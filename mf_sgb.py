@@ -29,11 +29,17 @@ from typing import Iterable
 import pandas as pd
 import requests
 
+from logging_setup import get_logger
+from parallel import map_parallel
+
+log = get_logger("mf_sgb")
+
 PROJECT = Path(__file__).resolve().parent
 MF_FILE = PROJECT / "mfs.json"
 SGB_FILE = PROJECT / "sgbs.json"
-CACHE_FILE = PROJECT / "data" / "mf_sgb_cache.json"
-SGB_PRICE_CACHE = PROJECT / "data" / "sgb_price_history.json"
+SGB_PRICE_CACHE_LEGACY = PROJECT / "data" / "sgb_price_history.json"   # JSON, migrated
+
+from history_db import HistoryDB
 
 
 # ---------- Data classes ----------
@@ -81,7 +87,7 @@ def _master_list() -> list[dict]:
     _MASTER_CACHE = r.json()
     cache_file.parent.mkdir(exist_ok=True)
     cache_file.write_text(json.dumps(_MASTER_CACHE))
-    print(f"[mf] master list: {len(_MASTER_CACHE)} schemes")
+    log.info("master list: %d schemes", len(_MASTER_CACHE))
     return _MASTER_CACHE
 
 
@@ -142,52 +148,81 @@ def _fetch_mf_history(code: int) -> list[dict]:
 
 def fetch_mf_rows(mfs: list[dict]) -> list[AssetRow]:
     """
-    Fetch MF NAVs and compute day-change % directly from mfapi.in.
+    Fetch MF NAVs in parallel and compute day-change % directly from mfapi.in.
 
     No assumptions about which day it is — just use whatever mfapi.in returns
     as the latest NAV. Day-change = (latest NAV) vs (previous NAV in history).
     If mfapi.in is stale, the chart will reflect that automatically.
     """
-    rows: list[AssetRow] = []
+    # Pre-resolve scheme codes serially (master list is in-process cached),
+    # then fetch NAVs in parallel.
+    resolved: list[tuple[int | None, str, dict]] = []
     for entry in mfs:
         name = entry.get("name", "").strip()
         units = float(entry.get("units", 0))
         if not name or units <= 0:
             continue
+        code, full_name = resolve_scheme_code(name)
+        if code is None:
+            log.info("not matched: %s", name)
+        resolved.append((code, full_name or name, entry))
+
+    def _one(pair: tuple[int | None, str, dict]) -> AssetRow | None:
+        code, full_name, entry = pair
+        if code is None:
+            return None
+        units = float(entry.get("units", 0))
         try:
-            code, full_name = resolve_scheme_code(name)
-            if code is None:
-                print(f"[mf]   not matched: {name}")
-                rows.append(AssetRow(name=name, kind="mf", units=units,
-                                     value=0.0, prev_value=0.0, pct=0.0,
-                                     extra={"error": "scheme not found"}))
-                continue
             hist = _fetch_mf_history(code)
-            if len(hist) < 1:
-                rows.append(AssetRow(name=full_name or name, kind="mf", units=units,
-                                     value=0.0, prev_value=0.0, pct=0.0,
-                                     extra={"error": "no NAV data"}))
-                continue
-            latest = hist[0]
-            prev = hist[1] if len(hist) >= 2 else latest
-            nav = float(latest.get("nav", 0))
-            prev_nav = float(prev.get("nav", 0))
-            value = units * nav
-            prev_value = units * prev_nav
-            pct = ((nav / prev_nav) - 1.0) * 100.0 if prev_nav else 0.0
-            print(f"[mf]   {full_name[:50]:<50} units={units:>10.2f}  "
-                  f"NAV={nav:>8.4f} ({latest.get('date','')})  "
-                  f"value=₹{value:>12,.2f}  day={pct:+.2f}%")
-            rows.append(AssetRow(
-                name=full_name or name, kind="mf", units=units,
-                value=value, prev_value=prev_value, pct=pct,
-                extra={"nav": nav, "nav_date": latest.get("date", "")},
-            ))
         except Exception as e:
-            print(f"[mf]   error for {name}: {e}")
+            log.warning("NAV fetch failed for %s: %s", full_name, e)
+            return None
+        if len(hist) < 1:
+            return AssetRow(name=full_name, kind="mf", units=units,
+                            value=0.0, prev_value=0.0, pct=0.0,
+                            extra={"error": "no NAV data"})
+        latest = hist[0]
+        prev = hist[1] if len(hist) >= 2 else latest
+        nav = float(latest.get("nav", 0))
+        prev_nav = float(prev.get("nav", 0))
+        value = units * nav
+        prev_value = units * prev_nav
+        pct = ((nav / prev_nav) - 1.0) * 100.0 if prev_nav else 0.0
+        log.info("%-50s units=%10.2f  NAV=%8.4f (%s)  value=₹%s  day=%+.2f%%",
+                 full_name[:50], units, nav, latest.get('date', ''),
+                 f"{value:,.2f}", pct)
+        return AssetRow(
+            name=full_name, kind="mf", units=units,
+            value=value, prev_value=prev_value, pct=pct,
+            extra={"nav": nav, "nav_date": latest.get("date", "")},
+        )
+
+    results = map_parallel(_one, resolved, desc="MF NAVs")
+
+    # Stitch results back into the original mfs order, adding "not matched"
+    # placeholders for schemes we couldn't resolve.
+    rows: list[AssetRow] = []
+    seen: set[int] = set()
+    for entry in mfs:
+        name = entry.get("name", "").strip()
+        units = float(entry.get("units", 0))
+        if not name or units <= 0:
+            continue
+        code, full_name = resolve_scheme_code(name)   # cached, free
+        if code is None:
             rows.append(AssetRow(name=name, kind="mf", units=units,
                                  value=0.0, prev_value=0.0, pct=0.0,
-                                 extra={"error": str(e)}))
+                                 extra={"error": "scheme not found"}))
+            continue
+        if code in seen:
+            continue
+        # find the matching result
+        for (rc, _rn, _), asset in zip(resolved, results):
+            if rc == code:
+                seen.add(code)
+                if asset is not None:
+                    rows.append(asset)
+                break
     return rows
 
 
@@ -241,34 +276,61 @@ def _fetch_mintbyte_sgb_prices() -> dict[str, dict] | None:
         return None
 
 
+# ---------- SGB history helpers (DB-backed, lazily cached) ----------
+_sgb_history_cache: dict | None = None
+
+
 def _load_sgb_history() -> dict:
-    """Load the SGB price history cache (date-indexed prices per ISIN)."""
-    if SGB_PRICE_CACHE.exists():
-        return json.loads(SGB_PRICE_CACHE.read_text())
-    return {}
+    """Return the SGB history as ``{isin: {date: price}}`` from the SQLite DB.
+    Lazily cached in-process; clears on process restart."""
+    global _sgb_history_cache
+    if _sgb_history_cache is not None:
+        return _sgb_history_cache
+    db = HistoryDB()
+    out: dict[str, dict[str, float]] = {}
+    with db._tx() as c:
+        for row in c.execute("SELECT isin, date, price FROM sgb_price").fetchall():
+            out.setdefault(row["isin"], {})[row["date"]] = float(row["price"])
+    _sgb_history_cache = out
+    return out
 
 
 def _save_sgb_history(history: dict) -> None:
-    SGB_PRICE_CACHE.write_text(json.dumps(history, indent=2))
+    """Persist ``{isin: {date: price}}`` into the SQLite DB.
+    Cheap because INSERT OR REPLACE skips duplicates."""
+    items: list[tuple[str, str, float, str]] = []
+    for isin, dates in history.items():
+        for d, p in dates.items():
+            items.append((isin, d, float(p), "legacy-shim"))
+    if items:
+        HistoryDB().record_sgb_prices(items)
+        # Refresh the in-memory cache so subsequent reads see the new rows.
+        global _sgb_history_cache
+        _sgb_history_cache = None
 
 
 def fetch_mintbyte_with_history() -> dict[str, dict] | None:
     """
-    Fetch today's mintbyte prices and update the local history cache.
+    Fetch today's mintbyte prices and update the history (SQLite DB).
     Returns the *latest* snapshot for each ISIN (same shape as _fetch_mintbyte_sgb_prices).
     """
     today_data = _fetch_mintbyte_sgb_prices()
     if not today_data:
         return None
-    history = _load_sgb_history()
-    today_iso = pd.Timestamp.today().strftime("%Y-%m-%d")
+    from datetime import datetime as _dt
+    today_iso = _dt.now().strftime("%Y-%m-%d")
+    db = HistoryDB()
+    items: list[tuple[str, str, float, str]] = []
     for isin, info in today_data.items():
-        history.setdefault(isin, {})
-        history[isin][info["date"]] = info["price"]
-        # Also store under today_iso if the price date differs (so we have a stable key)
+        items.append((isin, info["date"], float(info["price"]), "mintbyte"))
         if info["date"] != today_iso:
-            history[isin][today_iso] = info["price"]
-    _save_sgb_history(history)
+            # Also store under today_iso so the most-recent fetch has a
+            # stable key aligned with the run date.
+            items.append((isin, today_iso, float(info["price"]), "mintbyte-today"))
+    db.record_sgb_prices(items)
+    # Bust the in-memory shim cache.
+    global _sgb_history_cache
+    _sgb_history_cache = None
     return today_data
 
 
@@ -413,9 +475,9 @@ def fetch_sgb_rows(sgbs: list[dict], asof: pd.Timestamp | None = None) -> list[A
         log.warning("mintbyte: fetch failed")
 
     if ibja_today[0]:
-        log.info("IBJA 999 gold today:  ₹%,.2f/g  (%s)", ibja_today[0], ibja_today[1])
+        log.info("IBJA 999 gold today:  ₹%s/g  (%s)", f"{ibja_today[0]:,.2f}", ibja_today[1])
     if ibja_prev[0]:
-        log.info("IBJA 999 gold prev:   ₹%,.2f/g  (%s)", ibja_prev[0], ibja_prev[1])
+        log.info("IBJA 999 gold prev:   ₹%s/g  (%s)", f"{ibja_prev[0]:,.2f}", ibja_prev[1])
 
     for entry in sgbs:
         isin = entry.get("isin", "").strip().upper()
@@ -469,7 +531,7 @@ def fetch_sgb_rows(sgbs: list[dict], asof: pd.Timestamp | None = None) -> list[A
             source = "IBJA (RBI benchmark proxy)"
 
         if last is None:
-            print(f"[sgb]  no price for {isin} ({name}) — add manual_price_per_g to sgbs.json")
+            log.warning("no price for %s (%s) — add manual_price_per_g to sgbs.json", isin, name)
             rows.append(AssetRow(
                 name=name, kind="sgb", units=units,
                 value=0.0, prev_value=0.0, pct=0.0,
@@ -486,8 +548,9 @@ def fetch_sgb_rows(sgbs: list[dict], asof: pd.Timestamp | None = None) -> list[A
             extra={"price_per_g": last, "isin": isin, "source": source,
                    "buy_date": entry.get("buy_date", "")},
         ))
-        print(f"[sgb]  {name[:50]:<50} {units}g  "
-              f"₹{last:,.0f}/g  value=₹{value:,.0f}  day={pct:+.2f}%  ({source})")
+        log.info("%-50s %sg  ₹%s/g  value=₹%s  day=%+.2f%%  (%s)",
+                 name[:50], f"{units:g}",
+                 f"{last:,.0f}", f"{value:,.0f}", pct, source)
     return rows
 
 

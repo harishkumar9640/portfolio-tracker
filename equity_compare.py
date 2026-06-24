@@ -24,6 +24,8 @@ from indices_chart import (
     fetch_indices,
 )
 from logging_setup import get_logger
+from history_db import HistoryDB
+from parallel import fetch_all, map_parallel
 
 log = get_logger("compare")
 from mf_sgb import (
@@ -187,78 +189,82 @@ def main() -> None:
         if asof is None or d > asof:
             asof = d
 
-    # 2. Equity — use SmartAPI's prev_close field directly (matches Angel One app)
+    # 2-4. Equity, MF, SGB are independent — fetch them in parallel.
+    mfs = load_mfs()
+    sgbs = load_sgbs()
+    log.info("parallel fetch: equity + %d MF + %d SGB",
+             sum(1 for m in mfs if m.get("name") and float(m.get("units", 0)) > 0),
+             sum(1 for s in sgbs if s.get("isin") and float(s.get("units", 0)) > 0))
+
+    def _fetch_equity():
+        hs = fetch_holdings()
+        s = portfolio_summary(hs)
+        return hs, s
+
+    def _fetch_mf():
+        if not mfs:
+            return []
+        return fetch_mf_rows(mfs)
+
+    def _fetch_sgb():
+        if not sgbs:
+            return []
+        return fetch_sgb_rows(sgbs, asof=asof)
+
+    results = fetch_all({
+        "equity": _fetch_equity,
+        "mf":     _fetch_mf,
+        "sgb":    _fetch_sgb,
+    })
+
+    eq_result = results.get("equity")
+    if isinstance(eq_result, tuple) and len(eq_result) == 2:
+        holdings, _ = eq_result
+    else:
+        holdings = []
     equity_row: dict | None = None
-    equity_status = ""
-    try:
-        holdings = fetch_holdings()
-        s = portfolio_summary(holdings)
-        current_value = s["value"]
-        prev_value = sum(h.quantity * h.prev_close for h in holdings if h.prev_close > 0)
-        if current_value > 0 and prev_value > 0:
-            equity_pct = (current_value / prev_value - 1.0) * 100.0
-            equity_row = {
-                "name": "My Equity",
-                "pct": equity_pct,
-                "kind": "portfolio",
-                "value": current_value,
-            }
-            matched = sum(1 for h in holdings if h.prev_close > 0)
-            equity_status = (
-                f"using SmartAPI prev_close  matched={matched}/{len(holdings)}"
-            )
-            log.info("%s  pct=%+.2f%%  value=₹%,.0f",
-                     equity_status, equity_pct, current_value)
-    except Exception as e:
-        equity_status = f"equity fetch failed: {e}"
-    if equity_row is None:
-        log.warning("%s", equity_status)
+    if isinstance(holdings, list) and holdings:
+        try:
+            current_value = sum(h.current_value for h in holdings)
+            prev_value = sum(h.quantity * h.prev_close for h in holdings if h.prev_close > 0)
+            if current_value > 0 and prev_value > 0:
+                equity_pct = (current_value / prev_value - 1.0) * 100.0
+                matched = sum(1 for h in holdings if h.prev_close > 0)
+                equity_row = {
+                    "name": "My Equity",
+                    "pct": equity_pct,
+                    "kind": "portfolio",
+                    "value": current_value,
+                }
+                log.info(
+                    "equity using SmartAPI prev_close  matched=%d/%d  pct=%+.2f%%  value=₹%s",
+                    matched, len(holdings), equity_pct,
+                    f"{current_value:,.0f}",
+                )
+        except Exception as e:
+            log.warning("equity post-processing failed: %s", e)
+    elif not holdings:
+        log.info("equity: no holdings (broker returned empty)")
 
-    # 3. Mutual funds
-    mf_chart_rows: list[dict] = []
-    mf_assets: list[AssetRow] = []
-    mf_value = 0.0
-    mf_prev = 0.0
-    try:
-        mfs = load_mfs()
-        if mfs:
-            log.info("%d funds in mfs.json", len(mfs))
-            mf_assets = fetch_mf_rows(mfs)
-            mf_agg = aggregate_assets(mf_assets)
-            mf_value = mf_agg["value"]
-            mf_prev = mf_agg["prev_value"]
-            mf_pct = mf_agg["pct"]
-            mf_chart_rows.append({
-                "name": f"My Mutual Funds ({mf_agg['count']})",
-                "pct": mf_pct,
-                "kind": "mf",
-                "value": mf_value,
-            })
-    except Exception as e:
-        log.warning("mf failed: %s", e)
+    mf_assets: list[AssetRow] = results.get("mf") or []
+    sgb_assets: list[AssetRow] = results.get("sgb") or []
 
-    # 4. SGBs
-    sgb_chart_rows: list[dict] = []
-    sgb_assets: list[AssetRow] = []
-    sgb_value = 0.0
-    sgb_prev = 0.0
-    try:
-        sgbs = load_sgbs()
-        if sgbs:
-            log.info("%d SGBs in sgbs.json", len(sgbs))
-            sgb_assets = fetch_sgb_rows(sgbs, asof=asof)
-            sgb_agg = aggregate_assets(sgb_assets)
-            sgb_value = sgb_agg["value"]
-            sgb_prev = sgb_agg["prev_value"]
-            sgb_pct = sgb_agg["pct"]
-            sgb_chart_rows.append({
-                "name": f"My SGBs ({sgb_agg['count']})",
-                "pct": sgb_pct,
-                "kind": "sgb",
-                "value": sgb_value,
-            })
-    except Exception as e:
-        log.warning("sgb failed: %s", e)
+    mf_agg = aggregate_assets(mf_assets)
+    sgb_agg = aggregate_assets(sgb_assets)
+    mf_value, mf_prev = mf_agg["value"], mf_agg["prev_value"]
+    sgb_value, sgb_prev = sgb_agg["value"], sgb_agg["prev_value"]
+    mf_chart_rows = [{
+        "name": f"My Mutual Funds ({mf_agg['count']})",
+        "pct": mf_agg["pct"],
+        "kind": "mf",
+        "value": mf_value,
+    }] if mf_agg["count"] else []
+    sgb_chart_rows = [{
+        "name": f"My SGBs ({sgb_agg['count']})",
+        "pct": sgb_agg["pct"],
+        "kind": "sgb",
+        "value": sgb_value,
+    }] if sgb_agg["count"] else []
 
     # 5. Total portfolio
     total_row: dict | None = None
@@ -329,6 +335,28 @@ def main() -> None:
     if asof is None:
         log.error("FAIL: no index data")
         return
+
+    # 6. Persist today's snapshot for the history overlay / future reports.
+    try:
+        today_iso = pd.Timestamp(asof).strftime("%Y-%m-%d")
+        db = HistoryDB()
+        if equity_row:
+            db.record_snapshot(today_iso, "equity",
+                               equity_row["value"], equity_prev, equity_row["pct"])
+        if mf_chart_rows:
+            db.record_snapshot(today_iso, "mf", mf_value, mf_prev,
+                               mf_chart_rows[0]["pct"])
+        if sgb_chart_rows:
+            db.record_snapshot(today_iso, "sgb", sgb_value, sgb_prev,
+                               sgb_chart_rows[0]["pct"])
+        if total_row:
+            db.record_snapshot(today_iso, "total",
+                               total_row["value"], total_prev, total_row["pct"])
+        db.record_run("equity_compare.py", "ok",
+                      note=f"asof={today_iso}")
+    except Exception as e:
+        log.warning("failed to persist snapshot: %s", e)
+
     out = draw_bar_chart(chart_rows, asof, annotation=annotation)
 
     # 6. Print summary (full breakdown in terminal, chart is summary only)

@@ -15,6 +15,9 @@ secrets.local.json
 # Local data
 data/*.csv
 data/*.json
+data/*.json.*
+data/*.db
+data/*.db-*
 charts/*.png
 charts/*.html
 logs/**/*.log

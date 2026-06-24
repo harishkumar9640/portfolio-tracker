@@ -22,6 +22,7 @@ import pandas as pd
 import yfinance as yf
 
 from logging_setup import get_logger
+from parallel import map_parallel
 
 log = get_logger("indices")
 
@@ -134,14 +135,23 @@ def fetch_indices(period: str) -> pd.DataFrame:
     if needs_fetch:
         # Always pull "max" so the cache grows over time; we slice to `period` at the end.
         log.info("fetching %d tickers from Yahoo Finance...", len(tickers))
-        series_map: dict[str, pd.Series] = {}
-        for t in tickers:
+        # Parallelise per-ticker downloads. Yahoo's rate-limit window is
+        # generous enough for ~8 concurrent connections on a typical network.
+        def _safe_download(t: str) -> pd.Series | None:
             try:
                 s = _download_one(t)
-                series_map[t] = s
                 log.info("  ok  %s  (%d days)", t, len(s))
+                return s
             except Exception as e:
                 log.error("  FAIL %s: %s", t, e)
+                return None
+        series_list = map_parallel(
+            _safe_download, tickers,
+            desc="yahoo tickers",
+        )
+        series_map: dict[str, pd.Series] = {
+            t: s for t, s in zip(tickers, series_list) if s is not None
+        }
         if not series_map:
             raise RuntimeError("yfinance returned no data — check your network or ticker symbols")
         closes = pd.concat(series_map, axis=1)

@@ -39,6 +39,9 @@ py-modules = [
     "cas_parser",
     "cas_dump",
     "logging_setup",
+    "history_db",
+    "parallel",
+    "portfolio_html",
 ]
 
 [tool.pytest.ini_options]

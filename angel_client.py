@@ -14,6 +14,7 @@ script run. The TOTP secret + MPIN are used only for that single login.
 """
 from __future__ import annotations
 
+import json
 import os
 import time
 from dataclasses import dataclass
@@ -30,6 +31,11 @@ log = get_logger("angel")
 # Load .env from the project root, regardless of cwd.
 PROJECT = Path(__file__).resolve().parent
 load_dotenv(PROJECT / ".env")
+
+# Where we cache the SmartAPI session (jwtToken + refreshToken + feed token).
+# SmartAPI's jwtToken is valid until ~6:30 AM IST next day; caching avoids a
+# fresh TOTP+MPIN login on every script run.
+ANGEL_SESSION_FILE = PROJECT / "data" / "angel_session.json"
 
 
 def _get(name: str) -> str:
@@ -86,18 +92,52 @@ class Holding:
 
 
 def login() -> "SmartConnect":
-    """Create a logged-in SmartConnect client. Logs in once per call."""
+    """Create a logged-in SmartConnect client.
+
+    Tries the cached session first (jwtToken valid until ~6:30 AM IST next
+    day). Falls back to a fresh TOTP+MPIN login if the cache is missing,
+    expired, or rejected by the API.
+
+    NOTE on cache effectiveness:
+      Angel One's /api.token endpoint (used by ``generateToken``) actively
+      rejects refreshes within minutes of a fresh login as an anti-abuse
+      measure. In practice the cache hit path is therefore rare — most
+      runs will fall back to a full TOTP+MPIN login. The cache is still
+      useful: it occasionally short-circuits a login and the failure path
+      is well-tested. Always design callers to tolerate a re-login.
+    """
     # Import lazily so the rest of the project still works without the SDK installed.
     from SmartApi import SmartConnect  # type: ignore
 
     api_key = _get("ANGEL_API_KEY")
     client_code = _get("ANGEL_CLIENT_CODE")
-    pin = _get("ANGEL_MPIN")
-    totp_secret = _get("ANGEL_TOTP_SECRET")
-
-    totp = pyotp.TOTP(totp_secret).now()
 
     obj = SmartConnect(api_key=api_key)
+
+    cached = _load_session()
+    if cached:
+        try:
+            # setRefreshToken first; generateToken() uses it to mint a fresh
+            # jwtToken + feedToken and set them on the client.
+            obj.setRefreshToken(cached["refreshToken"])
+            try:
+                tok = obj.generateToken(cached["refreshToken"])
+            except Exception as tok_err:
+                # Angel One frequently rejects /api.token calls within
+                # minutes of a fresh login as an anti-abuse measure.
+                # Fall through to a full re-login.
+                raise RuntimeError(f"generateToken rejected: {tok_err}")
+            if not isinstance(tok, dict) or not tok.get("data", {}).get("jwtToken"):
+                raise RuntimeError(f"generateToken returned no jwtToken: {tok!r}")
+            log.info("session cache hit  client=%s", client_code)
+            return obj
+        except Exception as e:
+            log.info("cached session rejected, re-logging in: %s", e)
+
+    pin = _get("ANGEL_MPIN")
+    totp_secret = _get("ANGEL_TOTP_SECRET")
+    totp = pyotp.TOTP(totp_secret).now()
+
     try:
         data = obj.generateSession(client_code, pin, totp)
     except Exception as e:
@@ -110,17 +150,58 @@ def login() -> "SmartConnect":
             f"Angel One login failed: {data.get('message', 'unknown error')}"
         )
 
-    # Refresh the access token; some endpoints require it.
-    auth_token = data["data"]["jwtToken"]
-    refresh_token = data["data"]["refreshToken"]
-    try:
-        obj.getProfile(refresh_token)
-    except Exception:
-        pass  # profile fetch is best-effort
+    # generateSession() already calls setAccessToken/setRefreshToken/
+    # setFeedToken/setUserId internally. Just sanity-check.
+    if not obj.access_token or not obj.refresh_token:
+        raise RuntimeError("Angel One login succeeded but SDK has no tokens set")
+    feed = obj.feed_token or ""
 
-    # We do NOT log or return the tokens — they stay inside the SmartConnect obj.
+    # Best-effort profile fetch (some endpoints need a primed session).
+    # Suppress exceptions — we already have a valid session.
+    try:
+        obj.getProfile(obj.refresh_token)
+    except Exception:
+        pass
+
+    _save_session({
+        "jwtToken": obj.access_token,
+        "refreshToken": obj.refresh_token,
+        "feedToken": feed,
+        "client_code": client_code,
+        "logged_in_at": int(time.time()),
+    })
+
+    # We do NOT log the tokens — they stay inside the SmartConnect obj.
     log.info("login ok  client=%s  ts=%d", client_code, int(time.time()))
     return obj
+
+
+def _load_session() -> dict | None:
+    """Load a cached SmartAPI session if it exists and isn't expired."""
+    if not ANGEL_SESSION_FILE.exists():
+        return None
+    try:
+        data = json.loads(ANGEL_SESSION_FILE.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, dict) or not data.get("jwtToken"):
+        return None
+    # SmartAPI tokens are valid until ~6:30 AM IST next day.
+    # Cache for 20 hours to be safe across timezones / DST.
+    logged_in_at = int(data.get("logged_in_at", 0))
+    if time.time() - logged_in_at > 20 * 3600:
+        log.info("cached session too old (>20h); will re-login")
+        return None
+    return data
+
+
+def _save_session(session: dict) -> None:
+    """Persist the SmartAPI session to disk. Writes are atomic."""
+    import os
+    ANGEL_SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
+    tmp = ANGEL_SESSION_FILE.with_suffix(".tmp")
+    tmp.write_text(json.dumps(session))
+    os.replace(tmp, ANGEL_SESSION_FILE)
 
 
 def fetch_holdings() -> list[Holding]:
