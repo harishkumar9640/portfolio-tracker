@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Secrets — never commit
+.env
+secrets.local.json
+
+# Local data
+data/*.csv
+data/*.json
+charts/*.png
+charts/*.html
+logs/**/*.log
+!charts/.gitkeep
+!data/.gitkeep
+!mfs.json.example
+!sgbs.json.example
+
+# User portfolio lists (real holdings — never commit)
+mfs.json
+sgbs.json
