@@ -1,0 +1,16 @@
+[
+  {
+    "isin": "IN0020230184",
+    "units": 1,
+    "name": "SGB 2022-23 Series IV (Feb 2032)",
+    "buy_date": "2023-02-15",
+    "invested_per_g": 7920
+  },
+  {
+    "isin": "IN0020230069",
+    "units": 1,
+    "name": "SGB 2023-24 Series I",
+    "buy_date": "2023-06-15",
+    "invested_per_g": 7833
+  }
+]
