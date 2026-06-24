@@ -117,10 +117,10 @@ nano .env        # or open in any editor
 Your `.env` will look like:
 
 ```
-ANGEL_API_KEY=AbCdEf12345
-ANGEL_CLIENT_CODE=A12345678
-ANGEL_MPIN=123456
-ANGEL_TOTP_SECRET=JBSWY3DPEHPK3PXP
+ANGEL_API_KEY=your-api-key-from-smartapi-dashboard
+ANGEL_CLIENT_CODE=your-angel-one-client-id
+ANGEL_MPIN=your-angel-one-pin
+ANGEL_TOTP_SECRET=your-base32-totp-secret-from-qr-code
 ```
 
 > **The `.env` file is in `.gitignore`.** It will never be committed or
@@ -157,7 +157,7 @@ It will look like:
 
 ```json
 {
-  "cas_pdf_password": "the-PIN-you-set-on-CAMS"
+  "cas_pdf_password": "your-cas-pdf-pin"
 }
 ```
 

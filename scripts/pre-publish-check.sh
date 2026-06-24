@@ -46,19 +46,19 @@ fi
 echo
 echo "2. Tracked files containing real secrets"
 # Look for any tracked file that has a non-placeholder value for our secrets.
-# The placeholder strings are 'replace_me' and 'your_cas_password_here'.
+# Recognised placeholders: 'replace_me', 'your_*' prefixed values.
 SECRETS_PATTERN='ANGEL_(API_KEY|CLIENT_CODE|MPIN|TOTP_SECRET)=[A-Za-z0-9]+|cas_pdf_password[[:space:]]*=[[:space:]]*"[A-Za-z0-9]+'
 
 LEAKS=$(git ls-files \
     | grep -vE '\.example$' \
     | xargs grep -lE "$SECRETS_PATTERN" 2>/dev/null \
-    | grep -vE 'replace_me|your_cas_password_here' || true)
+    | grep -vE 'replace_me|your_|your-' || true)
 
 # Refine: exclude files where the only matches are placeholder lines.
 SUSPECT=""
 for f in $LEAKS; do
     HITS=$(grep -nE "$SECRETS_PATTERN" "$f" 2>/dev/null \
-        | grep -vE 'replace_me|your_cas_password_here' || true)
+        | grep -vE 'replace_me|your_|your-' || true)
     [ -n "$HITS" ] && SUSPECT="$SUSPECT $f"
 done
 
@@ -66,7 +66,7 @@ if [ -n "$SUSPECT" ]; then
     fail "Found real-looking secrets in tracked files:"
     for f in $SUSPECT; do
         echo "       $f"
-        grep -nE "$SECRETS_PATTERN" "$f" | grep -vE 'replace_me|your_cas_password_here' | sed 's/^/         /'
+        grep -nE "$SECRETS_PATTERN" "$f" | grep -vE 'replace_me|your_|your-' | sed 's/^/         /'
     done
 else
     ok "No real secrets found in tracked files"
@@ -103,7 +103,7 @@ fi
 # Also check for non-placeholder cas_pdf_password values in history.
 HISTORY_PW=$(git log --all -p 2>/dev/null \
     | grep -E '"cas_pdf_password"[[:space:]]*:[[:space:]]*"[^"]+"' \
-    | grep -vE 'your_cas_password_here|your_pin|replace_me|""|<set |empty' \
+    | grep -vE 'your_cas_password_here|your-cas-pdf-pin|your_|your-|the-PIN-you-set|replace_me|""|<set |empty' \
     | head -5 || true)
 if [ -n "$HISTORY_PW" ]; then
     fail "Possible CAS PDF password in git history!"

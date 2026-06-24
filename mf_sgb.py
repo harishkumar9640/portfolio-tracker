@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -413,47 +414,165 @@ def _fetch_ibja_gold_price(date_str: str | None = None, occurrence: int = 0) -> 
         return None, None
 
 
-def _fetch_nse_quote(isin: str) -> dict | None:
+# Cache the ISIN <-> NSE symbol mapping so we don't re-scrape mintbyte on every run.
+_ISIN_TO_NSE_SYMBOL: dict[str, str] = {}
+_NSE_SGB_DATA: list[dict] = []     # last successful NSE payload
+_NSE_SGB_FETCHED_AT: float = 0.0   # monotonic timestamp of last fetch
+
+
+def _fetch_nse_sgb_universe() -> list[dict] | None:
     """
-    Best-effort SGB price fetch via NSE public quote API.
-    Returns dict with lastPrice / previousClose or None on failure.
+    Fetch the full NSE SGB universe (all ~45 instruments) in one call.
+    Endpoint: https://www.nseindia.com/api/sovereign-gold-bonds
+
+    Returns a list of dicts with keys like:
+        symbol      e.g. "SGBFEB32IV"
+        ltP         last traded price (₹/g)
+        prevClose   previous trading day's close
+        chn, per    absolute & % change
+        issue_price
+        maturityDate
+
+    Returns None on any failure; the caller should fall back to mintbyte.
+
+    Note: NSE requires a session cookie from the SGB landing page. Without it
+    the API returns a tiny 13-byte empty response.
     """
+    global _NSE_SGB_DATA, _NSE_SGB_FETCHED_AT
+    # Cache the result for 5 minutes per process — the API rarely changes
+    # within a single Python run.
+    if _NSE_SGB_DATA and (time.monotonic() - _NSE_SGB_FETCHED_AT) < 300:
+        return _NSE_SGB_DATA
     try:
         headers = {
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "application/json",
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36"
+            ),
+            "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
+            "Referer": "https://www.nseindia.com/market-data/sovereign-gold-bond",
         }
-        # NSE's public search-by-ISIN endpoint
-        url = f"https://www.nseindia.com/api/quote-equity?symbol=GSEC"
-        # Many SGBs are traded under their series code (e.g. "SGB<YY><MM>")
-        # rather than isin, so a generic search is needed. As a robust fallback
-        # we try the search API.
-        search_url = "https://www.nseindia.com/api/search/autocomplete"
-        r = requests.get(search_url, params={"q": isin}, headers=headers, timeout=10)
-        if r.status_code == 200:
-            results = r.json()
-            if isinstance(results, dict) and "symbols" in results:
-                for sym in results["symbols"]:
-                    if sym.get("symbol_info", "").upper().startswith("SGB"):
-                        quote_url = f"https://www.nseindia.com/api/quote-equity?symbol={sym['symbol_info'].split('|')[0]}"
-                        r2 = requests.get(quote_url, headers=headers, timeout=10)
-                        if r2.status_code == 200:
-                            d = r2.json()
-                            price_info = d.get("priceInfo", {})
-                            return {
-                                "lastPrice": price_info.get("lastPrice"),
-                                "previousClose": price_info.get("previousClose"),
-                            }
+        s = requests.Session()
+        # Establish cookies via the landing page — NSE blocks API calls
+        # without the right cookies set.
+        s.get(
+            "https://www.nseindia.com/market-data/sovereign-gold-bond",
+            headers=headers,
+            timeout=15,
+        )
+        r = s.get(
+            "https://www.nseindia.com/api/sovereign-gold-bonds",
+            headers=headers,
+            timeout=15,
+        )
+        if r.status_code != 200 or len(r.text) < 1000:
+            log.warning("NSE SGB API returned %s (%d bytes)",
+                        r.status_code, len(r.text))
+            return None
+        data = r.json()
+        if not isinstance(data, dict) or "data" not in data:
+            return None
+        _NSE_SGB_DATA = data["data"]
+        _NSE_SGB_FETCHED_AT = time.monotonic()
+        log.info("NSE: fetched %d SGB instruments", len(_NSE_SGB_DATA))
+        return _NSE_SGB_DATA
+    except Exception as e:
+        log.warning("NSE SGB fetch failed: %s", e)
         return None
-    except Exception:
+
+
+def _build_isin_to_nse_symbol_map() -> dict[str, str]:
+    """
+    Build {isin: nse_symbol} mapping from mintbyte.com's HTML.
+
+    mintbyte's table lists every SGB with its ISIN and the NSE trading
+    symbol (e.g. IN0020230184 -> SGBFEB32IV). We scrape this once and
+    cache it in-process; missing entries fall back to a fuzzy match.
+    """
+    global _ISIN_TO_NSE_SYMBOL
+    if _ISIN_TO_NSE_SYMBOL:
+        return _ISIN_TO_NSE_SYMBOL
+    mapping: dict[str, str] = {}
+    try:
+        r = requests.get(
+            "https://mintbyte.com/sgb/premium/",
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/120.0.0.0 Safari/537.36"
+                ),
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            },
+            timeout=20,
+        )
+        r.raise_for_status()
+        # In mintbyte's HTML the columns appear in this order:
+        #   ISIN, "SGB <series>", issue_price, interest_rate, maturity_date,
+        #   days_left, LTP, LTP_date, IBJA_999_gold, arrow, change_pct,
+        #   "From <date>", <NSE_symbol>
+        # i.e. the NSE symbol appears AFTER (and to the right of) the ISIN
+        # in the rendered page, but in the raw HTML the ISIN appears AFTER
+        # its symbol because the table cells are emitted right-to-left in
+        # some layouts. To be safe we look in both directions.
+        for m in re.finditer(r'(IN002[0-9]+)', r.text):
+            isin = m.group(1)
+            # Look backward up to 1500 chars for the most recent SGB symbol
+            before = r.text[max(0, m.start() - 1500):m.start()]
+            before_syms = re.findall(r'(SGB[A-Z]+\d+[IVX]+)', before)
+            if before_syms:
+                mapping[isin] = before_syms[-1]
+                continue
+            # Fallback: look forward up to 2500 chars
+            after = r.text[m.start():m.start() + 2500]
+            after_syms = re.findall(r'(SGB[A-Z]+\d+[IVX]+)', after)
+            if after_syms:
+                mapping[isin] = after_syms[0]
+        log.info("ISIN→NSE symbol map: %d entries from mintbyte", len(mapping))
+    except Exception as e:
+        log.warning("mintbyte symbol-map fetch failed: %s", e)
+    _ISIN_TO_NSE_SYMBOL = mapping
+    return mapping
+
+
+def _fetch_nse_quote(isin: str) -> dict | None:
+    """
+    Fetch live SGB price from NSE's sovereign-gold-bonds API.
+
+    Returns ``{"lastPrice": float, "previousClose": float, "symbol": str}``
+    or None on failure. This is the price your demat account values your
+    SGBs at on the Angel One app.
+    """
+    universe = _fetch_nse_sgb_universe()
+    if not universe:
         return None
+    sym_map = _build_isin_to_nse_symbol_map()
+    target_symbol = sym_map.get(isin.upper())
+    if not target_symbol:
+        return None
+    for d in universe:
+        if d.get("symbol", "").upper() == target_symbol.upper():
+            try:
+                return {
+                    "lastPrice": float(d["ltP"]),
+                    "previousClose": float(d["prevClose"]),
+                    "symbol": d["symbol"],
+                }
+            except (KeyError, ValueError):
+                return None
+    return None
 
 
 def fetch_sgb_rows(sgbs: list[dict], asof: pd.Timestamp | None = None) -> list[AssetRow]:
     """
-    Fetch SGB prices. IBJA gold-spot proxy is primary (RBI-benchmarked);
-    NSE is best-effort fallback; manual is the last resort.
+    Fetch SGB prices. Order of preference (most accurate first):
+      1. NSE wholesale debt market (the price Angel One shows in your demat)
+      2. mintbyte (Motilal Oswal moAPI) — broker-quoted indicative price;
+         fallback when NSE is down or the ISIN is not on NSE's traded list
+      3. Manual price in sgbs.json (user-provided, e.g. from sgbanalyzer.com)
+      4. IBJA gold-spot proxy (RBI benchmark) — last resort
     Returns list of AssetRows including prev_value for XIRR.
 
     `asof` is accepted for backward compatibility but currently unused
@@ -496,7 +615,20 @@ def fetch_sgb_rows(sgbs: list[dict], asof: pd.Timestamp | None = None) -> list[A
             if quote and quote.get("lastPrice") and quote.get("previousClose"):
                 last = float(quote["lastPrice"])
                 prev = float(quote["previousClose"])
-                source = "NSE"
+                source = f"NSE ({quote.get('symbol', '')})"
+                # Persist to the SQLite history so future runs have an
+                # authoritative NSE-anchored prev-day price. This also
+                # lets the HTML chart overlay use real NSE-traded values
+                # instead of mintbyte's broker-quoted indicative price.
+                try:
+                    today_iso = pd.Timestamp.today().strftime("%Y-%m-%d")
+                    HistoryDB().record_sgb_prices([(
+                        isin, today_iso, last, f"NSE/{quote.get('symbol','')}"
+                    )])
+                    global _sgb_history_cache
+                    _sgb_history_cache = None
+                except Exception as persist_err:
+                    log.debug("NSE price persist failed: %s", persist_err)
         except Exception:
             pass
 
