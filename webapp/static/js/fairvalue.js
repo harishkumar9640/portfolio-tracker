@@ -267,29 +267,83 @@
         <div class="modal-company">${escapeHtml(d.resolved_name || "")}</div>`,
       priceHTML: `<div class="modal-price">₹${fmtNum(d.price, 2)}</div>`,
       bodyHTML: `
-        <div class="lookup-result-grid">
-          ${dcfTile}
-          <div class="lookup-tile">
-            <div class="lookup-tile-label">Underlying</div>
-            <div class="lookup-tile-meta">
-              <div class="lookup-tile-meta-row"><span>EPS</span><span>₹${fmtNum(d.eps, 2)}</span></div>
-              <div class="lookup-tile-meta-row"><span>BVPS</span><span>₹${fmtNum(d.book_value, 2)}</span></div>
-              <div class="lookup-tile-meta-row"><span>FCF/Share</span><span>₹${fmtNum(d.fcf_per_share, 2)}</span></div>
-              <div class="lookup-tile-meta-row"><span>Mkt Cap</span><span>₹${fmtNum(d.market_cap, 2)} Cr</span></div>
+        <div class="lookup-tabs" role="tablist">
+          <button type="button" class="lookup-tab is-active" role="tab"
+                  data-tab="summary" aria-selected="true">Summary</button>
+          <button type="button" class="lookup-tab" role="tab"
+                  data-tab="calc" aria-selected="false">Calculation</button>
+          <button type="button" class="lookup-tab" role="tab"
+                  data-tab="other" aria-selected="false">Other methods</button>
+        </div>
+
+        <div class="lookup-tab-panel is-active" data-panel="summary">
+          <div class="lookup-result-grid">
+            ${dcfTile}
+            <div class="lookup-tile">
+              <div class="lookup-tile-label">Underlying</div>
+              <div class="lookup-tile-meta">
+                <div class="lookup-tile-meta-row"><span>EPS</span><span>₹${fmtNum(d.eps, 2)}</span></div>
+                <div class="lookup-tile-meta-row"><span>BVPS</span><span>₹${fmtNum(d.book_value, 2)}</span></div>
+                <div class="lookup-tile-meta-row"><span>FCF/Share</span><span>₹${fmtNum(d.fcf_per_share, 2)}</span></div>
+                <div class="lookup-tile-meta-row"><span>Mkt Cap</span><span>₹${fmtNum(d.market_cap, 2)} Cr</span></div>
+              </div>
             </div>
           </div>
+          <p class="text-muted text-sm mt-3 mb-0">
+            Tap <strong>Calculation</strong> above to see the full Two-stage DCF
+            worked example (variables, year-by-year projection, terminal value,
+            reality check).
+          </p>
         </div>
-        ${mathSection}
-        ${otherMethodsSection}`,
+
+        <div class="lookup-tab-panel" data-panel="calc">
+          ${mathSection}
+        </div>
+
+        <div class="lookup-tab-panel" data-panel="other">
+          ${otherMethodsSection || '<p class="text-muted text-sm">No other methods available for this ticker.</p>'}
+        </div>`,
       footnote,
       closeButtonLabel: "Close",
     });
     openModal();
+    bindTabHandlers();
+  }
+
+  /**
+   * bindTabHandlers() wires the Summary / Calculation / Other methods
+   * tabs in the modal. Uses event delegation on .modal so it survives
+   * re-renders. ES5+ compatible.
+   */
+  function bindTabHandlers() {
+    var modal = document.getElementById("resultModal");
+    if (!modal || modal._tabsBound) return;
+    modal._tabsBound = true;
+    modal.addEventListener("click", function (e) {
+      var btn = e.target.closest && e.target.closest(".lookup-tab");
+      if (!btn) return;
+      var tabName = btn.getAttribute("data-tab");
+      if (!tabName) return;
+      // Update button states
+      var tabs = modal.querySelectorAll(".lookup-tab");
+      for (var i = 0; i < tabs.length; i++) {
+        var isActive = tabs[i] === btn;
+        tabs[i].classList.toggle("is-active", isActive);
+        tabs[i].setAttribute("aria-selected", isActive ? "true" : "false");
+      }
+      // Update panels
+      var panels = modal.querySelectorAll(".lookup-tab-panel");
+      for (var j = 0; j < panels.length; j++) {
+        var p = panels[j];
+        var match = p.getAttribute("data-panel") === tabName;
+        p.classList.toggle("is-active", match);
+      }
+    });
   }
 
   /**
    * buildMathSection(d, g1, g2, r) renders the worked-example DCF
-   * math inside a collapsible <details>. Includes:
+   * math as an always-visible section. Includes:
    *   - Variable definitions table (FCF, g₁, g₂, r, PV, TV, ...)
    *   - Abbreviations glossary (DCF, FCF, EPS, BVPS, PV, TV, NPV, ...)
    *   - Year-by-year FCF projection with discount factors
@@ -366,11 +420,17 @@
         ? 'A majority of the DCF value comes from the terminal-value assumption. The model is moderately sensitive to the choice of r and g₂.'
         : 'Most of the DCF value comes from explicit FCF projections. The terminal value is a smaller contribution, so the model is more robust to small changes in r or g₂.');
 
+    // Math section is rendered visible by default (no <details> toggle).
+    // Earlier we wrapped it in <details open>, but the user couldn't
+    // tell it was a clickable thing — clicking the header actually CLOSED
+    // it, which felt like a bug. Now the math is always visible and the
+    // user can scroll through it.
     return (
-      '<details class="lookup-math mt-4" open>' +
-        '<summary class="lookup-math-summary">' +
-          '<strong>Show calculation</strong> — Two-stage DCF worked example' +
-        '</summary>' +
+      '<section class="lookup-math mt-4">' +
+        '<header class="lookup-math-header">' +
+          '<strong>Calculation</strong> ' +
+          '<span class="text-muted text-sm">— Two-stage DCF worked example</span>' +
+        '</header>' +
         '<div class="lookup-math-body">' +
 
           // ----- Variable definitions -----
@@ -442,7 +502,7 @@
           '</table>' +
 
         '</div>' +
-      '</details>'
+      '</section>'
     );
   }
 

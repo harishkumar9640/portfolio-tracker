@@ -33,7 +33,10 @@ PROJECT = Path(__file__).resolve().parent.parent
 # ----- module-level caches (populated lazily; TTL in seconds) -----
 _portfolio_cache: dict = {"asof": None, "data": None, "ts": 0.0}
 _fairvalue_cache: dict = {"asof": None, "data": None, "ts": 0.0}
-_CACHE_TTL = 60  # seconds
+# Portfolio snapshots take ~5s to build (Angel One + mfapi + NSE).
+# Cache them aggressively so most requests are instant. The user can
+# still click "Refresh" to force a rebuild.
+_CACHE_TTL = 300  # 5 minutes
 
 
 # ---------- Today's portfolio snapshot ----------

@@ -79,6 +79,11 @@ def root() -> str:
 
 @app.get("/portfolio", response_class=HTMLResponse)
 def portfolio_page(request: Request) -> HTMLResponse:
+    """Render the portfolio page. The snapshot is fetched synchronously
+    here (cached for 60s in webapp.data). On a cold cache the first
+    request takes ~5s while the build runs; the browser shows a
+    stopwatch loader via #page-loading during that time.
+    """
     snap = get_portfolio_snapshot()
     return templates.TemplateResponse(
         request,
@@ -279,6 +284,22 @@ def main() -> None:
     parser.add_argument("--reload", action="store_true",
                         help="Auto-reload on source changes (dev mode).")
     args = parser.parse_args()
+
+    # Pre-warm the portfolio cache in the background so the first
+    # page load after server start is fast. We can't block uvicorn.run
+    # for ~5 seconds (the build takes that long), but the cache will
+    # be ready by the time the user actually opens their browser.
+    import threading
+    def _warm():
+        try:
+            from webapp.data import get_portfolio_snapshot, get_fairvalue_snapshot
+            get_portfolio_snapshot(force=True)
+            log.info("portfolio cache pre-warmed")
+            get_fairvalue_snapshot(force=True)
+            log.info("fairvalue cache pre-warmed")
+        except Exception as e:
+            log.warning("cache pre-warm failed (non-fatal): %s", e)
+    threading.Thread(target=_warm, daemon=True, name="cache-warmer").start()
 
     log.info("starting Portfolio Tracker on http://%s:%d", args.host, args.port)
     uvicorn.run(

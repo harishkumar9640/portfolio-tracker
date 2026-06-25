@@ -152,13 +152,53 @@ class TestFairValueModalUX:
         pg.click("#lookupSubmit")
         pg.wait_for_selector("#resultModal:not([hidden])", timeout=10000)
         # Wait for the actual valuation data (not the loading state)
-        pg.wait_for_selector(".modal-dialog:has-text('GRAHAM')", timeout=10000)
+        pg.wait_for_selector(".modal-dialog:has-text('TWO-STAGE DCF')", timeout=10000)
 
         text = pg.locator(".modal-dialog").inner_text()
         assert "ITC" in text
-        assert "GRAHAM" in text.upper(), f"GRAHAM missing from modal:\n{text}"
-        assert "DCF" in text.upper(), f"DCF missing from modal:\n{text}"
+        assert "TWO-STAGE DCF" in text.upper(), f"DCF missing from modal:\n{text}"
         assert pg.locator(".modal-close").is_visible()
+
+    def test_three_tabs_present(self, page, server_url):
+        """The modal now uses tabs: Summary, Calculation, Other methods.
+        All three must be present so the user can find the math."""
+        pg, _ = page
+        pg.goto(f"{server_url}/fairvalue", wait_until="networkidle")
+        pg.fill("#lookupInput", "ITC")
+        pg.click("#lookupSubmit")
+        pg.wait_for_selector("#resultModal:not([hidden])", timeout=10000)
+        pg.wait_for_selector(".modal-dialog:has-text('TWO-STAGE DCF')", timeout=10000)
+
+        tabs = pg.locator(".lookup-tab")
+        assert tabs.count() == 3, f"expected 3 tabs, got {tabs.count()}"
+        tab_labels = [tabs.nth(i).inner_text() for i in range(3)]
+        assert "Summary" in tab_labels
+        assert "Calculation" in tab_labels
+        assert "Other methods" in tab_labels
+
+    def test_calculation_tab_shows_full_math(self, page, server_url):
+        """Regression: previously the math was hidden inside a collapsed
+        <details> element. Users couldn't see the calculation on click.
+        Now it lives behind a tab that's a single click away."""
+        pg, _ = page
+        pg.goto(f"{server_url}/fairvalue", wait_until="networkidle")
+        pg.fill("#lookupInput", "ITC")
+        pg.click("#lookupSubmit")
+        pg.wait_for_selector("#resultModal:not([hidden])", timeout=10000)
+        pg.wait_for_selector(".modal-dialog:has-text('TWO-STAGE DCF')", timeout=10000)
+        # Click the Calculation tab
+        pg.click('.lookup-tab[data-tab="calc"]')
+        pg.wait_for_timeout(500)
+        # The math panel must now be visible
+        panel = pg.locator('.lookup-tab-panel[data-panel="calc"]')
+        assert panel.is_visible(), "Calculation panel should be visible after clicking the tab"
+        text = panel.inner_text()
+        assert "VARIABLES USED" in text.upper(), "Variables table missing"
+        assert "STEP-BY-STEP" in text.upper(), "Step-by-step math missing"
+        assert "YEAR-BY-YEAR" in text.upper(), "Year-by-year table missing"
+        assert "TERMINAL VALUE" in text.upper(), "Terminal value section missing"
+        assert "ABBREVIATIONS" in text.upper(), "Abbreviations glossary missing"
+        assert "REALITY CHECK" in text.upper(), "Reality check missing"
 
     def test_market_cap_is_not_a_dash(self, page, server_url):
         """Regression: market_cap was being dropped by the JSON
@@ -193,6 +233,23 @@ class TestFairValueModalUX:
                 break
             time.sleep(0.1)
         assert pg.locator("#resultModal").get_attribute("hidden") is not None
+
+    def test_other_methods_tab_shows_graham(self, page, server_url):
+        """Other methods tab should show Graham Number (hidden by default
+        in Summary, available on this tab)."""
+        pg, _ = page
+        pg.goto(f"{server_url}/fairvalue", wait_until="networkidle")
+        pg.fill("#lookupInput", "ITC")
+        pg.click("#lookupSubmit")
+        pg.wait_for_selector("#resultModal:not([hidden])", timeout=10000)
+        pg.wait_for_selector(".modal-dialog:has-text('TWO-STAGE DCF')", timeout=10000)
+        pg.click('.lookup-tab[data-tab="other"]')
+        pg.wait_for_timeout(500)
+        panel = pg.locator('.lookup-tab-panel[data-panel="other"]')
+        assert panel.is_visible()
+        text = panel.inner_text()
+        # Graham is in the other methods section
+        assert "Graham" in text, f"Graham missing from Other methods tab:\n{text}"
 
     def test_escape_key_dismisses_modal(self, page, server_url):
         pg, _ = page

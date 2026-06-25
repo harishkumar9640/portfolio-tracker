@@ -7,9 +7,69 @@
   <title>{{ page_title }} · Portfolio Tracker</title>
   <link rel="stylesheet" href="/static/css/app.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%88%3C/text%3E%3C/svg%3E">
+  <script>
+    // Stopwatch driver: starts on first script execution (i.e. before
+    // the body even renders). Updates the on-screen clock every 100ms
+    // and hides the loader as soon as the document is interactive.
+    (function () {
+      var t0 = (window.performance && performance.now)
+        ? performance.now() : Date.now();
+      var clock = null;
+      var loader = null;
+      var clockTimer = null;
+      function fmt(ms) {
+        if (ms < 1000) return Math.round(ms) + "ms";
+        return (ms / 1000).toFixed(1) + "s";
+      }
+      function tick() {
+        var now = (window.performance && performance.now)
+          ? performance.now() : Date.now();
+        if (clock) clock.textContent = fmt(now - t0);
+      }
+      function hide() {
+        if (loader) loader.classList.add("is-hidden");
+        if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+      }
+      function attach() {
+        loader = document.getElementById("page-loading");
+        clock = document.getElementById("pageLoadingClock");
+        if (clock) tick();
+        clockTimer = setInterval(tick, 100);
+      }
+      // Hide on either DOMContentLoaded or window load (whichever
+      // fires first). DOMContentLoaded fires when the body has been
+      // parsed; load fires when all subresources are loaded.
+      document.addEventListener("DOMContentLoaded", function () {
+        attach();
+        setTimeout(hide, 250);
+      });
+      window.addEventListener("load", function () {
+        if (!loader) attach();
+        setTimeout(hide, 250);
+      });
+      window.__stopwatchT0 = t0;
+    })();
+  </script>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
+
+  {# ----- Page-loading stopwatch -----
+     Visible immediately on page load and hidden once the document is
+     interactive. Shows a digital clock with elapsed milliseconds so
+     the user has feedback during slow server responses (e.g. cold
+     cache on /portfolio where building the snapshot takes ~5s).
+     The script at the bottom of <body> drives the timer. #}
+  <div id="page-loading" class="page-loading" role="status" aria-live="polite">
+    <div class="page-loading-inner">
+      <div class="page-loading-spinner" aria-hidden="true"></div>
+      <div class="page-loading-text">
+        <div class="page-loading-title">Loading…</div>
+        <div class="page-loading-clock" id="pageLoadingClock">0.0s</div>
+        <div class="page-loading-hint">Fetching today's data from Angel One, mfapi.in, and NSE.</div>
+      </div>
+    </div>
+  </div>
 
   <header class="topbar">
     <div class="topbar-inner">

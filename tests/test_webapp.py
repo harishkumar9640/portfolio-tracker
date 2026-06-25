@@ -119,6 +119,21 @@ class TestRoutes:
         assert "Nifty 50 (IN)" in r.text
         assert "S&amp;P 500 (US)" in r.text or "S&P 500 (US)" in r.text
 
+    def test_page_loading_stopwatch_present(self, client):
+        """Every page must include the page-loading stopwatch element
+        so users see feedback during slow server responses."""
+        for path in ["/portfolio", "/fairvalue", "/history", "/settings"]:
+            r = client.get(path)
+            assert r.status_code == 200
+            assert "page-loading" in r.text, \
+                f"{path} missing #page-loading stopwatch"
+            assert "pageLoadingClock" in r.text, \
+                f"{path} missing the stopwatch clock element"
+            assert "page-loading-spinner" in r.text, \
+                f"{path} missing the spinner element"
+            assert "Fetching today's data" in r.text, \
+                f"{path} missing the loading hint text"
+
     def test_equity_bar_shows_pnl_today(self, client):
         """The My Equity bar must show today's gain/loss in ₹ as well
         as the percentage change, so the user can see the actual money

@@ -920,33 +920,37 @@ body.modal-open { overflow: hidden; }
   font-size: var(--fs-xs);
   color: var(--c-fg-subtle);
 }
-/* ---------- Fair-value math breakdown (collapsible) ---------- */
+/* ---------- Fair-value math breakdown (always-visible section) ---------- */
 .lookup-math, .lookup-other-methods {
   border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
   background: var(--c-bg-card);
   padding: var(--s-3) var(--s-4);
 }
-.lookup-math-summary {
-  cursor: pointer;
+.lookup-math-header, .lookup-other-methods > summary {
   font-size: var(--fs-sm);
+  padding-bottom: var(--s-2);
+  border-bottom: 1px dashed var(--c-border);
+  margin-bottom: var(--s-3);
+}
+.lookup-other-methods > summary {
+  cursor: pointer;
   list-style: none;
   display: flex;
   align-items: center;
   gap: var(--s-2);
 }
-.lookup-math-summary::-webkit-details-marker { display: none; }
-.lookup-math-summary::before {
+.lookup-other-methods > summary::-webkit-details-marker { display: none; }
+.lookup-other-methods > summary::before {
   content: "▶";
   font-size: 0.7em;
   color: var(--c-muted);
   transition: transform 0.15s ease-out;
 }
-details[open] > .lookup-math-summary::before { transform: rotate(90deg); }
+.lookup-other-methods[open] > summary::before { transform: rotate(90deg); }
 .lookup-math-body {
-  margin-top: var(--s-3);
-  padding-top: var(--s-3);
-  border-top: 1px dashed var(--c-border);
+  /* No top border needed — the .lookup-math-header above already
+     separates the header from the body content. */
 }
 .lookup-math-h {
   margin: var(--s-4) 0 var(--s-2);
@@ -1027,4 +1031,104 @@ details[open] > .lookup-math-summary::before { transform: rotate(90deg); }
 .lookup-reality-check.text-pos {
   background: rgba(22, 163, 74, 0.06);
   border-left-color: var(--c-positive);
+}
+
+/* ---------- Modal tabs (Summary / Calculation / Other methods) ---------- */
+.lookup-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--c-border);
+  margin: calc(var(--s-4) * -1) calc(var(--s-5) * -1) var(--s-4);
+  padding: 0 var(--s-5);
+  background: var(--c-bg);
+}
+.lookup-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: var(--s-3) var(--s-4);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: color 0.15s ease-out, border-color 0.15s ease-out;
+  font-family: inherit;
+  margin-bottom: -1px;
+}
+.lookup-tab:hover { color: var(--c-fg); }
+.lookup-tab.is-active {
+  color: var(--c-primary);
+  border-bottom-color: var(--c-primary);
+  font-weight: 600;
+}
+.lookup-tab-panel {
+  display: none;
+  animation: lookup-fade-in 0.18s ease-out;
+}
+.lookup-tab-panel.is-active { display: block; }
+@keyframes lookup-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Page-loading stopwatch ---------- */
+.page-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease-out;
+}
+.page-loading.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.page-loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-5);
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  min-width: 280px;
+  max-width: 90vw;
+}
+.page-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--c-bg);
+  border-top-color: var(--c-primary);
+  border-radius: 50%;
+  animation: page-loading-spin 0.9s linear infinite;
+}
+@keyframes page-loading-spin {
+  to { transform: rotate(360deg); }
+}
+.page-loading-text { text-align: center; }
+.page-loading-title {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  margin-bottom: var(--s-1);
+}
+.page-loading-clock {
+  font-family: var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace);
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--c-primary);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.page-loading-hint {
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+  margin-top: var(--s-2);
+  max-width: 280px;
 }
