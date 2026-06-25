@@ -94,6 +94,26 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### 4. Run the web dashboard (optional)
+
+After `pip install`, you can launch a local web UI:
+
+```bash
+python3 -m webapp.server --port 8000
+```
+
+Open http://localhost:8000 in any browser. The dashboard is fully
+responsive — tested on phones (360px+), tablets (iPad portrait &
+landscape), laptops, and 4K monitors. The pages are:
+
+- **Portfolio** — today's equity + MF + SGB vs world indices (with bar chart)
+- **Fair Value** — Graham / PE-Relative / DCF for tickers in `my_tickers.txt`
+- **History** — interactive Plotly chart of your portfolio over time
+- **Settings** — view your `mfs.json`, `sgbs.json`, and `my_tickers.txt`
+
+The dashboard reads from the same SQLite DB the CLI scripts use, so
+nothing is duplicated.
+
 ### 4. Set up your Angel One credentials
 
 Sign in to the Angel One app, go to **My Profile → Developer Console**

@@ -19,6 +19,12 @@ dependencies = [
     "logzero>=1.7.0",
     "websocket-client>=1.6.0",
     "plotly>=5.18.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "jinja2>=3.1.0",
+    "python-multipart>=0.0.9",
+    "httpx2>=0.0.1",
+    "beautifulsoup4>=4.12.0",
 ]
 
 [project.optional-dependencies]
@@ -42,6 +48,7 @@ py-modules = [
     "history_db",
     "parallel",
     "portfolio_html",
+    "fairvalue",
 ]
 
 [tool.pytest.ini_options]

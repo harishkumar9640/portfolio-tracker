@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="flex-between mb-4">
+  <div>
+    <h1 class="mb-0">Fair Value</h1>
+    <p class="text-muted mb-0">
+      Graham Number · PE-Relative · Two-stage DCF
+      <span class="hidden-sm">·</span>
+      <br class="hidden-md">
+      <span class="text-sm">Source: <a href="https://www.screener.in" target="_blank" rel="noopener">screener.in</a></span>
+    </p>
+  </div>
+  <div class="flex-gap-2">
+    <button id="refreshBtn" data-kind="fairvalue" class="btn">Refresh</button>
+  </div>
+</header>
+
+<section class="card">
+  {% if snapshot.rows %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Price (₹)</th>
+            <th>EPS</th>
+            <th>BVPS</th>
+            <th>FCF/Share</th>
+            <th>Graham</th>
+            <th>Margin</th>
+            <th>DCF</th>
+            <th>DCF Margin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in snapshot.rows %}
+            <tr>
+              <td><strong>{{ r.ticker }}</strong></td>
+              <td>{{ "{:,.2f}".format(r.price) if r.price is not none else '—' }}</td>
+              <td>{{ "{:,.2f}".format(r.eps) if r.eps is not none else '—' }}</td>
+              <td>{{ "{:,.2f}".format(r.book_value) if r.book_value is not none else '—' }}</td>
+              <td>{{ "{:,.2f}".format(r.fcf_per_share) if r.fcf_per_share is not none else '—' }}</td>
+              <td>{{ "{:,.2f}".format(r.graham) if r.graham is not none else '—' }}</td>
+              <td>
+                {% if r.graham_margin_pct is not none %}
+                  <span class="badge {% if r.graham_margin_pct >= 0 %}badge-positive{% else %}badge-negative{% endif %}">
+                    {{ "{:+.1f}".format(r.graham_margin_pct) }}%
+                  </span>
+                {% else %}—{% endif %}
+              </td>
+              <td>{{ "{:,.2f}".format(r.dcf) if r.dcf is not none else '—' }}</td>
+              <td>
+                {% if r.dcf_margin_pct is not none %}
+                  <span class="badge {% if r.dcf_margin_pct >= 0 %}badge-positive{% else %}badge-negative{% endif %}">
+                    {{ "{:+.1f}".format(r.dcf_margin_pct) }}%
+                  </span>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">
+      No tickers to value. Add some to <code>my_tickers.txt</code> in the project root
+      (one per line) and refresh.
+    </p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2 class="mb-3">How these models work</h2>
+  <dl class="grid grid-2" style="gap: var(--s-4);">
+    <div>
+      <dt><strong>Graham Number</strong></dt>
+      <dd class="text-muted text-sm">
+        <code>√(22.5 × EPS × BVPS)</code> — Benjamin Graham's classic
+        intrinsic-value formula. Conservative; useful as a sanity check.
+      </dd>
+    </div>
+    <div>
+      <dt><strong>PE-Relative</strong></dt>
+      <dd class="text-muted text-sm">
+        <code>EPS × industry PE</code> — values a stock at the average PE
+        of its peers. Requires an industry-PE input.
+      </dd>
+    </div>
+    <div>
+      <dt><strong>Two-stage DCF</strong></dt>
+      <dd class="text-muted text-sm">
+        PV of FCF/share for 5 years (growing at g₁) plus a discounted
+        terminal value (growing at g₂). Defaults: g₁=10%, g₂=3%, r=10%.
+      </dd>
+    </div>
+    <div>
+      <dt><strong>Margin</strong></dt>
+      <dd class="text-muted text-sm">
+        <code>(fair_value − price) / price</code>. Positive = undervalued;
+        negative = overvalued. The badge colour follows the sign.
+      </dd>
+    </div>
+  </dl>
+</section>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="flex-between mb-4">
+  <div>
+    <h1 class="mb-0">Settings</h1>
+    <p class="text-muted mb-0">
+      What the dashboard is reading from your project files.
+      Editing them in a text editor is the supported workflow.
+    </p>
+  </div>
+</header>
+
+<div class="grid grid-2">
+  <section class="card">
+    <div class="flex-between mb-3">
+      <h2 class="mb-0">Mutual funds</h2>
+      <span class="badge">{{ holdings.mfs | length }}</span>
+    </div>
+    <p class="text-sm text-muted mb-3">
+      Read from <code>mfs.json</code> (project root).
+    </p>
+    {% if holdings.mfs %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Units</th></tr>
+          </thead>
+          <tbody>
+            {% for m in holdings.mfs %}
+              <tr>
+                <td>{{ m.name }}</td>
+                <td class="tabular">{{ m.units }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted">No mutual funds configured.</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <div class="flex-between mb-3">
+      <h2 class="mb-0">Sovereign Gold Bonds</h2>
+      <span class="badge">{{ holdings.sgbs | length }}</span>
+    </div>
+    <p class="text-sm text-muted mb-3">
+      Read from <code>sgbs.json</code> (project root).
+    </p>
+    {% if holdings.sgbs %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ISIN</th><th>Name</th><th>Grams</th></tr>
+          </thead>
+          <tbody>
+            {% for s in holdings.sgbs %}
+              <tr>
+                <td class="text-mono text-xs">{{ s.isin }}</td>
+                <td>{{ s.name[:30] }}{% if s.name | length > 30 %}…{% endif %}</td>
+                <td class="tabular">{{ s.units }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted">No SGBs configured.</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <div class="flex-between mb-3">
+    <h2 class="mb-0">Fair-value tickers</h2>
+    <span class="badge">{{ holdings.tickers | length }}</span>
+  </div>
+  <p class="text-sm text-muted mb-3">
+    Read from <code>my_tickers.txt</code> (one ticker per line, <code>#</code> starts a comment).
+  </p>
+  {% if holdings.tickers %}
+    <div class="flex-gap-2">
+      {% for t in holdings.tickers %}
+        <span class="badge">{{ t }}</span>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No tickers in <code>my_tickers.txt</code>.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2 class="mb-3">Where things live</h2>
+  <dl class="grid grid-2" style="gap: var(--s-4);">
+    <div>
+      <dt><code>.env</code></dt>
+      <dd class="text-muted text-sm">Angel One API key, MPIN, TOTP secret. Gitignored.</dd>
+    </div>
+    <div>
+      <dt><code>secrets.local.json</code></dt>
+      <dd class="text-muted text-sm">CAS PDF password. Gitignored.</dd>
+    </div>
+    <div>
+      <dt><code>mfs.json</code></dt>
+      <dd class="text-muted text-sm">Your mutual fund holdings. Gitignored.</dd>
+    </div>
+    <div>
+      <dt><code>sgbs.json</code></dt>
+      <dd class="text-muted text-sm">Your SGB holdings. Gitignored.</dd>
+    </div>
+    <div>
+      <dt><code>my_tickers.txt</code></dt>
+      <dd class="text-muted text-sm">Tickers for fair-value analysis. Tracked in git.</dd>
+    </div>
+    <div>
+      <dt><code>data/history.db</code></dt>
+      <dd class="text-muted text-sm">SQLite DB of daily snapshots and SGB prices. Gitignored.</dd>
+    </div>
+  </dl>
+</section>
+
+{% endblock %}

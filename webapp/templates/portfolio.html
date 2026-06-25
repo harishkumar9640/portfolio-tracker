@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="flex-between mb-4">
+  <div>
+    <h1 class="mb-0">Today's Portfolio</h1>
+    <p class="text-muted mb-0">
+      {{ snapshot.asof or '—' }} · auto-refreshed from Angel One, mfapi.in, NSE, IBJA
+    </p>
+  </div>
+  <div class="flex-gap-2">
+    <a href="/history" class="btn btn-secondary">View history</a>
+    <button id="refreshBtn" data-kind="portfolio" class="btn">Refresh</button>
+  </div>
+</header>
+
+{# ----- KPI tiles ----- #}
+<section class="grid grid-2 grid-4 mb-4">
+  <div class="kpi">
+    <div class="kpi-label">Total Portfolio</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(snapshot.total.value) }}</div>
+    <div class="kpi-sub {% if snapshot.total.pct >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ "{:+.2f}".format(snapshot.total.pct) }}% today
+    </div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">My Equity</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(snapshot.equity.value) }}</div>
+    <div class="kpi-sub">
+      {% if snapshot.equity.row %}
+        {{ "{:+.2f}".format(snapshot.equity.row.pct) }}% today
+      {% else %}
+        <span class="text-muted">No data</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">Mutual Funds</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(snapshot.mf.value) }}</div>
+    <div class="kpi-sub {% if snapshot.mf.pct >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ snapshot.mf.count }} funds · {{ "{:+.2f}".format(snapshot.mf.pct) }}%
+    </div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">SGBs</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(snapshot.sgb.value) }}</div>
+    <div class="kpi-sub {% if snapshot.sgb.pct >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ snapshot.sgb.count }} bonds · {{ "{:+.2f}".format(snapshot.sgb.pct) }}%
+    </div>
+  </div>
+</section>
+
+{# ----- World indices bar chart ----- #}
+<section class="card">
+  <div class="flex-between mb-3">
+    <h2 class="mb-0">Day change vs world indices</h2>
+    {% if snapshot.best_index %}
+      <span class="text-muted text-sm">
+        Best {{ snapshot.best_index.name }} {{ "{:+.2f}".format(snapshot.best_index.pct) }}%
+        · Worst {{ snapshot.worst_index.name }} {{ "{:+.2f}".format(snapshot.worst_index.pct) }}%
+      </span>
+    {% endif %}
+  </div>
+
+  {# Compute bar widths (max abs pct) #}
+  {% set max_abs = 1 %}
+  {% for r in snapshot.indices %}
+    {% if r.pct | abs > max_abs %}{% set max_abs = r.pct | abs %}{% endif %}
+  {% endfor %}
+  {% if snapshot.equity.row and snapshot.equity.row.pct | abs > max_abs %}
+    {% set max_abs = snapshot.equity.row.pct | abs %}
+  {% endif %}
+
+  <div class="barlist">
+    {# Portfolio first if present #}
+    {% if snapshot.equity.row %}
+      {% set eq = snapshot.equity.row %}
+      <div class="bar-row">
+        <div class="bar-label">
+          <span class="bar-name">My Equity</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-center"></div>
+          <div class="bar-fill is-portfolio"
+               style="left: {% if eq.pct >= 0 %}50%{% else %}{{ 50 - (eq.pct | abs / max_abs * 50) }}%{% endif %};
+                      width: {{ eq.pct | abs / max_abs * 50 }}%;"></div>
+        </div>
+        <div class="bar-pct {% if eq.pct >= 0 %}pct-pos{% else %}pct-neg{% endif %} text-right">
+          {{ "{:+.2f}".format(eq.pct) }}%
+        </div>
+      </div>
+    {% endif %}
+
+    {# Indices #}
+    {% for r in snapshot.indices %}
+      <div class="bar-row">
+        <div class="bar-label">
+          <span class="bar-name">{{ r.name }}</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-center"></div>
+          <div class="bar-fill {% if r.pct >= 0 %}is-positive{% else %}is-negative{% endif %}"
+               style="left: {% if r.pct >= 0 %}50%{% else %}{{ 50 - (r.pct | abs / max_abs * 50) }}%{% endif %};
+                      width: {{ r.pct | abs / max_abs * 50 }}%;"></div>
+        </div>
+        <div class="bar-pct {% if r.pct >= 0 %}pct-pos{% else %}pct-neg{% endif %} text-right">
+          {{ "{:+.2f}".format(r.pct) }}%
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<div class="grid grid-2">
+  {# ----- Equity holdings ----- #}
+  <section class="card">
+    <h2 class="mb-3">Equity holdings</h2>
+    {% if snapshot.equity.holdings %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Qty</th>
+              <th>Avg</th>
+              <th>LTP</th>
+              <th>P&amp;L</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for h in snapshot.equity.holdings | sort(attribute='current_value', reverse=true) %}
+              <tr>
+                <td>{{ h.symbol }}</td>
+                <td>{{ h.quantity }}</td>
+                <td>₹{{ "{:,.2f}".format(h.avg_price) }}</td>
+                <td>₹{{ "{:,.2f}".format(h.ltp) }}</td>
+                <td class="{% if h.pnl_pct >= 0 %}pct-pos{% else %}pct-neg{% endif %}">
+                  {{ "{:+.2f}".format(h.pnl_pct) }}%
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted">No equity holdings. Add them in <a href="/settings">Settings</a>.</p>
+    {% endif %}
+  </section>
+
+  {# ----- SGB breakdown ----- #}
+  <section class="card">
+    <h2 class="mb-3">Sovereign Gold Bonds</h2>
+    {% if snapshot.sgb.rows %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Bond</th>
+              <th>Grams</th>
+              <th>₹/g</th>
+              <th>Day %</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in snapshot.sgb.rows %}
+              <tr>
+                <td>
+                  {{ r.name[:40] }}{% if r.name | length > 40 %}…{% endif %}
+                  <div class="text-muted text-xs">{{ r.source.split(' ')[0] if r.source else '' }}</div>
+                </td>
+                <td>{{ "{:g}".format(r.units) }}</td>
+                <td>₹{{ "{:,.0f}".format(r.price_per_g) }}</td>
+                <td class="{% if r.pct >= 0 %}pct-pos{% else %}pct-neg{% endif %}">
+                  {{ "{:+.2f}".format(r.pct) }}%
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted">No SGB holdings. Add them in <a href="/settings">Settings</a>.</p>
+    {% endif %}
+  </section>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+{% endblock %}

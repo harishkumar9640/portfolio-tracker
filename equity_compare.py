@@ -169,6 +169,145 @@ def draw_bar_chart(rows: list[dict], asof: pd.Timestamp,
     return out
 
 
+# ---------- Snapshot builder (used by webapp) ----------
+def build_snapshot() -> dict:
+    """
+    Build a JSON-serialisable snapshot of today's portfolio.
+
+    Used by:
+      - webapp.data (FastAPI dashboard)
+      - main() (terminal printout)
+
+    Returns a dict with all the fields the web pages and the terminal
+    summary need. See webapp/data.py for the exact shape.
+    """
+    period = "equity_compare"
+    raw = fetch_indices("5d")
+    index_rows = []
+    asof: pd.Timestamp | None = None
+    for col in raw.columns:
+        s = raw[col].dropna()
+        if len(s) < 2:
+            continue
+        prev, last = float(s.iloc[-2]), float(s.iloc[-1])
+        if prev == 0:
+            continue
+        index_rows.append({"name": col, "pct": (last / prev - 1.0) * 100.0, "kind": "index"})
+        d = s.index[-1]
+        if asof is None or d > asof:
+            asof = d
+
+    mfs = load_mfs()
+    sgbs = load_sgbs()
+
+    from parallel import fetch_all
+
+    def _fetch_equity():
+        hs = fetch_holdings()
+        s = portfolio_summary(hs)
+        return hs, s
+
+    def _fetch_mf():
+        if not mfs:
+            return []
+        return fetch_mf_rows(mfs)
+
+    def _fetch_sgb():
+        if not sgbs:
+            return []
+        return fetch_sgb_rows(sgbs, asof=asof)
+
+    results = fetch_all({
+        "equity": _fetch_equity,
+        "mf":     _fetch_mf,
+        "sgb":    _fetch_sgb,
+    })
+
+    eq_result = results.get("equity")
+    if isinstance(eq_result, tuple) and len(eq_result) == 2:
+        holdings, _ = eq_result
+    else:
+        holdings = []
+
+    equity_value = 0.0
+    equity_prev = 0.0
+    equity_row = None
+    equity_holdings = []
+    if isinstance(holdings, list) and holdings:
+        equity_value = sum(h.current_value for h in holdings)
+        equity_prev = sum(h.quantity * h.prev_close for h in holdings if h.prev_close > 0)
+        for h in holdings:
+            equity_holdings.append({
+                "symbol": h.symbol,
+                "quantity": h.quantity,
+                "avg_price": round(h.avg_price, 2),
+                "ltp": round(h.ltp, 2),
+                "current_value": round(h.current_value, 2),
+                "pnl": round(h.pnl, 2),
+                "pnl_pct": round(h.pnl_pct, 2),
+            })
+        if equity_value > 0 and equity_prev > 0:
+            equity_row = {
+                "name": "My Equity",
+                "pct": (equity_value / equity_prev - 1.0) * 100.0,
+                "value": equity_value,
+            }
+
+    mf_assets = results.get("mf") or []
+    sgb_assets = results.get("sgb") or []
+    mf_agg = aggregate_assets(mf_assets)
+    sgb_agg = aggregate_assets(sgb_assets)
+
+    sgb_rows = []
+    for a in sgb_assets:
+        if a.value > 0:
+            sgb_rows.append({
+                "name": a.name,
+                "units": a.units,
+                "price_per_g": a.extra.get("price_per_g", 0),
+                "value": a.value,
+                "pct": a.pct,
+                "source": a.extra.get("source", ""),
+            })
+
+    total_value = equity_value + mf_agg["value"] + sgb_agg["value"]
+    total_prev = equity_prev + mf_agg["prev_value"] + sgb_agg["prev_value"]
+    total_pct = ((total_value / total_prev) - 1.0) * 100.0 if total_prev > 0 else 0.0
+
+    index_rows.sort(key=lambda r: -r["pct"])
+    return {
+        "asof": asof.strftime("%Y-%m-%d") if asof is not None else None,
+        "period": period,
+        "indices": index_rows,
+        "equity": {
+            "row": equity_row,
+            "holdings": equity_holdings,
+            "value": equity_value,
+            "prev_value": equity_prev,
+        },
+        "mf": {
+            "count": mf_agg["count"],
+            "value": mf_agg["value"],
+            "prev_value": mf_agg["prev_value"],
+            "pct": mf_agg["pct"],
+        },
+        "sgb": {
+            "count": sgb_agg["count"],
+            "value": sgb_agg["value"],
+            "prev_value": sgb_agg["prev_value"],
+            "pct": sgb_agg["pct"],
+            "rows": sgb_rows,
+        },
+        "total": {
+            "value": total_value,
+            "prev_value": total_prev,
+            "pct": total_pct,
+        },
+        "best_index": index_rows[0] if index_rows else None,
+        "worst_index": index_rows[-1] if index_rows else None,
+    }
+
+
 # ---------- Main ----------
 def main() -> None:
     period = "equity_compare"
