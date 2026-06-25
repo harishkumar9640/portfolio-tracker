@@ -303,3 +303,39 @@ class TestKeyboard:
         assert m, f"{path}: could not find navToggle element"
         assert m.group(1) == "button", \
             f"{path}: navToggle is a <{m.group(1)}>, should be <button>"
+
+    def test_fairvalue_submit_button_present(self, client):
+        """The fairvalue page must have a visible Calculate button."""
+        html = _fetch_html(client, "/fairvalue")
+        assert 'id="lookupSubmit"' in html
+        # The button must be a real <button> element with type=button
+        m = re.search(
+            r'<button[^>]*id="lookupSubmit"[^>]*>',
+            html,
+        )
+        assert m, "lookupSubmit not rendered as a <button>"
+        assert "type=" in m.group(0) or "type=\"button\"" in html, \
+            "lookupSubmit should be type=button to avoid form submission"
+
+    def test_fairvalue_result_panel_shows_placeholder_initially(self, client):
+        """When the page first loads, the result area must show a hint
+        explaining what to do (not just be empty/hidden)."""
+        html = _fetch_html(client, "/fairvalue")
+        # The result div exists in the markup (no `hidden` attr on initial render)
+        m = re.search(r'<div[^>]*id="lookupResult"[^>]*>', html)
+        assert m, "lookupResult not in HTML"
+        assert "hidden" not in m.group(0), \
+            "lookupResult should be visible on page load (with a placeholder)"
+
+    def test_fairvalue_js_includes_submit_button_handler(self, client):
+        """fairvalue.js must bind a click handler to the submit button."""
+        js = (Path(__file__).parent.parent /
+              "webapp" / "static" / "js" / "fairvalue.js").read_text()
+        # The submit button handler references both submitBtn and runLookup
+        assert "submitBtn" in js, "submitBtn not referenced in fairvalue.js"
+        assert "lookupSubmit" in js, "lookupSubmit id not referenced"
+        # Make sure the click handler exists
+        assert re.search(
+            r"submitBtn\.addEventListener\(\s*[\"']click[\"']",
+            js,
+        ), "submitBtn has no click event listener"

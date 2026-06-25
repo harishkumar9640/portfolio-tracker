@@ -28,28 +28,33 @@
   </p>
 
   <div class="lookup">
-    <div class="lookup-input-wrap">
-      <input
-        type="search"
-        id="lookupInput"
-        class="lookup-input"
-        placeholder="Search by ticker, name, or ISIN…"
-        autocomplete="off"
-        autocapitalize="off"
-        spellcheck="false"
-        aria-label="Search for a stock"
-        aria-autocomplete="list"
-        aria-controls="lookupSuggestions"
-        aria-expanded="false">
-      <button type="button" id="lookupClear" class="lookup-clear"
-              aria-label="Clear search" hidden>×</button>
+    <div class="lookup-row">
+      <div class="lookup-input-wrap">
+        <input
+          type="search"
+          id="lookupInput"
+          class="lookup-input"
+          placeholder="Search by ticker, name, or ISIN…"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-label="Search for a stock"
+          aria-autocomplete="list"
+          aria-controls="lookupSuggestions"
+          aria-expanded="false">
+        <button type="button" id="lookupClear" class="lookup-clear"
+                aria-label="Clear search" hidden>×</button>
+      </div>
+      <button type="button" id="lookupSubmit" class="lookup-submit btn">
+        Calculate fair value
+      </button>
     </div>
     <ul id="lookupSuggestions" class="lookup-suggestions" role="listbox"
         aria-label="Stock suggestions" hidden></ul>
   </div>
 
   {# Result panel — populated by JS #}
-  <div id="lookupResult" class="lookup-result" hidden></div>
+  <div id="lookupResult" class="lookup-result"></div></oldText>
 
   {# Advanced parameters (collapsible) #}
   <details class="lookup-params">

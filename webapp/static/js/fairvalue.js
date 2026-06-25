@@ -6,6 +6,7 @@
 
   const input        = document.getElementById('lookupInput');
   const clearBtn     = document.getElementById('lookupClear');
+  const submitBtn    = document.getElementById('lookupSubmit');
   const suggestions  = document.getElementById('lookupSuggestions');
   const resultPanel  = document.getElementById('lookupResult');
   const paramIndustry = document.getElementById('paramIndustryPe');
@@ -20,6 +21,9 @@
   let activeLookup = null;         // AbortController for in-flight valuation
   let highlightIdx = -1;           // -1 = no highlight
   let lastResults = [];
+
+  // Show a placeholder so the user knows what to do.
+  showPlaceholder();
 
   // ---------- helpers ----------
   function debounce(fn, ms) {
@@ -150,6 +154,26 @@
     if (!el) return undefined;
     const v = parseFloat(el.value);
     return Number.isFinite(v) ? v : undefined;
+  }
+
+  function showPlaceholder() {
+    input.classList.remove("is-loading");
+    resultPanel.hidden = false;
+    resultPanel.classList.remove("is-error");
+    resultPanel.innerHTML = `
+      <div class="lookup-result-header">
+        <div class="lookup-result-title">
+          <span class="text-muted">Enter a ticker, company name, or ISIN above and click <strong>Calculate fair value</strong>.</span>
+        </div>
+      </div>
+      <p class="text-muted text-sm">
+        Examples: <code>RELIANCE</code>, <code>Infosys Limited</code>,
+        <code>INE009A01021</code>, <code>HDFC Bank</code>.
+      </p>
+      <p class="text-muted text-sm">
+        Tip: pick a suggestion from the dropdown, press
+        <kbd>Enter</kbd>, or click the <strong>Calculate</strong> button.
+      </p>`;
   }
 
   function showLoading(ticker) {
@@ -335,10 +359,18 @@
     input.value = '';
     clearBtn.hidden = true;
     hideSuggestions();
-    resultPanel.hidden = true;
-    resultPanel.innerHTML = '';
+    showPlaceholder();
     input.focus();
   });
+
+  // Submit button: run the lookup on whatever's in the input.
+  if (submitBtn) {
+    submitBtn.addEventListener('click', () => {
+      hideSuggestions();
+      const q = input.value.trim();
+      if (q) runLookup(q);
+    });
+  }
 
   // Re-run lookup when any advanced param changes (only if we already have a ticker)
   [paramIndustry, paramG1, paramG2, paramR].forEach((el) => {

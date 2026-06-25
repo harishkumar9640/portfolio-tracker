@@ -448,6 +448,17 @@ pre {
   overflow-x: auto;
   border: 1px solid var(--c-border);
 }
+kbd {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--c-fg);
+  white-space: nowrap;
+}
 
 /* ---------- Utility ---------- */
 .text-muted   { color: var(--c-fg-muted); }
@@ -475,6 +486,18 @@ pre {
 .lookup {
   position: relative;
   margin-bottom: var(--s-3);
+}
+.lookup-row {
+  display: flex;
+  gap: var(--s-2);
+  align-items: stretch;
+}
+.lookup-row .lookup-input-wrap { flex: 1 1 auto; }
+.lookup-row .lookup-submit {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding-left: var(--s-5);
+  padding-right: var(--s-5);
 }
 .lookup-input-wrap {
   position: relative;
