@@ -154,7 +154,7 @@ def fetch_indices(period: str) -> pd.DataFrame:
         }
         if not series_map:
             raise RuntimeError("yfinance returned no data — check your network or ticker symbols")
-        closes = pd.concat(series_map, axis=1)
+        closes = pd.concat(series_map, axis=1, sort=True)
         closes.index = pd.to_datetime(closes.index)
         # If pd.concat produced a 2-level column index (ticker, 'Close'), flatten it.
         if isinstance(closes.columns, pd.MultiIndex):

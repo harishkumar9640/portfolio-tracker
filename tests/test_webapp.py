@@ -66,21 +66,38 @@ def client():
              "dcf": 2838.89, "dcf_margin_pct": 29.10},
         ],
     }
+    # webapp.server does `from webapp.data import get_*` so it holds its
+    # own module-level references. Patch both the source (webapp.data)
+    # and the consumer (webapp.server) so the real network functions
+    # are never called during tests.
+    import webapp.server as ws
+
     wd.get_portfolio_snapshot = lambda force=False: fake_portfolio
+    ws.get_portfolio_snapshot = wd.get_portfolio_snapshot
+
     wd.get_fairvalue_snapshot = lambda force=False: fake_fairvalue
-    wd.get_health = lambda: {
-        "now": "2026-06-25T11:00:00",
-        "last_portfolio_run": {"ran_at": "2026-06-25T10:00:00",
-                               "status": "ok", "note": "asof=2026-06-25"},
-        "last_fairvalue_run": {},
-        "snapshots_in_db": 5,
-        "sgb_price_rows": 100,
-    }
+    ws.get_fairvalue_snapshot = wd.get_fairvalue_snapshot
+
+    def fake_health():
+        return {
+            "now": "2026-06-25T11:00:00",
+            "last_portfolio_run": {"ran_at": "2026-06-25T10:00:00",
+                                   "status": "ok", "note": "asof=2026-06-25"},
+            "last_fairvalue_run": {},
+            "snapshots_in_db": 5,
+            "sgb_price_rows": 100,
+        }
+    wd.get_health = fake_health
+    ws.get_health = fake_health
+
     wd.get_holdings_summary = lambda: {
         "mfs": [{"name": "HDFC Mid Cap Fund", "units": 500.58}],
         "sgbs": [{"isin": "IN0020230184", "name": "SGB 2022-23 IV", "units": 1}],
         "tickers": ["RELIANCE", "TCS", "INFY"],
     }
+    ws.get_holdings_summary = wd.get_holdings_summary
+    ws.start_background_refresh = lambda kind="all": None
+
     from fastapi.testclient import TestClient
     from webapp.server import app
     return TestClient(app)

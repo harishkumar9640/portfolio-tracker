@@ -145,6 +145,90 @@ def api_fairvalue() -> dict:
     return get_fairvalue_snapshot()
 
 
+@app.get("/api/fairvalue/search")
+def api_fairvalue_search(q: str = "", limit: int = 10) -> dict:
+    """
+    Autocomplete endpoint. Matches the user's query against the in-memory
+    mfapi.in master scheme list by ticker prefix or name substring.
+    Returns up to ``limit`` matches, sorted by relevance.
+
+    Empty ``q`` returns the most-popular schemes (useful for the default
+    dropdown state).
+    """
+    from fair_value.search import search_schemes
+    return {"query": q, "results": search_schemes(q, limit=limit)}
+
+
+@app.post("/api/fairvalue/lookup")
+def api_fairvalue_lookup(payload: dict) -> dict:
+    """
+    Compute the fair value for a single ticker on demand.
+
+    Body (JSON):
+        {
+            "ticker":      "RELIANCE"  (required),
+            "industry_pe": 25,         (optional, enables PE-relative),
+            "dcf_g1":      0.10,       (optional, default 10%),
+            "dcf_g2":      0.03,       (optional, default 3%),
+            "dcf_r":       0.10        (optional, default 10%)
+        }
+
+    Returns the full breakdown including the underlying fundamentals.
+    """
+    from fair_value.valuation import (
+        check,
+    )
+    from fair_value.search import resolve_ticker
+
+    raw_ticker = (payload.get("ticker") or "").strip()
+    if not raw_ticker:
+        return {"error": "ticker is required"}
+
+    # Resolve via screener.in master list if the user typed a name / ISIN
+    resolved_ticker, resolved_name = resolve_ticker(raw_ticker)
+
+    industry_pe = payload.get("industry_pe")
+    dcf_g1 = float(payload.get("dcf_g1", 0.10))
+    dcf_g2 = float(payload.get("dcf_g2", 0.03))
+    dcf_r = float(payload.get("dcf_r", 0.10))
+
+    rows = check(
+        [resolved_ticker],
+        industry_pe=industry_pe,
+        dcf_g1=dcf_g1, dcf_g2=dcf_g2, dcf_r=dcf_r,
+    )
+    if not rows:
+        return {"error": f"could not value {raw_ticker!r}"}
+
+    r = rows[0].to_dict()
+    if r.get("error"):
+        return {"error": r["error"], "ticker": resolved_ticker,
+                "queried_as": raw_ticker}
+
+    # Add margin metrics for the UI
+    if r.get("price") and r.get("graham"):
+        r["graham_margin_pct"] = round(
+            (r["graham"] - r["price"]) / r["price"] * 100, 2
+        )
+    if r.get("price") and r.get("dcf"):
+        r["dcf_margin_pct"] = round(
+            (r["dcf"] - r["price"]) / r["price"] * 100, 2
+        )
+    if r.get("price") and r.get("pe_relative"):
+        r["pe_margin_pct"] = round(
+            (r["pe_relative"] - r["price"]) / r["price"] * 100, 2
+        )
+
+    r["queried_as"] = raw_ticker
+    r["resolved_ticker"] = resolved_ticker
+    r["resolved_name"] = resolved_name
+    r["params"] = {
+        "industry_pe": industry_pe,
+        "dcf_g1": dcf_g1, "dcf_g2": dcf_g2, "dcf_r": dcf_r,
+    }
+    return r
+
+
 @app.get("/api/refresh")
 @app.post("/api/refresh")
 def api_refresh(kind: str = "all") -> JSONResponse:

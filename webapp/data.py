@@ -92,14 +92,20 @@ def _build_fairvalue_snapshot(tickers: Optional[list[str]] = None) -> dict:
         from fair_value.valuation import load_tickers
         tickers = load_tickers()
     rows = check(tickers)
-    # Augment with "margin of safety" for the UI
+    # Augment with "margin of safety" for the UI. Always set the keys
+    # (to None when not computable) so Jinja templates can use
+    # ``is not none`` rather than ``is defined``.
     out = []
     for r in rows:
         d = r.to_dict()
-        if r.price and r.graham:
-            d["graham_margin_pct"] = round((r.graham - r.price) / r.price * 100, 2)
-        if r.price and r.dcf:
-            d["dcf_margin_pct"] = round((r.dcf - r.price) / r.price * 100, 2)
+        d["graham_margin_pct"] = (
+            round((r.graham - r.price) / r.price * 100, 2)
+            if (r.price and r.graham) else None
+        )
+        d["dcf_margin_pct"] = (
+            round((r.dcf - r.price) / r.price * 100, 2)
+            if (r.price and r.dcf) else None
+        )
         out.append(d)
     return {"asof": date.today().isoformat(), "rows": out}
 

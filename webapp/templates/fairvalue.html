@@ -12,11 +12,85 @@
     </p>
   </div>
   <div class="flex-gap-2">
-    <button id="refreshBtn" data-kind="fairvalue" class="btn">Refresh</button>
+    <button id="refreshBtn" data-kind="fairvalue" class="btn">Refresh list</button>
   </div>
 </header>
 
+{# ============================================================ #}
+{# Lookup card: type a ticker, stock name, or ISIN to value it  #}
+{# ============================================================ #}
+<section class="card lookup-card">
+  <h2 class="mb-3">Look up a stock</h2>
+  <p class="text-sm text-muted mb-3">
+    Type a ticker (e.g. <code>RELIANCE</code>), a stock name (e.g.
+    <code>Infosys</code>), or an ISIN (e.g. <code>INE009A01021</code>).
+    The fair value is calculated on demand from screener.in data.
+  </p>
+
+  <div class="lookup">
+    <div class="lookup-input-wrap">
+      <input
+        type="search"
+        id="lookupInput"
+        class="lookup-input"
+        placeholder="Search by ticker, name, or ISIN…"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        aria-label="Search for a stock"
+        aria-autocomplete="list"
+        aria-controls="lookupSuggestions"
+        aria-expanded="false">
+      <button type="button" id="lookupClear" class="lookup-clear"
+              aria-label="Clear search" hidden>×</button>
+    </div>
+    <ul id="lookupSuggestions" class="lookup-suggestions" role="listbox"
+        aria-label="Stock suggestions" hidden></ul>
+  </div>
+
+  {# Result panel — populated by JS #}
+  <div id="lookupResult" class="lookup-result" hidden></div>
+
+  {# Advanced parameters (collapsible) #}
+  <details class="lookup-params">
+    <summary>Advanced parameters</summary>
+    <div class="lookup-params-grid">
+      <label class="form-row">
+        <span>Industry PE</span>
+        <input type="number" id="paramIndustryPe" step="0.1" min="0" max="200"
+               placeholder="e.g. 25">
+        <small class="text-muted">Enable PE-Relative model</small>
+      </label>
+      <label class="form-row">
+        <span>DCF g₁ (5y growth)</span>
+        <input type="number" id="paramDcfG1" step="0.005" min="-0.5" max="0.5"
+               value="0.10">
+        <small class="text-muted">e.g. 0.10 = 10%</small>
+      </label>
+      <label class="form-row">
+        <span>DCF g₂ (terminal)</span>
+        <input type="number" id="paramDcfG2" step="0.005" min="-0.1" max="0.1"
+               value="0.03">
+        <small class="text-muted">e.g. 0.03 = 3%</small>
+      </label>
+      <label class="form-row">
+        <span>DCF r (discount)</span>
+        <input type="number" id="paramDcfR" step="0.005" min="0.01" max="0.5"
+               value="0.10">
+        <small class="text-muted">Must be &gt; g₂</small>
+      </label>
+    </div>
+  </details>
+</section>
+
+{# ============================================================ #}
+{# Pre-computed list (from my_tickers.txt)                       #}
+{# ============================================================ #}
 <section class="card">
+  <div class="flex-between mb-3">
+    <h2 class="mb-0">Watchlist</h2>
+    <span class="text-sm text-muted">{{ snapshot.rows | length }} tickers</span>
+  </div>
   {% if snapshot.rows %}
     <div class="table-wrap">
       <table>
@@ -64,8 +138,8 @@
     </div>
   {% else %}
     <p class="text-muted">
-      No tickers to value. Add some to <code>my_tickers.txt</code> in the project root
-      (one per line) and refresh.
+      No tickers in the watchlist. Add some to <code>my_tickers.txt</code>
+      in the project root (one per line) and refresh.
     </p>
   {% endif %}
 </section>
@@ -105,5 +179,9 @@
 </section>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+{% block extra_js %}
+<script src="/static/js/fairvalue.js" defer></script>
+{% endblock %}
 
 {% endblock %}
