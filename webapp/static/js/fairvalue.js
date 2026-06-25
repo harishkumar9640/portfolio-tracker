@@ -157,58 +157,75 @@
   }
 
   function showPlaceholder() {
+    // Inline placeholder shown before the user searches. The modal
+    // opens only when a value has actually been computed.
     input.classList.remove("is-loading");
-    resultPanel.hidden = false;
     resultPanel.classList.remove("is-error");
     resultPanel.innerHTML = `
-      <div class="lookup-result-header">
-        <div class="lookup-result-title">
-          <span class="text-muted">Enter a ticker, company name, or ISIN above and click <strong>Calculate fair value</strong>.</span>
-        </div>
-      </div>
-      <p class="text-muted text-sm">
+      <p class="text-muted mb-0">
+        Enter a ticker, company name, or ISIN above and click
+        <strong>Calculate fair value</strong> (or press <kbd>Enter</kbd>).
         Examples: <code>RELIANCE</code>, <code>Infosys Limited</code>,
-        <code>INE009A01021</code>, <code>HDFC Bank</code>.
-      </p>
-      <p class="text-muted text-sm">
-        Tip: pick a suggestion from the dropdown, press
-        <kbd>Enter</kbd>, or click the <strong>Calculate</strong> button.
+        <code>INE009A01021</code>.
       </p>`;
   }
 
+  function openModal() {
+    const m = document.getElementById("resultModal");
+    if (!m) return;
+    m.hidden = false;
+    document.body.classList.add("modal-open");
+    // Move focus to the close button for keyboard users.
+    const close = m.querySelector(".modal-close");
+    if (close) close.focus();
+  }
+
+  function closeModal() {
+    const m = document.getElementById("resultModal");
+    if (!m) return;
+    m.hidden = true;
+    document.body.classList.remove("modal-open");
+    // Return focus to the search input so the next search is easy.
+    if (input) input.focus();
+  }
+
   function showLoading(ticker) {
-    input.classList.add('is-loading');
-    resultPanel.hidden = false;
-    resultPanel.classList.remove('is-error');
-    resultPanel.innerHTML = `
-      <div class="lookup-result-header">
-        <div class="lookup-result-title">
-          <span class="lookup-result-ticker">${escapeHtml(ticker)}</span>
-        </div>
-        <span class="text-muted">Fetching from screener.in…</span>
-      </div>
-      <p class="text-muted text-sm">This usually takes 1–3 seconds.</p>`;
+    input.classList.add("is-loading");
+    renderModal({
+      ticker,
+      isError: false,
+      headerHTML: `
+        <div class="modal-ticker">${escapeHtml(ticker)}</div>
+        <div class="modal-company text-muted">Fetching from screener.in…</div>`,
+      priceHTML: `<span class="modal-price text-muted">…</span>`,
+      bodyHTML: `
+        <p class="text-muted text-sm">Looking up fundamentals from screener.in.
+        This usually takes 1–3 seconds.</p>`,
+      footnote: "Source: screener.in",
+    });
+    openModal();
   }
 
   function showError(msg, ticker) {
-    input.classList.remove('is-loading');
-    resultPanel.hidden = false;
-    resultPanel.classList.add('is-error');
-    resultPanel.innerHTML = `
-      <div class="lookup-result-header">
-        <div class="lookup-result-title">
-          <span class="lookup-result-ticker">${escapeHtml(ticker || '?')}</span>
-        </div>
-      </div>
-      <p class="text-neg">⚠ ${escapeHtml(msg)}</p>
-      <p class="text-sm text-muted">If this is a recently listed stock or an unusual
-      ticker, screener.in may not have data for it yet.</p>`;
+    input.classList.remove("is-loading");
+    renderModal({
+      ticker: ticker || "?",
+      isError: true,
+      headerHTML: `
+        <div class="modal-ticker">${escapeHtml(ticker || "?")}</div>
+        <div class="modal-company text-neg">⚠ ${escapeHtml(msg)}</div>`,
+      priceHTML: "",
+      bodyHTML: `
+        <p>If this is a recently listed stock or an unusual ticker,
+        screener.in may not have data for it yet. You can also set
+        <em>manual_price_per_g</em> for SGBs in <code>sgbs.json</code>.</p>`,
+      footnote: "Source: screener.in",
+    });
+    openModal();
   }
 
   function renderResult(d) {
-    input.classList.remove('is-loading');
-    resultPanel.hidden = false;
-    resultPanel.classList.remove('is-error');
+    input.classList.remove("is-loading");
 
     const grahamTile = makeFairValueTile('Graham Number',
       d.graham, d.price, d.graham_margin_pct,
@@ -235,34 +252,74 @@
       `DCF params: g₁=${fmtPct((params.dcf_g1 ?? 0.10) * 100)}, g₂=${fmtPct((params.dcf_g2 ?? 0.03) * 100)}, r=${fmtPct((params.dcf_r ?? 0.10) * 100)}`,
     ].filter(Boolean).join(' · ');
 
-    resultPanel.innerHTML = `
-      <div class="lookup-result-header">
-        <div class="lookup-result-title">
-          <span class="lookup-result-ticker">${escapeHtml(d.resolved_ticker || d.ticker)}</span>
-          <span class="lookup-result-name">${escapeHtml(d.resolved_name || '')}</span>
-        </div>
-        <span class="lookup-result-price">₹${fmtNum(d.price, 2)}</span>
-      </div>
-
-      <div class="lookup-result-grid">
-        ${grahamTile}
-        ${peTile}
-        ${dcfTile}
-        <div class="lookup-tile">
-          <div class="lookup-tile-label">Underlying</div>
-          <div class="lookup-tile-meta">
-            <div class="lookup-tile-meta-row"><span>EPS</span><span>₹${fmtNum(d.eps, 2)}</span></div>
-            <div class="lookup-tile-meta-row"><span>BVPS</span><span>₹${fmtNum(d.book_value, 2)}</span></div>
-            <div class="lookup-tile-meta-row"><span>FCF/Share</span><span>₹${fmtNum(d.fcf_per_share, 2)}</span></div>
-            <div class="lookup-tile-meta-row"><span>Mkt Cap</span><span>₹${fmtNum(d.market_cap, 2)} Cr</span></div>
+    renderModal({
+      ticker: d.resolved_ticker || d.ticker,
+      isError: false,
+      headerHTML: `
+        <div class="modal-ticker">${escapeHtml(d.resolved_ticker || d.ticker)}</div>
+        <div class="modal-company">${escapeHtml(d.resolved_name || "")}</div>`,
+      priceHTML: `<div class="modal-price">₹${fmtNum(d.price, 2)}</div>`,
+      bodyHTML: `
+        <div class="lookup-result-grid">
+          ${grahamTile}
+          ${peTile}
+          ${dcfTile}
+          <div class="lookup-tile">
+            <div class="lookup-tile-label">Underlying</div>
+            <div class="lookup-tile-meta">
+              <div class="lookup-tile-meta-row"><span>EPS</span><span>₹${fmtNum(d.eps, 2)}</span></div>
+              <div class="lookup-tile-meta-row"><span>BVPS</span><span>₹${fmtNum(d.book_value, 2)}</span></div>
+              <div class="lookup-tile-meta-row"><span>FCF/Share</span><span>₹${fmtNum(d.fcf_per_share, 2)}</span></div>
+              <div class="lookup-tile-meta-row"><span>Mkt Cap</span><span>₹${fmtNum(d.market_cap, 2)} Cr</span></div>
+            </div>
           </div>
-        </div>
-      </div>
+        </div>`,
+      footnote,
+      closeButtonLabel: "Close",
+    });
+    openModal();
+  }
 
-      <div class="lookup-result-footnote">
-        <span>${footnote}</span>
-        <span class="text-muted">Source: screener.in</span>
+  /**
+   * renderModal({ticker, isError, headerHTML, priceHTML, bodyHTML,
+   *              footnote, closeButtonLabel}) populates the resultModal
+   * element with a consistent dialog layout. Centralising this keeps
+   * showLoading/showError/renderResult concise.
+   */
+  function renderModal(opts) {
+    const m = document.getElementById("resultModal");
+    if (!m) return;
+    m.classList.toggle("is-error", !!opts.isError);
+    m.innerHTML = `
+      <div class="modal-dialog"
+           role="document"
+           aria-labelledby="modalTitle">
+        <div class="modal-header">
+          <div class="modal-title-block">
+            <h2 id="modalTitle" class="modal-ticker">${escapeHtml(opts.ticker || "")}</h2>
+            ${opts.headerHTML || ""}
+          </div>
+          ${opts.priceHTML || ""}
+          <button type="button" class="modal-close"
+                  aria-label="${escapeHtml(opts.closeButtonLabel || "Close dialog")}">
+            ×
+          </button>
+        </div>
+        <div id="modalDesc" class="modal-body">
+          ${opts.bodyHTML || ""}
+        </div>
+        <div class="modal-footer">
+          <span class="text-muted text-xs">${escapeHtml(opts.footnote || "Source: screener.in")}</span>
+          <button type="button" class="btn btn-secondary modal-close-btn">
+            ${escapeHtml(opts.closeButtonLabel || "Close")}
+          </button>
+        </div>
       </div>`;
+    // Wire the close buttons (re-bound each render — they only listen
+    // for the lifetime of this dialog).
+    m.querySelectorAll(".modal-close, .modal-close-btn").forEach((btn) => {
+      btn.addEventListener("click", closeModal);
+    });
   }
 
   function makeFairValueTile(label, value, price, margin, sub) {
@@ -352,6 +409,24 @@
   document.addEventListener('click', (e) => {
     if (!suggestions.contains(e.target) && e.target !== input) {
       hideSuggestions();
+    }
+    // Click on the modal backdrop (but not the dialog itself) closes
+    // the modal. The dialog has class .modal-dialog; everything else
+    // inside the modal-backdrop is fair game.
+    const m = document.getElementById('resultModal');
+    if (m && !m.hidden && e.target === m) {
+      closeModal();
+    }
+  });
+
+  // Escape closes the modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const m = document.getElementById('resultModal');
+      if (m && !m.hidden) {
+        e.preventDefault();
+        closeModal();
+      }
     }
   });
 

@@ -54,7 +54,7 @@
   </div>
 
   {# Result panel — populated by JS #}
-  <div id="lookupResult" class="lookup-result"></div></oldText>
+  <div id="lookupResult" class="lookup-result"></div>
 
   {# Advanced parameters (collapsible) #}
   <details class="lookup-params">
@@ -184,6 +184,11 @@
 </section>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+{# Fair-value result modal — populated by JS #}
+<div id="resultModal" class="modal-backdrop"
+     role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+     aria-describedby="modalDesc" hidden></div>
 
 {% endblock %}
 
