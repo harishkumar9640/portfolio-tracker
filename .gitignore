@@ -21,7 +21,7 @@ data/*.db
 data/*.db-*
 charts/*.png
 charts/*.html
-logs/**/*.log
+logs/
 .cache
 !charts/.gitkeep
 !data/.gitkeep
