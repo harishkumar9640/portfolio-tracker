@@ -37,18 +37,4 @@
   </section>
 {% endif %}
 
-<section class="card">
-  <h2 class="mb-3">Snapshot database</h2>
-  {% set health = None %}
-  <p class="text-muted text-sm">
-    Snapshots are recorded automatically each time <code>equity_compare.py</code>
-    runs. The web dashboard reads from the same SQLite DB.
-  </p>
-  <p>
-    Run <code>python3 history_db.py stats</code> from the terminal to see
-    how many snapshots are stored, or check <a href="/api/health">/api/health</a>
-    for programmatic access.
-  </p>
-</section>
-
 {% endblock %}
