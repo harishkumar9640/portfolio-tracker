@@ -339,3 +339,21 @@ class TestKeyboard:
             r"submitBtn\.addEventListener\(\s*[\"']click[\"']",
             js,
         ), "submitBtn has no click event listener"
+
+    def test_fairvalue_js_loaded_exactly_once(self, client):
+        """Regression: a nested {% block extra_js %} inside {% block content %}
+        caused fairvalue.js to be loaded twice. Double-loading makes the
+        early-return guard (\`if (!input || ...) return;\`) fire twice,
+        registering TWO click handlers and breaking things.
+        """
+        html = _fetch_html(client, "/fairvalue")
+        count = html.count("/static/js/fairvalue.js")
+        assert count == 1, \
+            f"fairvalue.js is loaded {count} times (should be exactly 1)"
+
+    def test_other_pages_dont_load_fairvalue_js(self, client):
+        """Regression: fairvalue.js should only load on the fairvalue page."""
+        for path in ("/portfolio", "/history", "/settings"):
+            html = _fetch_html(client, path)
+            assert "/static/js/fairvalue.js" not in html, \
+                f"{path} should NOT load fairvalue.js"
