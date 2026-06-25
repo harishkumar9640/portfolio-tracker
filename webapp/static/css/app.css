@@ -5,6 +5,14 @@
  * ========================================================================== */
 
 /* ---------- Design tokens (CSS variables) ---------- */
+
+/* Defensive: ensure the HTML `hidden` attribute always wins over
+   author display rules. Without this, a `display: flex` rule on
+   a `.modal-backdrop` (or any other element) overrides the browser's
+   default `[hidden] { display: none }` and the element would show on
+   page load, blurring the whole page. */
+[hidden] { display: none !important; }
+
 :root {
   /* Colors — light theme */
   --c-bg:           #f6f7fb;
@@ -461,6 +469,13 @@ kbd {
 }
 
 /* ---------- Modal dialog ---------- */
+/* [hidden] must beat .modal-backdrop's display:flex.
+   Without this rule, the modal is visible on initial page load
+   (covering the entire viewport with a blur) because the HTML
+   `hidden` attribute is implemented as `display: none` in the
+   user-agent stylesheet but is overridden by any explicit `display`
+   declaration in author CSS. */
+.modal-backdrop[hidden] { display: none !important; }
 .modal-backdrop {
   position: fixed;
   inset: 0;
