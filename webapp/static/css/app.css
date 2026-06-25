@@ -361,7 +361,16 @@ table { border-collapse: collapse; width: 100%; }
   gap: var(--s-2);
 }
 .bar-name { font-weight: 500; }
+.bar-value { font-variant-numeric: tabular-nums; color: var(--c-muted); font-size: var(--fs-xs); }
 .bar-pct  { font-variant-numeric: tabular-nums; font-weight: 600; }
+.bar-pnl  { font-variant-numeric: tabular-nums; font-weight: 500; font-size: var(--fs-xs); }
+.bar-pct-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+}
+.kpi-pnl { font-weight: 500; font-size: var(--fs-xs); }
 .bar-track {
   position: relative;
   height: 22px;

@@ -287,6 +287,8 @@ def build_snapshot(_mock=None) -> dict:
                 "name": "My Equity",
                 "pct": (equity_value / equity_prev - 1.0) * 100.0,
                 "value": equity_value,
+                "prev_value": equity_prev,
+                "pnl_today": equity_value - equity_prev,
             }
 
     mf_assets = (results.get("mf") if _mock is None

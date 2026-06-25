@@ -175,3 +175,54 @@ class TestEquityPrevFix:
         assert total_prev == 3990.0
         # The bug would have left total_prev == mf_prev == 1990, dropping equity weight.
         assert total_prev > mf_prev
+
+
+# equity_compare equity_row.pnl_today should equal value − prev_value
+# ---------------------------------------------------------------------------
+class TestEquityRowPnlToday:
+    """Regression test for the 'show today's ₹ gain/loss on the bar' feature.
+    build_snapshot() must populate equity_row.pnl_today = current − previous.
+    """
+
+    def test_pnl_today_is_value_minus_prev(self):
+        from equity_compare import build_snapshot
+        # Construct a minimal _mock with one equity holding
+        mock = {
+            "holdings": [
+                # SimpleNamespace-like object with the fields equity_compare reads
+                # We'll use SimpleNamespace for type-safety
+            ],
+        }
+        from types import SimpleNamespace
+        mock["holdings"] = [
+            SimpleNamespace(
+                symbol="TEST", quantity=10, avg_price=100.0, prev_close=100.0,
+                ltp=110.0, current_value=1100.0, pnl=100.0, pnl_pct=10.0,
+            ),
+        ]
+        mock["indices"] = type("I", (), {"columns": [], "empty": True})()
+        snap = build_snapshot(_mock=mock)
+        eq = snap["equity"]
+        assert eq["value"] == 1100.0
+        assert eq["prev_value"] == 1000.0
+        row = eq["row"]
+        assert row is not None
+        assert row["pnl_today"] == 100.0  # 1100 - 1000
+        assert abs(row["pct"] - 10.0) < 1e-9  # (1100/1000 - 1) * 100
+
+    def test_pnl_today_negative_when_price_drops(self):
+        from equity_compare import build_snapshot
+        from types import SimpleNamespace
+        mock = {
+            "holdings": [
+                SimpleNamespace(
+                    symbol="TEST", quantity=10, avg_price=100.0, prev_close=100.0,
+                    ltp=95.0, current_value=950.0, pnl=-50.0, pnl_pct=-5.0,
+                ),
+            ],
+            "indices": type("I", (), {"columns": [], "empty": True})(),
+        }
+        snap = build_snapshot(_mock=mock)
+        row = snap["equity"]["row"]
+        assert row["pnl_today"] == -50.0
+        assert abs(row["pct"] - (-5.0)) < 1e-9

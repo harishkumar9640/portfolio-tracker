@@ -33,7 +33,8 @@ def client():
             {"name": "Hang Seng (HK)", "pct": 0.04},
         ],
         "equity": {
-            "row": {"name": "My Equity", "pct": -0.26, "value": 495969.0},
+            "row": {"name": "My Equity", "pct": -0.26, "value": 495969.0,
+                    "prev_value": 497262.0, "pnl_today": -1293.0},
             "holdings": [
                 {"symbol": "RELIANCE-EQ", "quantity": 60, "avg_price": 1250.52,
                  "ltp": 1304.40, "current_value": 78264.0, "pnl": 3232.8,
@@ -117,6 +118,33 @@ class TestRoutes:
         assert "Total Portfolio" in r.text
         assert "Nifty 50 (IN)" in r.text
         assert "S&amp;P 500 (US)" in r.text or "S&P 500 (US)" in r.text
+
+    def test_equity_bar_shows_pnl_today(self, client):
+        """The My Equity bar must show today's gain/loss in ₹ as well
+        as the percentage change, so the user can see the actual money
+        moved today without doing the math."""
+        r = client.get("/portfolio")
+        assert r.status_code == 200
+        # The KPI sub-line must include the formatted ₹ P&L.
+        assert "(-1,293)" in r.text or "(-1293)" in r.text, \
+            "KPI tile should show today's ₹ P&L in parentheses"
+        # The bar's right side must show the P&L too.
+        assert "bar-pnl" in r.text, \
+            "bar-pnl element should be present in the barlist"
+        assert "bar-pct-stack" in r.text, \
+            "the equity bar should have a stacked pct/pnl layout"
+
+    def test_api_portfolio_returns_pnl_today(self, client):
+        """/api/portfolio JSON should include pnl_today for the equity row."""
+        r = client.get("/api/portfolio")
+        assert r.status_code == 200
+        data = r.json()
+        assert "equity" in data
+        row = data["equity"].get("row") or {}
+        assert "pnl_today" in row, "equity.row should include pnl_today"
+        assert isinstance(row["pnl_today"], (int, float))
+        # Sanity: pnl_today must be derivable from value − prev_value
+        assert abs(row["pnl_today"] - (row["value"] - row["prev_value"])) < 0.01
 
     def test_fairvalue_page(self, client):
         r = client.get("/fairvalue")
