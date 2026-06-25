@@ -33,6 +33,8 @@ from fastapi.templating import Jinja2Templates
 
 from logging_setup import get_logger
 from webapp import TEMPLATES_DIR, STATIC_DIR
+from pathlib import Path
+PROJECT_CHARTS_DIR = Path(__file__).resolve().parent.parent / "charts"
 from webapp.data import (
     get_portfolio_snapshot,
     get_fairvalue_snapshot,
@@ -52,6 +54,10 @@ app = FastAPI(
 # Templates and static
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+# Serve generated charts (PNG + HTML overlays) under /charts so the
+# history iframe can embed them. The chart files are written by
+# portfolio_html.py and equity_compare.py into PROJECT_CHARTS_DIR.
+app.mount("/charts", StaticFiles(directory=str(PROJECT_CHARTS_DIR)), name="charts")
 
 
 def _ctx(**extra) -> dict:
@@ -110,7 +116,7 @@ def history_page(request: Request) -> HTMLResponse:
         _ctx(
             active_nav="history",
             page_title="Portfolio History",
-            chart_url=f"/static/../charts/portfolio_compare_3mo.html" if chart_exists else None,
+            chart_url=f"/charts/portfolio_compare_3mo.html" if chart_exists else None,
             chart_exists=chart_exists,
         ),
     )
@@ -245,7 +251,6 @@ def api_refresh(kind: str = "all") -> JSONResponse:
 
 
 # ---------- CLI ----------
-PROJECT_CHARTS_DIR = Path(__file__).resolve().parent.parent / "charts"
 
 
 def main() -> None:
