@@ -137,9 +137,11 @@ class TestNormalizeToOpenToday:
     def _make_df(self) -> pd.DataFrame:
         # Two columns, mixed-timezone feel; 100 ticks, only the last 50
         # are within the past 24h (everything older should be dropped).
-        old = pd.date_range("2024-01-01", periods=50, freq="5min")
-        new = pd.date_range(datetime.now() - timedelta(hours=2),
-                            periods=50, freq="5min")
+        # Use tz-aware UTC timestamps (like yfinance returns)
+        utc = pd.Timestamp.now(tz="UTC").tz
+        old = pd.date_range("2024-01-01", periods=50, freq="5min", tz="UTC")
+        new = pd.date_range(datetime.now(tz=utc) - timedelta(hours=2),
+                            periods=50, freq="5min", tz="UTC")
         idx = old.append(new)
         return pd.DataFrame(
             {"A": [float(i) for i in range(100)],
@@ -188,23 +190,34 @@ class TestNormalizeToOpenToday:
         Nifty's today. The fix is to keep only the contiguous block
         ending at the latest timestamp with at most 30-minute gaps."""
         from intraday import normalize_to_open_today
-        # Simulate mixed timezones: 6 hours of data ending "now",
-        # preceded by a 1-day gap, then 4 more hours of data
-        now = pd.Timestamp.now().normalize() + pd.Timedelta(hours=15)  # 15:00 today
-        recent_idx = pd.date_range(now - pd.Timedelta(hours=6), periods=36, freq="10min")
-        old_idx = pd.date_range(now - pd.Timedelta(days=1, hours=4), periods=24, freq="10min")
+        # Use IST-anchored "now" then build UTC ranges from the same instant
+        now_ist = pd.Timestamp.now(tz="Asia/Kolkata")
+        recent_start_ist = now_ist.normalize() + pd.Timedelta(hours=9)  # 09:00 IST today
+        recent_idx = pd.date_range(
+            start=recent_start_ist.tz_convert("UTC"),
+            periods=36, freq="10min",
+        )
+        # 1-day gap, then 4 hours of older data
+        old_start_ist = recent_start_ist - pd.Timedelta(days=1, hours=4)
+        old_idx = pd.date_range(
+            start=old_start_ist.tz_convert("UTC"),
+            periods=24, freq="10min",
+        )
         idx = old_idx.append(recent_idx)
         df = pd.DataFrame({"A": range(len(idx))}, index=idx)
         out = normalize_to_open_today(df)
         # Only the recent block should remain (36 points)
         assert len(out) == 36
-        assert out.index[0] == recent_idx[0]
+        # The first row's timestamp should be the recent block's first
+        # converted to IST
+        expected_first_ist = recent_idx[0].tz_convert("Asia/Kolkata")
+        assert out.index[0] == expected_first_ist
 
     def test_handles_sparse_indices_with_30min_gaps(self):
         """If gaps are at most 30 minutes (e.g. a sparse index), the
         algorithm should treat them as part of the same contiguous block."""
         from intraday import normalize_to_open_today
-        base = pd.Timestamp.now().normalize() + pd.Timedelta(hours=10)
+        base = pd.Timestamp.now(tz="Asia/Kolkata").normalize() + pd.Timedelta(hours=10)
         # 10 points spaced 15 minutes apart (small gaps)
         idx = pd.date_range(base, periods=10, freq="15min")
         df = pd.DataFrame({"A": range(len(idx))}, index=idx)
@@ -215,12 +228,12 @@ class TestNormalizeToOpenToday:
         """A 5-hour gap (e.g. between US close and Asian reopen) must
         split the chart into two blocks; we keep only the latest block."""
         from intraday import normalize_to_open_today
-        recent = pd.date_range("2026-06-25 09:00", periods=5, freq="5min")
-        sparse_late = pd.date_range("2026-06-25 15:00", periods=2, freq="5min")
+        recent = pd.date_range("2026-06-25 09:00", periods=5, freq="5min", tz="Asia/Kolkata")
+        sparse_late = pd.date_range("2026-06-25 15:00", periods=2, freq="5min", tz="Asia/Kolkata")
         idx = recent.append(sparse_late)
         df = pd.DataFrame({"A": range(len(idx))}, index=idx)
         out = normalize_to_open_today(df)
-        # Only the latest 2 points survive the 5h40m gap
+        # Only the latest 2 points survive the 5h40m gap (after IST conversion they're still in IST)
         assert len(out) == 2
         assert out.index[0] == sparse_late[0]
 
@@ -232,8 +245,8 @@ class TestBuildIntradaySnapshot:
     and that the normalisation is correct."""
 
     def _mock_series(self, n: int = 30, base: float = 100.0, slope: float = 0.1) -> pd.Series:
-        idx = pd.date_range(datetime.now() - timedelta(hours=n * 5 / 60),
-                            periods=n, freq="5min")
+        idx = pd.date_range(datetime.now(tz=pd.Timestamp.now(tz="UTC").tz) - timedelta(hours=n * 5 / 60),
+                            periods=n, freq="5min", tz="UTC")
         return pd.Series([base + slope * i for i in range(n)], index=idx)
 
     def test_returns_expected_json_shape(self, tmp_path, monkeypatch):
@@ -297,14 +310,43 @@ class TestBuildIntradaySnapshot:
                 ts = pd.Timestamp(p["t"])
                 assert ts.year >= 2024
 
+    def test_timestamps_are_in_ist(self, tmp_path):
+        """Regression: previously the API returned timestamps in each
+        index's native timezone (US in America/New_York, Asia in
+        Asia/Tokyo etc.), so the chart's x-axis showed wrong hours for
+        Indian users. Now every timestamp must carry +05:30 offset."""
+        from intraday import build_intraday_snapshot
+        # Use tz-aware indices in DIFFERENT timezones to simulate the
+        # mixed-tz yfinance output (US Eastern for S&P 500, IST for Nifty).
+        us_tz = pd.date_range("2026-06-25 09:30", periods=4, freq="1h",
+                              tz="America/New_York")
+        in_tz = pd.date_range("2026-06-25 09:15", periods=4, freq="1h",
+                              tz="Asia/Kolkata")
+        nifty = pd.Series([100, 101, 102, 103], index=in_tz)
+        sp500 = pd.Series([4000, 4005, 4010, 4015], index=us_tz)
+        with patch("intraday.fetch_intraday_indices", return_value=pd.DataFrame({
+            "Nifty 50 (IN)": nifty, "S&P 500 (US)": sp500,
+        })), \
+             patch("intraday.build_combined_portfolio", return_value=pd.DataFrame({
+                 "My Portfolio": nifty,
+             })), \
+             patch("intraday._cache_path", return_value=tmp_path / "cache.csv"):
+            snap = build_intraday_snapshot("5m")
+        # Every serialised timestamp must end with +05:30 (IST) regardless
+        # of which index it came from
+        for col, pts in snap["series"].items():
+            for p in pts:
+                assert p["t"].endswith("+0530") or p["t"].endswith("+05:30"), \
+                    f"{col} timestamp {p['t']!r} is not IST (expected +0530 or +05:30)"
+
 
 # ---------- Combined portfolio weighting ----------
 class TestBuildCombinedPortfolio:
     """Verify that the portfolio line = weight_eq * equity + weight_mf * mf + weight_sgb * sgb."""
 
     def _series(self, n=30, base=100.0, slope=0.5) -> pd.Series:
-        idx = pd.date_range(datetime.now() - timedelta(hours=n * 5 / 60),
-                            periods=n, freq="5min")
+        idx = pd.date_range(datetime.now(tz=pd.Timestamp.now(tz="UTC").tz) - timedelta(hours=n * 5 / 60),
+                            periods=n, freq="5min", tz="UTC")
         return pd.Series([base + slope * i for i in range(n)], index=idx, name="x")
 
     def test_weighted_sum_with_zero_mf_sgb(self, tmp_path, monkeypatch):
@@ -358,7 +400,8 @@ class TestBuildCombinedPortfolio:
 class TestDrawChart:
     def test_draw_produces_html_file(self, tmp_path, monkeypatch):
         from intraday import draw_intraday_chart, CHARTS_DIR
-        idx = pd.date_range(datetime.now() - timedelta(hours=2), periods=30, freq="5min")
+        idx = pd.date_range(datetime.now(tz=pd.Timestamp.now(tz="UTC").tz) - timedelta(hours=2),
+                            periods=30, freq="5min", tz="UTC")
         df = pd.DataFrame({
             "Nifty 50 (IN)": [100 + i * 0.1 for i in range(30)],
             "My Portfolio":  [100 + i * 0.2 for i in range(30)],

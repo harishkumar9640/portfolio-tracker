@@ -349,12 +349,24 @@ def normalize_to_open_today(df: pd.DataFrame) -> pd.DataFrame:
     and normalise each column so its first valid value today = 100.
     Drops rows before the most recent market day so we only show today.
 
+    All timestamps are first converted to IST so 'today' is consistent
+    across US/Asian/European indices (otherwise US indices would still
+    show yesterday's close while Nifty shows today's open).
+
     "Today" is defined as: the longest contiguous run of rows (where any
     column has data) ending at the latest available timestamp, allowing
     gaps up to 30 minutes (sparse indices).
     """
     if df.empty:
         return df
+
+    # Convert all timestamps to IST first so we have a single timeline
+    def _to_ist(ts: pd.Timestamp) -> pd.Timestamp:
+        if ts.tzinfo is None:
+            ts = ts.tz_localize("UTC")
+        return ts.tz_convert("Asia/Kolkata")
+    df = df.copy()
+    df.index = df.index.map(_to_ist)
 
     ffill = df.ffill()
     latest_valid = ffill.dropna(how="all").index.max()
@@ -450,7 +462,11 @@ def draw_intraday_chart(combined: pd.DataFrame, asof: pd.Timestamp, interval: In
 # ---------- Snapshot (used by webapp) ----------
 def build_intraday_snapshot(interval: Interval = "5m") -> dict:
     """
-    Returns a JSON-serialisable snapshot for the webapp:
+    Returns a JSON-serialisable snapshot for the webapp. All timestamps
+    are converted to IST (Asia/Kolkata, UTC+05:30) so the chart's x-axis
+    matches what the user sees on the wall clock — important because
+    yfinance returns mixed timezones (US indices in America/New_York,
+    Nifty in Asia/Kolkata, Nikkei in Asia/Tokyo, etc.).
       {
         "interval": "5m",
         "asof": "2026-06-25T15:30:00+05:30",
@@ -466,6 +482,10 @@ def build_intraday_snapshot(interval: Interval = "5m") -> dict:
     combined = pd.concat([idx_df, portfolio_df], axis=1, sort=True)
     combined = normalize_to_open_today(combined)
     # Drop rows where EVERYTHING is NaN (rare index dropouts)
+    combined = combined.dropna(how="all")
+
+    # normalize_to_open_today already converts everything to IST, so
+    # we can serialise directly. (See that function's docstring for why.)
     combined = combined.dropna(how="all")
 
     series: dict[str, list[dict]] = {}

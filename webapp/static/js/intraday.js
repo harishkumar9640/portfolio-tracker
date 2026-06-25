@@ -109,9 +109,14 @@
     }
     var layout = {
       title: "My Portfolio vs World Indices — today (" + snap.interval + " bars, base 100 at open)",
-      xaxis: { title: "Time", type: "date" },
+      xaxis: {
+        title: "Time (IST, UTC+05:30)",
+        type: "date",
+        tickformat: "%H:%M",
+      },
       yaxis: { title: "Indexed value (open = 100)" },
       hovermode: "x unified",
+      hoverlabel: { bgcolor: "#fff" },
       template: "plotly_white",
       legend: { orientation: "h", yanchor: "top", y: -0.15, xanchor: "center", x: 0.5 },
       margin: { l: 60, r: 20, t: 80, b: 120 },
