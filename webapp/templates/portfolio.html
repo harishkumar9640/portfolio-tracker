@@ -30,9 +30,6 @@
     <div class="kpi-sub">
       {% if snapshot.equity.row %}
         {{ "{:+.2f}".format(snapshot.equity.row.pct) }}% today
-        <span class="kpi-pnl {% if snapshot.equity.row.pnl_today >= 0 %}is-positive{% else %}is-negative{% endif %}">
-          ({{ "{:+,.0f}".format(snapshot.equity.row.pnl_today) }})
-        </span>
       {% else %}
         <span class="text-muted">No data</span>
       {% endif %}
@@ -84,23 +81,23 @@
       <div class="bar-row bar-row-portfolio">
         <div class="bar-label">
           <span class="bar-name">My Equity</span>
-          <span class="bar-value">₹{{ "{:,.0f}".format(eq.value) }}</span>
         </div>
         <div class="bar-track">
           <div class="bar-center"></div>
           <div class="bar-fill is-portfolio"
                style="left: {% if eq.pct >= 0 %}50%{% else %}{{ 50 - (eq.pct | abs / max_abs * 50) }}%{% endif %};
-                      width: {{ eq.pct | abs / max_abs * 50 }}%;"></div>
+                      width: {{ eq.pct | abs / max_abs * 50 }}%;">
+            {% if eq.pnl_today is defined %}
+              <span class="bar-fill-label {% if eq.pnl_today >= 0 %}is-pos{% else %}is-neg{% endif %}">
+                {{ "{:+,.0f}".format(eq.pnl_today) }} {% if eq.pct >= 0 %}&rarr;{% else %}&larr;{% endif %}
+              </span>
+            {% endif %}
+          </div>
         </div>
         <div class="bar-pct-stack">
           <div class="bar-pct {% if eq.pct >= 0 %}pct-pos{% else %}pct-neg{% endif %} text-right">
             {{ "{:+.2f}".format(eq.pct) }}%
           </div>
-          {% if eq.pnl_today is defined %}
-          <div class="bar-pnl {% if eq.pnl_today >= 0 %}pct-pos{% else %}pct-neg{% endif %} text-right">
-            ({{ "{:+,.0f}".format(eq.pnl_today) }})
-          </div>
-          {% endif %}
         </div>
       </div>
     {% endif %}

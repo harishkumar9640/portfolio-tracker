@@ -122,17 +122,19 @@ class TestRoutes:
     def test_equity_bar_shows_pnl_today(self, client):
         """The My Equity bar must show today's gain/loss in ₹ as well
         as the percentage change, so the user can see the actual money
-        moved today without doing the math."""
+        moved today without doing the math. The ₹ value is rendered
+        *inside* the bar fill itself (white text on the bar colour).
+        """
         r = client.get("/portfolio")
         assert r.status_code == 200
-        # The KPI sub-line must include the formatted ₹ P&L.
-        assert "(-1,293)" in r.text or "(-1293)" in r.text, \
-            "KPI tile should show today's ₹ P&L in parentheses"
-        # The bar's right side must show the P&L too.
-        assert "bar-pnl" in r.text, \
-            "bar-pnl element should be present in the barlist"
-        assert "bar-pct-stack" in r.text, \
-            "the equity bar should have a stacked pct/pnl layout"
+        # The in-bar label element must be present.
+        assert "bar-fill-label" in r.text, \
+            "bar-fill-label element should be present inside the bar"
+        # The formatted ₹ value must be in the bar fill label.
+        # (Template uses no parentheses around the number for in-bar
+        # rendering — it's styled as part of the bar's visual identity.)
+        assert "-1,293" in r.text, \
+            "the bar should contain the formatted ₹ P&L"
 
     def test_api_portfolio_returns_pnl_today(self, client):
         """/api/portfolio JSON should include pnl_today for the equity row."""

@@ -385,11 +385,30 @@ table { border-collapse: collapse; width: 100%; }
   background: var(--c-fg-muted);
   border-radius: var(--radius-sm);
   transition: width 0.4s ease-out;
+  overflow: hidden;
 }
 .bar-fill.is-positive  { background: var(--c-positive); }
 .bar-fill.is-negative  { background: var(--c-negative); }
 .bar-fill.is-portfolio { background: var(--c-primary); }
 .bar-fill.is-portfolio-total { background: var(--c-accent); }
+.bar-fill-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+  /* Default: place inside the bar at its right (positive) or left (negative) edge */
+  padding: 0 8px;
+}
+.bar-fill-label.is-pos { left: 0; }
+.bar-fill-label.is-neg { right: 0; }
+.bar-row-portfolio .bar-track {
+  height: 36px;
+}
 .bar-center {
   position: absolute;
   top: 0;

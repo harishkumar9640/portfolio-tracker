@@ -51,4 +51,23 @@
       }
     });
   }
+
+  // ----- Bar fill width check (hide in-bar label if too narrow) -----
+  // The My Equity bar shows today's ₹ P&L inside the bar fill. If the
+  // fill is narrower than the text, the text overflows and looks bad.
+  // We measure the actual pixel width after layout and add .is-narrow
+  // when needed; CSS hides the in-bar label and the user can still
+  // see the % on the right (where the stacked layout lives).
+  function markNarrowBars() {
+    document.querySelectorAll('.bar-row-portfolio .bar-fill').forEach((fill) => {
+      const w = fill.getBoundingClientRect().width;
+      if (w < 90) {
+        fill.classList.add('is-narrow');
+      } else {
+        fill.classList.remove('is-narrow');
+      }
+    });
+  }
+  markNarrowBars();
+  window.addEventListener('resize', markNarrowBars);
 })();
