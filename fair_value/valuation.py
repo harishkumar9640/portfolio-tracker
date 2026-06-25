@@ -65,6 +65,7 @@ class ValuationRow:
     eps: Optional[float] = None
     book_value: Optional[float] = None
     fcf_per_share: Optional[float] = None
+    market_cap: Optional[float] = None
     graham: Optional[float] = None
     pe_relative: Optional[float] = None
     dcf: Optional[float] = None
@@ -114,6 +115,7 @@ def check(
         eps = data.get("eps")
         bvps = data.get("book_value")
         fcf = data.get("operating_cash_flow_per_share")
+        market_cap = data.get("market_cap")
 
         graham = graham_number(eps, bvps) if (eps and bvps) else None
         pe_rel = pe_relative_value(eps, industry_pe) if (eps and industry_pe) else None
@@ -125,6 +127,7 @@ def check(
             eps=eps,
             book_value=bvps,
             fcf_per_share=fcf,
+            market_cap=market_cap,
             graham=graham,
             pe_relative=pe_rel,
             dcf=dcf,

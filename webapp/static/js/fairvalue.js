@@ -238,9 +238,9 @@
           'Set an industry PE in Advanced parameters');
     const dcfTile = makeFairValueTile('Two-stage DCF',
       d.dcf, d.price, d.dcf_margin_pct,
-      `g₁=${fmtPct((d.params && d.params.dcf_g1 ?? 0.10) * 100)}, ` +
-      `g₂=${fmtPct((d.params && d.params.dcf_g2 ?? 0.03) * 100)}, ` +
-      `r=${fmtPct((d.params && d.params.dcf_r ?? 0.10) * 100)}`);
+      `g₁=${fmtPct((d.params && d.params.dcf_g1 || 0.10) * 100)}, ` +
+      `g₂=${fmtPct((d.params && d.params.dcf_g2 || 0.03) * 100)}, ` +
+      `r=${fmtPct((d.params && d.params.dcf_r  || 0.10) * 100)}`);
 
     const params = d.params || {};
     const showPe = params.industry_pe !== undefined && params.industry_pe !== null;
@@ -249,7 +249,7 @@
         ? `Resolved "${escapeHtml(d.queried_as)}" → ${escapeHtml(d.resolved_ticker)}`
         : '',
       showPe ? '' : 'PE-Relative hidden: no industry PE set',
-      `DCF params: g₁=${fmtPct((params.dcf_g1 ?? 0.10) * 100)}, g₂=${fmtPct((params.dcf_g2 ?? 0.03) * 100)}, r=${fmtPct((params.dcf_r ?? 0.10) * 100)}`,
+      `DCF params: g₁=${fmtPct((params.dcf_g1 || 0.10) * 100)}, g₂=${fmtPct((params.dcf_g2 || 0.03) * 100)}, r=${fmtPct((params.dcf_r  || 0.10) * 100)}`,
     ].filter(Boolean).join(' · ');
 
     renderModal({
