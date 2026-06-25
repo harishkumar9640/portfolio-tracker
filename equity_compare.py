@@ -170,7 +170,13 @@ def draw_bar_chart(rows: list[dict], asof: pd.Timestamp,
 
 
 # ---------- Snapshot builder (used by webapp) ----------
-def build_snapshot() -> dict:
+def _empty_indices_df():
+    """Return an empty pandas DataFrame with no rows (the test mock passes this)."""
+    import pandas as _pd
+    return _pd.DataFrame()
+
+
+def build_snapshot(_mock=None) -> dict:
     """
     Build a JSON-serialisable snapshot of today's portfolio.
 
@@ -182,52 +188,82 @@ def build_snapshot() -> dict:
     summary need. See webapp/data.py for the exact shape.
     """
     period = "equity_compare"
-    raw = fetch_indices("5d")
-    index_rows = []
-    asof: pd.Timestamp | None = None
-    for col in raw.columns:
-        s = raw[col].dropna()
-        if len(s) < 2:
-            continue
-        prev, last = float(s.iloc[-2]), float(s.iloc[-1])
-        if prev == 0:
-            continue
-        index_rows.append({"name": col, "pct": (last / prev - 1.0) * 100.0, "kind": "index"})
-        d = s.index[-1]
-        if asof is None or d > asof:
-            asof = d
+    # Test/mock short-circuit: callers can pass _mock={"indices": ...,
+    # "holdings": [...], "mf_assets": [...], "sgb_assets": [...]} to
+    # bypass every network call. Used by regression tests.
+    if _mock is not None:
+        raw = _mock.get("indices")
+        if raw is None or (hasattr(raw, "empty") and raw.empty):
+            raw = _empty_indices_df()
+        index_rows = []
+        asof = None
+        for col in (raw.columns if hasattr(raw, "columns") else []):
+            s = raw[col].dropna()
+            if len(s) < 2:
+                continue
+            prev, last = float(s.iloc[-2]), float(s.iloc[-1])
+            if prev == 0:
+                continue
+            index_rows.append({"name": col, "pct": (last / prev - 1.0) * 100.0,
+                              "kind": "index"})
+            d = s.index[-1]
+            if asof is None or d > asof:
+                asof = d
+        holdings = _mock.get("holdings", [])
+        mf_assets = _mock.get("mf_assets", [])
+        sgb_assets = _mock.get("sgb_assets", [])
+    else:
+        raw = fetch_indices("5d")
+        index_rows = []
+        asof: pd.Timestamp | None = None
+        for col in raw.columns:
+            s = raw[col].dropna()
+            if len(s) < 2:
+                continue
+            prev, last = float(s.iloc[-2]), float(s.iloc[-1])
+            if prev == 0:
+                continue
+            index_rows.append({"name": col, "pct": (last / prev - 1.0) * 100.0, "kind": "index"})
+            d = s.index[-1]
+            if asof is None or d > asof:
+                asof = d
 
     mfs = load_mfs()
     sgbs = load_sgbs()
 
-    from parallel import fetch_all
+    # When _mock is provided, skip the parallel fetches entirely.
+    if _mock is None:
+        from parallel import fetch_all
 
-    def _fetch_equity():
-        hs = fetch_holdings()
-        s = portfolio_summary(hs)
-        return hs, s
+        def _fetch_equity():
+            hs = fetch_holdings()
+            s = portfolio_summary(hs)
+            return hs, s
 
-    def _fetch_mf():
-        if not mfs:
-            return []
-        return fetch_mf_rows(mfs)
+        def _fetch_mf():
+            if not mfs:
+                return []
+            return fetch_mf_rows(mfs)
 
-    def _fetch_sgb():
-        if not sgbs:
-            return []
-        return fetch_sgb_rows(sgbs, asof=asof)
+        def _fetch_sgb():
+            if not sgbs:
+                return []
+            return fetch_sgb_rows(sgbs, asof=asof)
 
-    results = fetch_all({
-        "equity": _fetch_equity,
-        "mf":     _fetch_mf,
-        "sgb":    _fetch_sgb,
-    })
+        results = fetch_all({
+            "equity": _fetch_equity,
+            "mf":     _fetch_mf,
+            "sgb":    _fetch_sgb,
+        })
 
-    eq_result = results.get("equity")
-    if isinstance(eq_result, tuple) and len(eq_result) == 2:
-        holdings, _ = eq_result
+        eq_result = results.get("equity")
+        if isinstance(eq_result, tuple) and len(eq_result) == 2:
+            holdings, _ = eq_result
+        else:
+            holdings = []
     else:
-        holdings = []
+        # _mock mode: use the supplied data directly
+        holdings = _mock.get("holdings", [])
 
     equity_value = 0.0
     equity_prev = 0.0
@@ -253,8 +289,10 @@ def build_snapshot() -> dict:
                 "value": equity_value,
             }
 
-    mf_assets = results.get("mf") or []
-    sgb_assets = results.get("sgb") or []
+    mf_assets = (results.get("mf") if _mock is None
+                  else _mock.get("mf_assets")) or []
+    sgb_assets = (results.get("sgb") if _mock is None
+                  else _mock.get("sgb_assets")) or []
     mf_agg = aggregate_assets(mf_assets)
     sgb_agg = aggregate_assets(sgb_assets)
 

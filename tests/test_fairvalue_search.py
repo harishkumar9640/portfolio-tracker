@@ -423,7 +423,7 @@ class TestFairvaluePageMarkup:
     """Verify the template renders the search box + result panel."""
 
     @pytest.fixture
-    def client(self):
+    def client(self, monkeypatch):
         import tempfile
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".csv", delete=False, encoding="utf-8"
@@ -435,6 +435,22 @@ class TestFairvaluePageMarkup:
             search_mod.CACHE_FILE = csv_path
             search_mod._index = []
             search_mod._index_loaded_at = 0.0
+
+            # Block the slow portfolio snapshot fetch — these tests
+            # only verify template structure, not data.
+            import webapp.data as wd
+            import webapp.server as ws
+            _stub = lambda force=False: {
+                "asof": "2026-06-25", "indices": [], "equity":
+                {"row": None, "holdings": [], "value": 0, "prev_value": 0},
+                "mf": {"count": 0, "value": 0, "prev_value": 0, "pct": 0},
+                "sgb": {"count": 0, "value": 0, "prev_value": 0, "pct": 0,
+                        "rows": []},
+                "total": {"value": 0, "prev_value": 0, "pct": 0},
+                "best_index": None, "worst_index": None,
+            }
+            wd.get_portfolio_snapshot = _stub
+            ws.get_portfolio_snapshot = _stub
 
             from fastapi.testclient import TestClient
             from webapp.server import app

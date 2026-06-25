@@ -27,17 +27,28 @@ class TestEquityPrevFix:
     """
 
     def test_build_snapshot_populates_equity_prev(self):
+        """build_snapshot() must always include equity.prev_value so the
+        Total Portfolio day-% correctly weights equity.
+        """
         from equity_compare import build_snapshot
-        snap = build_snapshot()
-        # Even if equity_value is zero (no broker session), the field
-        # must exist on the snapshot dict.
+        # Pass a synthetic mock to avoid broker/NSE network calls.
+        mock_holdings = [type("H", (), {
+            "symbol": "X", "quantity": 10,
+            "avg_price": 100.0, "ltp": 110.0, "prev_close": 105.0,
+            "current_value": 1100.0, "pnl": 100.0, "pnl_pct": 10.0,
+        })()]
+        snap = build_snapshot(_mock={
+            "indices": None,        # empty
+            "holdings": mock_holdings,
+            "mf_assets": [],
+            "sgb_assets": [],
+        })
         assert "equity" in snap
         assert "prev_value" in snap["equity"]
-        # The same prev_value is used by the "Total" line. Verify the
-        # total includes equity's prev when equity has value.
-        if snap["equity"]["value"] > 0 and snap["equity"]["prev_value"] > 0:
-            # The total_prev should be >= the equity_prev alone.
-            assert snap["total"]["prev_value"] >= snap["equity"]["prev_value"]
+        # Equity prev_value = sum(qty * prev_close) for each holding
+        assert snap["equity"]["prev_value"] == pytest.approx(10 * 105.0)
+        # Total prev_value should include equity's contribution
+        assert snap["total"]["prev_value"] >= snap["equity"]["prev_value"]
 
 
 # ---------- Fairvalue / SGB regressions ----------
@@ -49,28 +60,31 @@ class TestSGBPriceFix:
     def test_nse_used_before_mintbyte(self):
         """Verify that when both NSE and mintbyte return data, NSE wins."""
         import mf_sgb
+        from unittest.mock import patch
 
-        # Reset module-level state
-        mf_sgb._ISIN_TO_NSE_SYMBOL = {}
-        mf_sgb._NSE_SGB_DATA = []
-        mf_sgb._NSE_SGB_FETCHED_AT = 0
-
-        # Build a fake NSE universe containing a high price
-        mf_sgb._NSE_SGB_DATA = [{
+        # Block ALL upstream network calls (NSE, mintbyte, IBJA) so the
+        # test runs offline. The NSE mock returns a populated universe;
+        # mintbyte and IBJA return empty so the NSE path is the only one
+        # with data.
+        nse_universe = [{
             "symbol": "SGBFEB32IV", "ltP": "14950.00",
             "prevClose": "15129.77", "maturityDate": "B32IV",
         }]
-        mf_sgb._NSE_SGB_FETCHED_AT = float("inf")   # force cache hit
-        mf_sgb._ISIN_TO_NSE_SYMBOL = {"IN0020230184": "SGBFEB32IV"}
-
-        # mintbyte would return a different (broker) price — but NSE wins.
+        isin_map = {"IN0020230184": "SGBFEB32IV"}
         fake_mintbyte = {
             "IN0020230184": {"price": 15302.74, "date": "2026-06-22"},
         }
-
-        rows = mf_sgb.fetch_sgb_rows([{
-            "isin": "IN0020230184", "units": 1, "name": "SGB IV",
-        }])
+        with patch.object(mf_sgb, "_fetch_nse_sgb_universe",
+                          return_value=nse_universe), \
+             patch.object(mf_sgb, "_build_isin_to_nse_symbol_map",
+                          return_value=isin_map), \
+             patch.object(mf_sgb, "fetch_mintbyte_with_history",
+                          return_value=fake_mintbyte), \
+             patch.object(mf_sgb, "_fetch_ibja_gold_price",
+                          return_value=(None, None)):
+            rows = mf_sgb.fetch_sgb_rows([{
+                "isin": "IN0020230184", "units": 1, "name": "SGB IV",
+            }])
         assert len(rows) == 1
         # The value must reflect the NSE price (14950), not mintbyte
         assert rows[0].value == pytest.approx(14950.0, rel=0.01)
@@ -210,16 +224,28 @@ class TestSnapshotMathFix:
 
     def test_total_includes_mf_when_equity_zero(self):
         """The total snapshot must sum equity + mf + sgb even when
-        equity_value is 0 (so the chart can still show MF day change)."""
+        equity_value is 0 (so the chart can still show MF day change).
+        """
         from equity_compare import build_snapshot
-
-        # We can't easily inject a zero-equity scenario because
-        # build_snapshot is wired to real broker code. So we just
-        # assert the structural invariant:
-        snap = build_snapshot()
+        # Mock MF/SGB with positive values and zero equity.
+        mf = [type("M", (), {
+            "name": "Fund", "units": 100, "value": 1000.0,
+            "prev_value": 950.0, "pct": 5.26, "extra": {},
+        })()]
+        sgb = [type("S", (), {
+            "name": "SGB", "units": 1, "value": 15000.0,
+            "prev_value": 15500.0, "pct": -3.23, "extra": {},
+        })()]
+        snap = build_snapshot(_mock={
+            "indices": None,
+            "holdings": [],          # zero equity
+            "mf_assets": mf,
+            "sgb_assets": sgb,
+        })
+        # Total must include MF + SGB even with no equity.
+        assert snap["total"]["value"] == pytest.approx(1000 + 15000)
         assert snap["total"]["value"] >= snap["mf"]["value"]
         assert snap["total"]["value"] >= snap["sgb"]["value"]
-        assert snap["total"]["value"] >= snap["equity"]["value"]
 
 
 # ---------- Import regressions ----------
