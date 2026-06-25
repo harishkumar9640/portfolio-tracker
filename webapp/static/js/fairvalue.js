@@ -227,29 +227,36 @@
   function renderResult(d) {
     input.classList.remove("is-loading");
 
-    const grahamTile = makeFairValueTile('Graham Number',
-      d.graham, d.price, d.graham_margin_pct,
-      `√(22.5 × ${fmtNum(d.eps, 2)} × ${fmtNum(d.book_value, 2)})`);
-    const peTile = (d.pe_relative !== undefined && d.pe_relative !== null)
-      ? makeFairValueTile('PE-Relative',
-          d.pe_relative, d.price, d.pe_margin_pct,
-          `EPS ${fmtNum(d.eps, 2)} × industry PE ${fmtNum(d.params && d.params.industry_pe, 2)}`)
-      : makeFairValueTile('PE-Relative', null, null, null,
-          'Set an industry PE in Advanced parameters');
+    // Only Two-stage DCF is surfaced as the primary recommendation in
+    // the UI (per user feedback: most stocks' fair values are closest
+    // to this method). Graham and PE-Relative are still computed by
+    // the backend and exposed under d.other_methods for callers that
+    // want them; the modal shows them in a collapsible "Other methods"
+    // panel so the user can sanity-check DCF if they want.
+    const params = d.params || {};
+    const g1 = (params.dcf_g1 !== undefined ? params.dcf_g1 : 0.10);
+    const g2 = (params.dcf_g2 !== undefined ? params.dcf_g2 : 0.03);
+    const r  = (params.dcf_r  !== undefined ? params.dcf_r  : 0.10);
+
+    // DCF is the headline tile. The tile shows the fair value, the
+    // margin vs market price, and the parameter summary.
     const dcfTile = makeFairValueTile('Two-stage DCF',
       d.dcf, d.price, d.dcf_margin_pct,
-      `g₁=${fmtPct((d.params && d.params.dcf_g1 || 0.10) * 100)}, ` +
-      `g₂=${fmtPct((d.params && d.params.dcf_g2 || 0.03) * 100)}, ` +
-      `r=${fmtPct((d.params && d.params.dcf_r  || 0.10) * 100)}`);
+      `g₁=${fmtPct(g1 * 100)}, g₂=${fmtPct(g2 * 100)}, r=${fmtPct(r * 100)}`);
 
-    const params = d.params || {};
+    // Build the math breakdown section if the API returned one.
+    const mathSection = buildMathSection(d, g1, g2, r);
+
+    // Build the "other methods" collapsible if the API returned them.
+    const otherMethodsSection = buildOtherMethodsSection(d);
+
     const showPe = params.industry_pe !== undefined && params.industry_pe !== null;
     const footnote = [
       d.queried_as && d.queried_as.toUpperCase() !== d.resolved_ticker
         ? `Resolved "${escapeHtml(d.queried_as)}" → ${escapeHtml(d.resolved_ticker)}`
         : '',
-      showPe ? '' : 'PE-Relative hidden: no industry PE set',
-      `DCF params: g₁=${fmtPct((params.dcf_g1 || 0.10) * 100)}, g₂=${fmtPct((params.dcf_g2 || 0.03) * 100)}, r=${fmtPct((params.dcf_r  || 0.10) * 100)}`,
+      `DCF params: g₁=${fmtPct(g1 * 100)}, g₂=${fmtPct(g2 * 100)}, r=${fmtPct(r * 100)}`,
+      showPe ? `PE-Relative uses industry PE = ${fmtNum(params.industry_pe, 1)}` : '',
     ].filter(Boolean).join(' · ');
 
     renderModal({
@@ -261,8 +268,6 @@
       priceHTML: `<div class="modal-price">₹${fmtNum(d.price, 2)}</div>`,
       bodyHTML: `
         <div class="lookup-result-grid">
-          ${grahamTile}
-          ${peTile}
           ${dcfTile}
           <div class="lookup-tile">
             <div class="lookup-tile-label">Underlying</div>
@@ -273,11 +278,214 @@
               <div class="lookup-tile-meta-row"><span>Mkt Cap</span><span>₹${fmtNum(d.market_cap, 2)} Cr</span></div>
             </div>
           </div>
-        </div>`,
+        </div>
+        ${mathSection}
+        ${otherMethodsSection}`,
       footnote,
       closeButtonLabel: "Close",
     });
     openModal();
+  }
+
+  /**
+   * buildMathSection(d, g1, g2, r) renders the worked-example DCF
+   * math inside a collapsible <details>. Includes:
+   *   - Variable definitions table (FCF, g₁, g₂, r, PV, TV, ...)
+   *   - Abbreviations glossary (DCF, FCF, EPS, BVPS, PV, TV, NPV, ...)
+   *   - Year-by-year FCF projection with discount factors
+   *   - Terminal value derivation
+   *   - Step-by-step math write-up
+   *   - "Reality check" note showing terminal-value dominance
+   */
+  function buildMathSection(d, g1, g2, r) {
+    const bd = d.dcf_breakdown;
+    if (!bd || !bd.years || bd.years.length === 0) {
+      return '<p class="text-muted text-sm mt-3">DCF breakdown unavailable (insufficient FCF data).</p>';
+    }
+
+    const inputs = bd.inputs || {};
+    const totals = bd.totals || {};
+    const term   = bd.terminal || {};
+
+    // Variable definitions table: the math symbols used in the steps.
+    const variableRows = [
+      { sym: 'FCF₀',  name: 'Current FCF per share',
+        detail: "Free cash flow the company generated per share in the most recent year (₹" + fmtNum(inputs.fcf_per_share, 2) + " for " + escapeHtml(d.resolved_ticker || d.ticker) + ")." },
+      { sym: 'g₁',    name: 'Stage-1 growth rate',
+        detail: "Annual growth rate applied to FCF for years 1–" + (inputs.years || 5) + ". Default " + fmtPct((inputs.g1 || 0) * 100) + "." },
+      { sym: 'g₂',    name: 'Terminal (perpetual) growth rate',
+        detail: "Constant growth rate applied from year " + ((inputs.years || 5) + 1) + " onward, forever. Default " + fmtPct((inputs.g2 || 0) * 100) + " (≈ Indian long-run inflation)." },
+      { sym: 'r',     name: 'Discount rate (cost of equity)',
+        detail: "Rate used to convert future cash flows to today's value. Default " + fmtPct((inputs.r || 0) * 100) + " (≈ 1-year SBI FD + equity risk premium)." },
+      { sym: 'N',     name: 'Stage-1 length (years)',
+        detail: "Number of years in the high-growth stage. Default " + (inputs.years || 5) + "." },
+      { sym: 'FCFₜ',  name: 'Projected FCF in year t',
+        detail: "FCF₀ × (1 + g₁)^t — what FCF would be in year t if growth continues." },
+      { sym: 'PV',    name: 'Present value',
+        detail: "The value in today's rupees of a cash flow expected in the future, after discounting." },
+      { sym: 'TV',    name: 'Terminal value',
+        detail: "Value at year " + (inputs.years || 5) + " of all cash flows from year " + ((inputs.years || 5) + 1) + " onward, growing at g₂ forever." },
+      { sym: 'DCF',   name: 'Discounted Cash Flow (intrinsic value)',
+        detail: "Sum of PV(stage 1) + PV(terminal) — the model's fair value per share." },
+    ];
+
+    // Abbreviations glossary
+    const abbrevRows = [
+      { abbr: 'DCF',  full: 'Discounted Cash Flow',  note: 'A valuation method that converts future cash flows to present value.' },
+      { abbr: 'FCF',  full: 'Free Cash Flow',         note: 'Cash a company generates after capital expenditures. "FCF per share" = FCF ÷ shares outstanding.' },
+      { abbr: 'EPS',  full: 'Earnings Per Share',     note: "Company's net profit divided by shares outstanding. NOT used directly by Two-stage DCF, but shown for context." },
+      { abbr: 'BVPS', full: 'Book Value Per Share',   note: "Net asset value per share from the balance sheet. NOT used by Two-stage DCF." },
+      { abbr: 'PV',   full: 'Present Value',          note: "Today's value of a future cash flow after discounting at rate r." },
+      { abbr: 'TV',   full: 'Terminal Value',         note: 'Value of all cash flows beyond the explicit forecast horizon.' },
+      { abbr: 'NPV',  full: 'Net Present Value',      note: "Sum of PVs of all cash flows (positive and negative). Same as DCF here since FCF > 0." },
+      { abbr: 'Cr',   full: 'Crore',                  note: '10 million. Used in Indian financial reporting (1 Cr = 10,000,000).' },
+    ];
+
+    // Year-by-year table rows
+    const yearRows = bd.years.map(function (yr) {
+      return (
+        '<tr>' +
+          '<td>' + yr.year + '</td>' +
+          '<td>₹' + fmtNum(yr.projected_fcf, 2) + '</td>' +
+          '<td>' + fmtNum(yr.discount_factor, 4) + '</td>' +
+          '<td>₹' + fmtNum(yr.present_value, 2) + '</td>' +
+        '</tr>'
+      );
+    }).join('');
+
+    // Step-by-step math (text version, easy to read)
+    const stepText = (bd.step_math || '').split('\n').map(function (line) {
+      return line.trim() ? '<li>' + escapeHtml(line) + '</li>' : '';
+    }).join('');
+
+    const terminalPct = (totals.terminal_pct || 0) * 100;
+    const realityCheckClass = terminalPct > 80 ? 'text-neg' : (terminalPct > 60 ? 'text-warn' : 'text-pos');
+    const realityCheckText = terminalPct > 80
+      ? 'Most of the DCF value comes from the terminal-value assumption, not from real cash flow growth. Be skeptical: a small change in r or g₂ will swing the DCF by a large amount.'
+      : (terminalPct > 60
+        ? 'A majority of the DCF value comes from the terminal-value assumption. The model is moderately sensitive to the choice of r and g₂.'
+        : 'Most of the DCF value comes from explicit FCF projections. The terminal value is a smaller contribution, so the model is more robust to small changes in r or g₂.');
+
+    return (
+      '<details class="lookup-math mt-4" open>' +
+        '<summary class="lookup-math-summary">' +
+          '<strong>Show calculation</strong> — Two-stage DCF worked example' +
+        '</summary>' +
+        '<div class="lookup-math-body">' +
+
+          // ----- Variable definitions -----
+          '<h4 class="lookup-math-h">Variables used</h4>' +
+          '<table class="lookup-math-table">' +
+            '<thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>' +
+            '<tbody>' +
+              variableRows.map(function (v) {
+                return (
+                  '<tr>' +
+                    '<td><code>' + escapeHtml(v.sym) + '</code></td>' +
+                    '<td><strong>' + escapeHtml(v.name) + '</strong><br>' +
+                      '<span class="text-muted text-xs">' + escapeHtml(v.detail) + '</span></td>' +
+                  '</tr>'
+                );
+              }).join('') +
+            '</tbody>' +
+          '</table>' +
+
+          // ----- Step-by-step math -----
+          '<h4 class="lookup-math-h">Step-by-step math</h4>' +
+          '<ol class="lookup-math-steps">' + stepText + '</ol>' +
+
+          // ----- Year-by-year breakdown table -----
+          '<h4 class="lookup-math-h">Year-by-year projection</h4>' +
+          '<table class="lookup-math-table">' +
+            '<thead><tr><th>Year (t)</th><th>FCFₜ</th><th>Discount 1/(1+r)^t</th><th>PV</th></tr></thead>' +
+            '<tbody>' + yearRows +
+              '<tr class="lookup-math-subtotal">' +
+                '<td colspan="3"><strong>PV of stage 1 (sum)</strong></td>' +
+                '<td><strong>₹' + fmtNum(totals.pv_stage1, 2) + '</strong></td>' +
+              '</tr>' +
+            '</tbody>' +
+          '</table>' +
+
+          // ----- Terminal value -----
+          '<h4 class="lookup-math-h">Terminal value</h4>' +
+          '<p class="lookup-math-formula">' + escapeHtml(term.formula || '') + '</p>' +
+          '<table class="lookup-math-table">' +
+            '<tr><td>Terminal value (year ' + (inputs.years || 5) + ')</td>' +
+              '<td>₹' + fmtNum(term.terminal_value, 2) + '</td></tr>' +
+            '<tr><td>PV of terminal value</td>' +
+              '<td><strong>₹' + fmtNum(term.present_value, 2) + '</strong></td></tr>' +
+          '</table>' +
+
+          // ----- Reality check -----
+          '<div class="lookup-reality-check ' + realityCheckClass + '">' +
+            '<strong>Reality check:</strong> terminal value contributes <strong>' +
+              fmtPct(terminalPct) + '</strong> of the total DCF (₹' +
+              fmtNum(totals.pv_terminal, 2) + ' of ₹' + fmtNum(totals.dcf, 2) + '). ' +
+              realityCheckText +
+          '</div>' +
+
+          // ----- Abbreviations glossary -----
+          '<h4 class="lookup-math-h">Abbreviations</h4>' +
+          '<table class="lookup-math-table">' +
+            '<thead><tr><th>Abbr.</th><th>Full form</th><th>Note</th></tr></thead>' +
+            '<tbody>' +
+              abbrevRows.map(function (a) {
+                return (
+                  '<tr>' +
+                    '<td><code>' + escapeHtml(a.abbr) + '</code></td>' +
+                    '<td>' + escapeHtml(a.full) + '</td>' +
+                    '<td class="text-muted text-xs">' + escapeHtml(a.note) + '</td>' +
+                  '</tr>'
+                );
+              }).join('') +
+            '</tbody>' +
+          '</table>' +
+
+        '</div>' +
+      '</details>'
+    );
+  }
+
+  /**
+   * buildOtherMethodsSection(d) renders a collapsible showing the
+   * Graham Number and PE-Relative results, which the API still
+   * returns under d.other_methods. Hidden by default so DCF stays
+   * the headline.
+   */
+  function buildOtherMethodsSection(d) {
+    const other = d.other_methods || {};
+    const rows = [];
+    if (other.graham && other.graham.value) {
+      rows.push(
+        '<tr>' +
+          '<td>Graham Number</td>' +
+          '<td>₹' + fmtNum(other.graham.value, 2) + '</td>' +
+          '<td class="text-muted text-xs">' + escapeHtml(other.graham.formula || '') + '</td>' +
+        '</tr>'
+      );
+    }
+    if (other.pe_relative && other.pe_relative.value) {
+      rows.push(
+        '<tr>' +
+          '<td>PE-Relative</td>' +
+          '<td>₹' + fmtNum(other.pe_relative.value, 2) + '</td>' +
+          '<td class="text-muted text-xs">' + escapeHtml(other.pe_relative.formula || '') + '</td>' +
+        '</tr>'
+      );
+    }
+    if (rows.length === 0) return '';
+
+    return (
+      '<details class="lookup-other-methods mt-3">' +
+        '<summary class="lookup-math-summary">' +
+          '<strong>Other methods</strong> (Graham, PE-Relative) — for sanity check' +
+        '</summary>' +
+        '<table class="lookup-math-table">' +
+          '<thead><tr><th>Method</th><th>Fair value</th><th>Formula</th></tr></thead>' +
+          '<tbody>' + rows.join('') + '</tbody>' +
+        '</table>' +
+      '</details>'
+    );
   }
 
   /**
