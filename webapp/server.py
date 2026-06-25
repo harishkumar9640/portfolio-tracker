@@ -146,6 +146,24 @@ def api_portfolio() -> dict:
     return get_portfolio_snapshot()
 
 
+@app.get("/api/intraday")
+def api_intraday(interval: str = "5m") -> dict:
+    """
+    JSON snapshot of today's intraday data for the user's full portfolio
+    (equity + MF + SGB) vs the 8 world indices.
+
+    interval: one of '1m', '5m', '15m'. Default '5m'.
+    """
+    if interval not in ("1m", "5m", "15m"):
+        return {"error": f"unsupported interval {interval!r}; use 1m, 5m, or 15m"}
+    try:
+        from intraday import build_intraday_snapshot
+        return build_intraday_snapshot(interval)  # type: ignore[arg-type]
+    except Exception as e:
+        log.exception("intraday snapshot failed for %s", interval)
+        return {"error": str(e), "interval": interval}
+
+
 @app.get("/api/fairvalue")
 def api_fairvalue() -> dict:
     return get_fairvalue_snapshot()
