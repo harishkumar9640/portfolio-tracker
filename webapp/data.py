@@ -33,6 +33,7 @@ PROJECT = Path(__file__).resolve().parent.parent
 # ----- module-level caches (populated lazily; TTL in seconds) -----
 _portfolio_cache: dict = {"asof": None, "data": None, "ts": 0.0}
 _fairvalue_cache: dict = {"asof": None, "data": None, "ts": 0.0}
+_mf_holdings_cache: dict = {"asof": None, "data": None, "ts": 0.0}
 # Portfolio snapshots take ~5s to build (Angel One + mfapi + NSE).
 # Cache them aggressively so most requests are instant. The user can
 # still click "Refresh" to force a rebuild.
@@ -125,17 +126,83 @@ def get_fairvalue_snapshot(force: bool = False) -> dict:
     return data
 
 
+# ---------- MF holdings snapshot ----------
+def _build_mf_holdings_snapshot() -> dict:
+    """
+    Fetch the latest monthly MF holdings data for the user's 8
+    equity tickers from Trendlyne. Returns the shape consumed by
+    /api/mf_holdings and the portfolio page.
+
+    Falls back to cache on network failure (Trendlyne can be flaky).
+    """
+    try:
+        from mf_holdings import get_mf_holdings_summary
+        rows = get_mf_holdings_summary()
+    except Exception as e:
+        log.warning("MF holdings snapshot failed (using cache): %s", e)
+        # Try cache directly
+        from mf_holdings import _load_cache
+        rows = []
+        cache = _load_cache()
+        for tkr, d in cache.items():
+            nc = d.get("net_change_shares")
+            sign = "+" if nc and nc >= 0 else ""
+            rows.append({
+                "ticker": tkr,
+                "name": d.get("name", tkr),
+                "asof": d.get("asof"),
+                "total_mfs_holding": d.get("total_mfs_holding"),
+                "mfs_bought": d.get("mfs_bought"),
+                "mfs_sold": d.get("mfs_sold"),
+                "net_change_shares": nc,
+                "net_change_label": (
+                    d.get("net_change_label")
+                    or (f"{sign}{nc:,}" if nc is not None else "\u2014")
+                ),
+                "total_shares_held": d.get("total_shares_held"),
+                "top_buyer": d.get("top_buyer"),
+                "top_seller": d.get("top_seller"),
+                "top_buyers": d.get("top_buyers", []),
+                "top_sellers": d.get("top_sellers", []),
+                "url": d.get("url"),
+                "fetched_at": d.get("fetched_at"),
+            })
+        rows.sort(key=lambda r: (
+            1 if r.get("net_change_shares") is None else 0,
+            -abs(r.get("net_change_shares") or 0),
+        ))
+    return {
+        "asof": date.today().isoformat(),
+        "row_count": len(rows),
+        "rows": rows,
+    }
+
+
+def get_mf_holdings_snapshot(force: bool = False) -> dict:
+    import time
+    now = time.time()
+    if not force and _mf_holdings_cache["data"] is not None:
+        if (now - _mf_holdings_cache["ts"]) < _CACHE_TTL:
+            return _mf_holdings_cache["data"]
+    data = _build_mf_holdings_snapshot()
+    _mf_holdings_cache["data"] = data
+    _mf_holdings_cache["ts"] = now
+    return data
+
+
 # ---------- Health / last-run info ----------
 def get_health() -> dict:
     db = HistoryDB()
     last_run = db.last_run("equity_compare.py") or {}
     last_run_fv = db.last_run("fairvalue.py") or {}
+    last_run_mf = db.last_run("mf_holdings.py") or {}
     snap_count = len(db.portfolio_history("total"))
     sgb_count = len(db.sgb_history("IN0020230184"))  # just a sample
     return {
         "now": datetime.now().isoformat(timespec="seconds"),
         "last_portfolio_run": last_run,
         "last_fairvalue_run": last_run_fv,
+        "last_mf_holdings_run": last_run_mf,
         "snapshots_in_db": snap_count,
         "sgb_price_rows": sgb_count,
     }
@@ -150,6 +217,8 @@ def start_background_refresh(kind: str = "portfolio") -> None:
                 get_portfolio_snapshot(force=True)
             elif kind == "fairvalue":
                 get_fairvalue_snapshot(force=True)
+            elif kind == "mf_holdings":
+                get_mf_holdings_snapshot(force=True)
         except Exception as e:
             log.error("background refresh failed: %s", e)
 

@@ -122,6 +122,141 @@
   </div>
 </section>
 
+{# ----- MF holdings trend (Trendlyne) -----
+   Shows the latest monthly MF holdings action for the user's 8 equity
+   tickers. Click any row to expand the top buyer / seller. #}
+<section class="card mb-4" id="mf-holdings-section">
+  <div class="flex-between mb-3">
+    <h2 class="mb-0">Mutual Fund Holdings Trend</h2>
+    <span class="text-muted text-sm">
+      {% if mf_holdings.rows and mf_holdings.rows[0].asof %}
+        Data as of <strong>{{ mf_holdings.rows[0].asof }}</strong>
+      {% else %}
+        No data
+      {% endif %}
+      · <a href="{{ mf_holdings.rows[0].url if mf_holdings.rows else '#' }}"
+            target="_blank" rel="noopener" class="text-sm">View on Trendlyne ↗</a>
+    </span>
+  </div>
+
+  {# Inline glossary for non-experts. Folded into the card so users
+     can see definitions of MF, AUM, etc. without leaving the page. #}
+  <details class="mf-glossary mb-3">
+    <summary class="text-sm text-muted">What do these terms mean?</summary>
+    <dl class="mf-glossary-list">
+      <dt>MF / MFs</dt><dd>Mutual Fund(s). A pooled investment vehicle managed by an asset-management company.</dd>
+      <dt>AUM</dt><dd>Assets Under Management — the total ₹ value the MF currently manages.</dd>
+      <dt>ETF</dt><dd>Exchange-Traded Fund — a MF that trades on the stock exchange like a share.</dd>
+      <dt>FII</dt><dd>Foreign Institutional Investor — overseas funds investing in Indian markets.</dd>
+      <dt>ISIN</dt><dd>International Securities Identification Number — a unique code for every security.</dd>
+      <dt>NAV</dt><dd>Net Asset Value — per-unit price of a mutual fund scheme.</dd>
+    </dl>
+  </details>
+
+  {% if mf_holdings.rows %}
+    <div class="table-wrap">
+      <table class="mf-table">
+        <thead>
+          <tr>
+            <th>Stock</th>
+            <th class="text-right">MFs Holding</th>
+            <th class="text-right">Buying</th>
+            <th class="text-right">Selling</th>
+            <th class="text-right">Net Change</th>
+            <th class="text-center">Top buyer / seller</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in mf_holdings.rows %}
+            <tr class="mf-row"
+                data-ticker="{{ r.ticker }}"
+                tabindex="0"
+                role="button"
+                aria-expanded="false"
+                aria-controls="mf-detail-{{ r.ticker }}">
+              <td>
+                <div class="mf-ticker">{{ r.ticker }}</div>
+                <div class="mf-name text-muted text-xs">{{ r.name }}</div>
+              </td>
+              <td class="text-right">
+                <span class="mf-holders-num">{{ "{:,}".format(r.total_mfs_holding or 0) }}</span>
+                <div class="text-muted text-xs">schemes</div>
+              </td>
+              <td class="text-right pct-pos">
+                {% if r.mfs_bought is not none %}
+                  <strong>+{{ r.mfs_bought }}</strong>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="text-right pct-neg">
+                {% if r.mfs_sold is not none %}
+                  <strong>-{{ r.mfs_sold }}</strong>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="text-right">
+                {% set nc = r.net_change_shares %}
+                {% if nc is not none %}
+                  <span class="mf-net {% if nc >= 0 %}pct-pos{% else %}pct-neg{% endif %}">
+                    {{ r.net_change_label }}
+                  </span>
+                  <div class="text-muted text-xs">shares</div>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="text-center mf-expand-hint">
+                <span class="mf-chevron" aria-hidden="true">▸</span>
+                <span class="text-sm text-muted">details</span>
+              </td>
+            </tr>
+            {# Expandable detail row (hidden by default) #}
+            <tr class="mf-detail-row" id="mf-detail-{{ r.ticker }}" hidden>
+              <td colspan="6" class="mf-detail-cell">
+                <div class="mf-detail-grid">
+                  <div class="mf-detail-buyer">
+                    <div class="mf-detail-label pct-pos">▲ Top buyer</div>
+                    {% if r.top_buyer %}
+                      <div class="mf-detail-name">{{ r.top_buyer.name }}</div>
+                      <div class="mf-detail-meta">
+                        +{{ "{:,}".format(r.top_buyer.shares) }} shares
+                        ({{ "%.2f"|format(r.top_buyer.pct_of_company) }}% of company)
+                      </div>
+                    {% else %}
+                      <div class="text-muted">No data</div>
+                    {% endif %}
+                  </div>
+                  <div class="mf-detail-seller">
+                    <div class="mf-detail-label pct-neg">▼ Top seller</div>
+                    {% if r.top_seller %}
+                      <div class="mf-detail-name">{{ r.top_seller.name }}</div>
+                      <div class="mf-detail-meta">
+                        -{{ "{:,}".format(r.top_seller.shares) }} shares
+                        ({{ "%.2f"|format(r.top_seller.pct_of_company) }}% of company)
+                      </div>
+                    {% else %}
+                      <div class="text-muted">No data</div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="mf-detail-link">
+                  <a href="{{ r.url }}" target="_blank" rel="noopener">
+                    View full MF list on Trendlyne ↗
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">No MF holdings data. Check <code>mf_holdings.py</code> connectivity.</p>
+  {% endif %}
+</section>
+
 <div class="grid grid-2">
   {# ----- Equity holdings ----- #}
   <section class="card">
@@ -196,5 +331,39 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+  // Mutual Fund Holdings Trend: click any row to expand the detail panel
+  // showing the top buyer and seller for that ticker. ES5+ (Safari-safe).
+  (function () {
+    var section = document.getElementById("mf-holdings-section");
+    if (!section) return;
+    var rows = section.querySelectorAll(".mf-row");
+    for (var i = 0; i < rows.length; i++) {
+      (function (row) {
+        function toggle() {
+          var tkr = row.getAttribute("data-ticker");
+          var detail = document.getElementById("mf-detail-" + tkr);
+          if (!detail) return;
+          var expanded = row.getAttribute("aria-expanded") === "true";
+          if (expanded) {
+            detail.setAttribute("hidden", "");
+            row.setAttribute("aria-expanded", "false");
+          } else {
+            detail.removeAttribute("hidden");
+            row.setAttribute("aria-expanded", "true");
+          }
+        }
+        row.addEventListener("click", toggle);
+        row.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+          }
+        });
+      })(rows[i]);
+    }
+  })();
+</script>
 
 {% endblock %}

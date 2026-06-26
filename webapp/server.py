@@ -38,6 +38,7 @@ PROJECT_CHARTS_DIR = Path(__file__).resolve().parent.parent / "charts"
 from webapp.data import (
     get_portfolio_snapshot,
     get_fairvalue_snapshot,
+    get_mf_holdings_snapshot,
     get_health,
     get_holdings_summary,
     start_background_refresh,
@@ -85,6 +86,7 @@ def portfolio_page(request: Request) -> HTMLResponse:
     stopwatch loader via #page-loading during that time.
     """
     snap = get_portfolio_snapshot()
+    mf_holdings = get_mf_holdings_snapshot()
     return templates.TemplateResponse(
         request,
         "portfolio.html",
@@ -92,6 +94,7 @@ def portfolio_page(request: Request) -> HTMLResponse:
             active_nav="portfolio",
             page_title="Portfolio — Today",
             snapshot=snap,
+            mf_holdings=mf_holdings,
         ),
     )
 
@@ -172,6 +175,42 @@ def api_intraday(interval: str = "5m") -> dict:
 @app.get("/api/fairvalue")
 def api_fairvalue() -> dict:
     return get_fairvalue_snapshot()
+
+
+@app.get("/api/mf_holdings")
+def api_mf_holdings() -> dict:
+    """
+    Monthly mutual fund holdings trend for the user's 8 equity tickers.
+
+    Returns:
+        {
+            "asof": "2026-06-26",
+            "row_count": 8,
+            "rows": [
+                {
+                    "ticker": "ITC",
+                    "name": "ITC",
+                    "asof": "May 2026",
+                    "total_mfs_holding": 458,
+                    "mfs_bought": 167,
+                    "mfs_sold": 120,
+                    "net_change_shares": -13181340,
+                    "net_change_label": "-13,181,340",
+                    "total_shares_held": 2085365191,
+                    "top_buyer": {...},
+                    "top_seller": {...},
+                    "top_buyers": [...],
+                    "top_sellers": [...],
+                    "url": "https://trendlyne.com/...",
+                    "fetched_at": "2026-06-26T09:00:00"
+                },
+                ...
+            ]
+        }
+
+    The data is sorted by |net_change| descending (biggest movers first).
+    """
+    return get_mf_holdings_snapshot()
 
 
 @app.get("/api/fairvalue/search")
@@ -266,8 +305,10 @@ def api_refresh(kind: str = "all") -> JSONResponse:
         start_background_refresh("portfolio")
     if kind in ("fairvalue", "all"):
         start_background_refresh("fairvalue")
+    if kind in ("mf_holdings", "all"):
+        start_background_refresh("mf_holdings")
     return JSONResponse(
-        {"status": "queued", "kinds": [k for k in ("portfolio", "fairvalue")
+        {"status": "queued", "kinds": [k for k in ("portfolio", "fairvalue", "mf_holdings")
                                        if kind in (k, "all")]},
         status_code=202,
     )
@@ -292,11 +333,17 @@ def main() -> None:
     import threading
     def _warm():
         try:
-            from webapp.data import get_portfolio_snapshot, get_fairvalue_snapshot
+            from webapp.data import (
+                get_portfolio_snapshot,
+                get_fairvalue_snapshot,
+                get_mf_holdings_snapshot,
+            )
             get_portfolio_snapshot(force=True)
             log.info("portfolio cache pre-warmed")
             get_fairvalue_snapshot(force=True)
             log.info("fairvalue cache pre-warmed")
+            get_mf_holdings_snapshot(force=True)
+            log.info("mf_holdings cache pre-warmed")
         except Exception as e:
             log.warning("cache pre-warm failed (non-fatal): %s", e)
     threading.Thread(target=_warm, daemon=True, name="cache-warmer").start()

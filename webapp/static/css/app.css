@@ -1132,3 +1132,124 @@ body.modal-open { overflow: hidden; }
   margin-top: var(--s-2);
   max-width: 280px;
 }
+
+
+/* ============================================================
+   MF Holdings Trend section (portfolio.html)
+   ============================================================ */
+.mf-glossary {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: var(--s-2) var(--s-3);
+  background: var(--c-bg-card);
+}
+.mf-glossary summary {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+.mf-glossary summary:hover { color: var(--c-primary); }
+.mf-glossary-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--s-1) var(--s-3);
+  margin: var(--s-3) 0 0;
+  font-size: var(--fs-sm);
+}
+.mf-glossary-list dt {
+  font-weight: 600;
+  color: var(--c-fg);
+  font-family: var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace);
+}
+.mf-glossary-list dd {
+  margin: 0;
+  color: var(--c-fg-muted);
+}
+
+.mf-table { width: 100%; }
+.mf-table thead th {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-fg-muted);
+  font-weight: 600;
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 2px solid var(--c-border);
+}
+.mf-table tbody td {
+  padding: var(--s-3);
+  border-bottom: 1px solid var(--c-border);
+  vertical-align: middle;
+}
+.mf-row { cursor: pointer; transition: background-color 0.15s ease; }
+.mf-row:hover,
+.mf-row:focus { background: var(--c-bg-card); outline: none; }
+.mf-row[aria-expanded="true"] { background: var(--c-bg-card); }
+.mf-row[aria-expanded="true"] .mf-chevron { transform: rotate(90deg); }
+.mf-chevron {
+  display: inline-block;
+  transition: transform 0.15s ease;
+  color: var(--c-fg-muted);
+}
+.mf-ticker {
+  font-weight: 600;
+  color: var(--c-fg);
+  font-size: var(--fs-base);
+}
+.mf-name {
+  margin-top: 2px;
+}
+.mf-holders-num {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-lg);
+}
+.mf-net {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.mf-expand-hint {
+  white-space: nowrap;
+}
+
+.mf-detail-row td { padding: 0 !important; border-bottom: 2px solid var(--c-border); }
+.mf-detail-cell {
+  background: var(--c-bg-card);
+  padding: var(--s-4) var(--s-5) !important;
+}
+.mf-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+  margin-bottom: var(--s-3);
+}
+.mf-detail-label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--s-1);
+}
+.mf-detail-name {
+  font-weight: 600;
+  color: var(--c-fg);
+  margin-bottom: 4px;
+}
+.mf-detail-meta {
+  font-size: var(--fs-sm);
+  color: var(--c-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+.mf-detail-link {
+  font-size: var(--fs-sm);
+  padding-top: var(--s-2);
+  border-top: 1px dashed var(--c-border);
+}
+
+/* Mobile: stack the buyer/seller detail panels */
+@media (max-width: 640px) {
+  .mf-detail-grid { grid-template-columns: 1fr; gap: var(--s-3); }
+  .mf-table thead th,
+  .mf-table tbody td { padding: var(--s-2); font-size: var(--fs-sm); }
+  .mf-table .mf-expand-hint { display: none; }
+}
