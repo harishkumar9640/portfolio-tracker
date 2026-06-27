@@ -53,6 +53,9 @@ py-modules = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "integration: tests that hit the real network (Trendlyne, Yahoo). Skipped by default.",
+]
 python_files = "test_*.py"
 python_functions = "test_*"
 addopts = "-q"

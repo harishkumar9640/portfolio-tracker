@@ -1253,3 +1253,24 @@ body.modal-open { overflow: hidden; }
   .mf-table tbody td { padding: var(--s-2); font-size: var(--fs-sm); }
   .mf-table .mf-expand-hint { display: none; }
 }
+
+/* ============================================================
+   MF Alerts card (settings.html)
+   ============================================================ */
+.mf-smtp-list {
+  margin: 8px 0 8px 24px;
+  color: var(--c-fg-muted);
+}
+.alert-result-changed   { color: var(--c-positive); font-weight: 600; }
+.alert-result-unchanged { color: var(--c-muted); }
+.alert-result-error     { color: var(--c-negative); }
+.alert-email-sent       { color: var(--c-positive); }
+.alert-log-table {
+  font-size: var(--fs-sm);
+  width: 100%;
+  border-collapse: collapse;
+}
+.alert-log-table thead tr { text-align: left; color: var(--c-fg-muted); }
+.alert-log-table th,
+.alert-log-table td { padding: 6px 8px; }
+.alert-log-table tbody tr { border-top: 1px solid var(--c-border); }

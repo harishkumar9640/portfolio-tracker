@@ -24,7 +24,10 @@ Routes (all responsive HTML, no SPA / JS framework):
 from __future__ import annotations
 
 import argparse
+import json
+import os
 from pathlib import Path
+from typing import Optional
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -213,6 +216,51 @@ def api_mf_holdings() -> dict:
     return get_mf_holdings_snapshot()
 
 
+@app.post("/api/mf_alert/run")
+def api_mf_alert_run(payload: Optional[dict] = None) -> dict:
+    """
+    Manually trigger one MF-holdings alert check. Same logic the daily
+    scheduler runs at 16:30 IST, but on demand. Fetches a fresh snapshot,
+    diffs against the persisted "previous" snapshot, and emails if
+    anything changed.
+
+    Body (JSON, optional):
+        {
+            "force_email": true    # send email even if no changes
+        }
+
+    Returns:
+        {
+            "ran_at":              ISO timestamp,
+            "snapshot_ok":         bool,
+            "stocks_with_changes": int,
+            "tickers_changed":     [...],
+            "email":               {sent, mode, ...}
+        }
+    """
+    from mf_holdings_alert import run_once
+    force_email = bool((payload or {}).get("force_email", False))
+    return run_once(force_email=force_email)
+
+
+@app.get("/api/mf_alert/log")
+def api_mf_alert_log() -> dict:
+    """
+    Return the last 30 runs of the MF alert (most recent first).
+    Useful for the user to verify the scheduler is working.
+    """
+    from pathlib import Path
+    from mf_holdings_alert import ALERT_LOG_FILE
+    if not ALERT_LOG_FILE.exists():
+        return {"runs": []}
+    try:
+        runs = json.loads(ALERT_LOG_FILE.read_text())
+    except (json.JSONDecodeError, OSError):
+        runs = []
+    # Most recent first
+    return {"runs": list(reversed(runs[-30:]))}
+
+
 @app.get("/api/fairvalue/search")
 def api_fairvalue_search(q: str = "", limit: int = 10) -> dict:
     """
@@ -347,6 +395,17 @@ def main() -> None:
         except Exception as e:
             log.warning("cache pre-warm failed (non-fatal): %s", e)
     threading.Thread(target=_warm, daemon=True, name="cache-warmer").start()
+
+    # Start the daily MF-holdings alert scheduler (16:30 IST). The
+    # scheduler is opt-out via MF_ALERT_DISABLED=1; it never blocks
+    # the server start (daemon thread). On missing SMTP credentials
+    # it runs in dry-run mode (logs emails instead of sending).
+    if not os.environ.get("MF_ALERT_DISABLED"):
+        try:
+            from mf_holdings_alert import start_daily_scheduler
+            start_daily_scheduler()
+        except Exception as e:
+            log.warning("could not start mf_holdings_alert scheduler: %s", e)
 
     log.info("starting Portfolio Tracker on http://%s:%d", args.host, args.port)
     uvicorn.run(

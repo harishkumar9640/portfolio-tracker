@@ -11,6 +11,45 @@
   </div>
 </header>
 
+<section class="card mb-4">
+  <h2 class="mb-2">📧 Mutual Fund Alerts</h2>
+  <p class="text-sm text-muted mb-3">
+    Every day at 16:30 IST (just after market close) the server checks
+    Trendlyne for changes in MF holdings of your 8 stocks. If anything
+    changed, you'll get an email with a per-stock diff. If you have no
+    SMTP credentials configured, the alert runs in "dry-run" mode and
+    just logs the email body.
+  </p>
+
+  <div id="mf-alert-status" class="mb-3" aria-live="polite">
+    <p class="text-muted text-sm">Loading alert history…</p>
+  </div>
+
+  <div class="flex-gap-2">
+    <button id="runAlertBtn" class="btn">Run alert check now</button>
+    <button id="forceAlertBtn" class="btn btn-secondary" title="Send the email even if nothing changed">
+      Force-send email
+    </button>
+  </div>
+
+  <details class="mt-3">
+    <summary class="text-sm text-muted">SMTP setup</summary>
+    <div class="text-sm mt-2" style="line-height:1.6;">
+      <p>Set these env vars (or add them to <code>secrets.local.json</code>):</p>
+      <ul class="mf-smtp-list">
+        <li><code>MF_ALERT_SMTP_HOST</code> e.g. <code>smtp.gmail.com</code></li>
+        <li><code>MF_ALERT_SMTP_PORT</code> e.g. <code>587</code></li>
+        <li><code>MF_ALERT_SMTP_USER</code> your full email address</li>
+        <li><code>MF_ALERT_SMTP_PASS</code> app password (Gmail users: create one at
+            <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">myaccount.google.com/apppasswords</a>)</li>
+        <li><code>MF_ALERT_TO</code> recipient (defaults to <code>SMTP_USER</code>)</li>
+        <li><code>MF_ALERT_DRY_RUN</code> <code>1</code> to log instead of send</li>
+      </ul>
+      <p>Disable the scheduler with <code>MF_ALERT_DISABLED=1</code> when starting the server.</p>
+    </div>
+  </details>
+</section>
+
 <div class="grid grid-2">
   <section class="card">
     <div class="flex-between mb-3">
@@ -120,5 +159,94 @@
     </div>
   </dl>
 </section>
+
+<script>
+  // MF Alerts: load history, wire "Run now" and "Force-send" buttons.
+  (function () {
+    var status = document.getElementById("mf-alert-status");
+    var runBtn = document.getElementById("runAlertBtn");
+    var forceBtn = document.getElementById("forceAlertBtn");
+
+    function fmtTime(iso) {
+      if (!iso) return "—";
+      try {
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return iso;
+        return d.toLocaleString();
+      } catch (e) { return iso; }
+    }
+
+    function renderHistory(runs) {
+      if (!runs || !runs.length) {
+        status.innerHTML = '<p class="text-muted text-sm">No alert runs yet. Click "Run alert check now" to test the pipeline.</p>';
+        return;
+      }
+      var rows = runs.slice(0, 8).map(function (r) {
+        var status = r.snapshot_ok
+          ? (r.stocks_with_changes > 0
+              ? '<span class="alert-result-changed">' + r.stocks_with_changes + ' changed</span>'
+              : '<span class="alert-result-unchanged">no changes</span>')
+          : '<span class="alert-result-error">snapshot failed</span>';
+        var email = r.email
+          ? (r.email.sent
+              ? '<span class="alert-email-sent">email sent</span>'
+              : (r.email.reason || r.email.mode || "skipped"))
+          : '—';
+        var tickers = (r.tickers_changed || []).join(", ") || '—';
+        return '<tr>'
+          + '<td>' + fmtTime(r.ran_at) + '</td>'
+          + '<td>' + status + '</td>'
+          + '<td>' + tickers + '</td>'
+          + '<td>' + email + '</td>'
+          + '</tr>';
+      }).join("");
+      status.innerHTML =
+        '<table class="alert-log-table">'
+        + '<thead><tr>'
+        + '<th>When</th>'
+        + '<th>Result</th>'
+        + '<th>Stocks changed</th>'
+        + '<th>Email</th>'
+        + '</tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>';
+    }
+
+    function loadHistory() {
+      fetch("/api/mf_alert/log").then(function (r) {
+        return r.ok ? r.json() : { runs: [] };
+      }).then(function (data) {
+        renderHistory(data.runs || []);
+      }).catch(function () {
+        status.innerHTML = '<p class="text-muted text-sm">Could not load alert history.</p>';
+      });
+    }
+
+    function runAlert(forceEmail) {
+      var btn = forceEmail ? forceBtn : runBtn;
+      btn.disabled = true;
+      var originalLabel = btn.textContent;
+      btn.textContent = "Running…";
+      fetch("/api/mf_alert/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ force_email: !!forceEmail }),
+      }).then(function (r) {
+        return r.json();
+      }).then(function (data) {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+        loadHistory();
+      }).catch(function () {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+        alert("Alert run failed. Check the server log.");
+      });
+    }
+
+    if (runBtn) runBtn.addEventListener("click", function () { runAlert(false); });
+    if (forceBtn) forceBtn.addEventListener("click", function () { runAlert(true); });
+    loadHistory();
+  })();
+</script>
 
 {% endblock %}
