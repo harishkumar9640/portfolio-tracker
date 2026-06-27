@@ -56,6 +56,18 @@ PROJECT = Path(__file__).resolve().parent
 DATA_DIR = PROJECT / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
+# Load .env as early as possible so the CLI picks up SMTP creds without
+# requiring the user to `export VAR=...` first. python-dotenv is a
+# dependency of the project (used by angel_client, mf_sgb, etc.) so we
+# can rely on it being installed.
+try:
+    from dotenv import load_dotenv
+    _env_file = PROJECT / ".env"
+    if _env_file.exists():
+        load_dotenv(_env_file, override=False)
+except ImportError:
+    pass
+
 PREV_SNAPSHOT_FILE = DATA_DIR / "mf_holdings_prev.json"
 ALERT_LOG_FILE = DATA_DIR / "mf_holdings_alert_log.json"
 
@@ -319,10 +331,22 @@ def render_email(
 # ---------- SMTP ----------
 
 def _env(name: str, default: str | None = None) -> str | None:
-    """Read env var with secrets.local.json fallback."""
+    """Read env var with .env + secrets.local.json fallback."""
     val = os.environ.get(name)
     if val:
         return val
+    # Try .env via python-dotenv (if installed)
+    try:
+        from dotenv import load_dotenv
+        # Load .env from project root (idempotent)
+        _ENV_PATH = PROJECT / ".env"
+        if _ENV_PATH.exists():
+            load_dotenv(_ENV_PATH, override=False)
+            val = os.environ.get(name)
+            if val:
+                return val
+    except ImportError:
+        pass
     # Optional fallback to secrets.local.json (gitignored)
     secrets_path = PROJECT / "secrets.local.json"
     if secrets_path.exists():

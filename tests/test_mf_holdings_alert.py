@@ -82,11 +82,18 @@ def tmp_data_dir(tmp_path, monkeypatch):
 
 @pytest.fixture
 def clean_env(monkeypatch):
-    """Strip MF_ALERT_* env vars so is_dry_run() returns True."""
+    """Strip MF_ALERT_* env vars so is_dry_run() returns True.
+
+    Also explicitly blank the values in os.environ (since mf_holdings_alert
+    now auto-loads .env at import time, monkeypatch.delenv alone is not
+    enough — load_dotenv has already populated os.environ with the
+    project's actual SMTP credentials).
+    """
     for k in ("MF_ALERT_DRY_RUN", "MF_ALERT_SMTP_HOST", "MF_ALERT_SMTP_USER",
               "MF_ALERT_SMTP_PASS", "MF_ALERT_SMTP_PORT", "MF_ALERT_TO",
               "MF_ALERT_FROM"):
         monkeypatch.delenv(k, raising=False)
+        monkeypatch.setenv(k, "")  # ensure empty string in os.environ
 
 
 # ---------- diff_snapshots ----------
