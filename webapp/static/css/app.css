@@ -1274,3 +1274,27 @@ body.modal-open { overflow: hidden; }
 .alert-log-table th,
 .alert-log-table td { padding: 6px 8px; }
 .alert-log-table tbody tr { border-top: 1px solid var(--c-border); }
+
+/* News digest preview block */
+.news-preview-body {
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: var(--s-3);
+  font-family: var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace);
+  font-size: var(--fs-xs);
+  white-space: pre-wrap;
+  max-height: 400px;
+  overflow: auto;
+  margin: var(--s-3) 0 0;
+}
+.news-env-hint {
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--fs-xs);
+  margin: var(--s-2) 0;
+  overflow-x: auto;
+}
+.flex-wrap { flex-wrap: wrap; }

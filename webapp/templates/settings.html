@@ -12,6 +12,56 @@
 </header>
 
 <section class="card mb-4">
+  <h2 class="mb-2">📰 Global News Digest</h2>
+  <p class="text-sm text-muted mb-3">
+    Every day at 8:55 AM IST the server scans 16 RSS feeds + GDACS disaster
+    alerts and sends you a Telegram digest of the most important stories
+    in 7 categories: war &amp; conflict, central bank / rate decisions,
+    pandemic / health crises, financial crises, global economic news,
+    political changes, and natural disasters.
+  </p>
+
+  <div id="news-alert-status" class="mb-3" aria-live="polite">
+    <p class="text-muted text-sm">Loading digest history…</p>
+  </div>
+
+  <div id="news-preview" class="mb-3" hidden>
+    <details>
+      <summary class="text-sm text-muted">Preview today's digest (no message sent)</summary>
+      <pre class="news-preview-body" id="newsPreviewBody"></pre>
+    </details>
+  </div>
+
+  <div class="flex-gap-2 flex-wrap">
+    <button id="runNewsBtn" class="btn">Send digest now</button>
+    <button id="forceNewsBtn" class="btn btn-secondary" title="Send even if no significant news">
+      Force-send
+    </button>
+    <button id="previewNewsBtn" class="btn btn-secondary">Preview digest</button>
+  </div>
+
+  <details class="mt-3">
+    <summary class="text-sm text-muted">Telegram setup</summary>
+    <div class="text-sm mt-2" style="line-height:1.6;">
+      <p>To enable real Telegram delivery:</p>
+      <ol class="mf-smtp-list">
+        <li>Open a chat with <strong>@BotFather</strong> on Telegram</li>
+        <li>Send <code>/newbot</code> and follow the prompts (give it a name like "Portfolio News Bot")</li>
+        <li>BotFather will give you a token like <code>123456:ABC-DEF...</code></li>
+        <li>Open a chat with your new bot and send <code>/start</code></li>
+        <li>Find your chat_id by visiting <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code> in a browser (look for the numeric <code>chat.id</code>), or message <strong>@userinfobot</strong></li>
+        <li>Add to <code>.env</code>:
+          <pre class="news-env-hint">NEWS_TELEGRAM_BOT_TOKEN=your-token-here
+NEWS_TELEGRAM_CHAT_ID=your-chat-id-here
+NEWS_DRY_RUN=0</pre>
+        </li>
+        <li>Disable with <code>NEWS_DISABLED=1</code> when starting the server</li>
+      </ol>
+    </div>
+  </details>
+</section>
+
+<section class="card mb-4">
   <h2 class="mb-2">📧 Mutual Fund Alerts</h2>
   <p class="text-sm text-muted mb-3">
     Every day at 16:30 IST (just after market close) the server checks
@@ -245,6 +295,116 @@
 
     if (runBtn) runBtn.addEventListener("click", function () { runAlert(false); });
     if (forceBtn) forceBtn.addEventListener("click", function () { runAlert(true); });
+    loadHistory();
+  })();
+
+  // News digest: history, run-now, force-send, preview buttons
+  (function () {
+    var status = document.getElementById("news-alert-status");
+    var runBtn = document.getElementById("runNewsBtn");
+    var forceBtn = document.getElementById("forceNewsBtn");
+    var previewBtn = document.getElementById("previewNewsBtn");
+    var previewBox = document.getElementById("news-preview");
+    var previewBody = document.getElementById("newsPreviewBody");
+    if (!status || !runBtn) return;
+
+    function fmtTime(iso) {
+      if (!iso) return "—";
+      try {
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return iso;
+        return d.toLocaleString();
+      } catch (e) { return iso; }
+    }
+
+    function renderHistory(runs) {
+      if (!runs || !runs.length) {
+        status.innerHTML = '<p class="text-muted text-sm">No digest runs yet. Click "Send digest now" to test the pipeline.</p>';
+        return;
+      }
+      var rows = runs.slice(0, 8).map(function (r) {
+        var kept = r.articles_kept || 0;
+        var statusLabel = kept > 0
+          ? '<span class="alert-result-changed">' + kept + ' stories</span>'
+          : '<span class="alert-result-unchanged">no significant news</span>';
+        var telegram = r.telegram
+          ? (r.telegram.sent
+              ? '<span class="alert-email-sent">telegram sent</span>'
+              : (r.telegram.reason || r.telegram.mode || "skipped"))
+          : '—';
+        return '<tr>'
+          + '<td>' + fmtTime(r.ran_at) + '</td>'
+          + '<td>' + statusLabel + '</td>'
+          + '<td>' + telegram + '</td>'
+          + '</tr>';
+      }).join("");
+      status.innerHTML =
+        '<table class="alert-log-table">'
+        + '<thead><tr>'
+        + '<th>When</th>'
+        + '<th>Result</th>'
+        + '<th>Telegram</th>'
+        + '</tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>';
+    }
+
+    function loadHistory() {
+      fetch("/api/news/log").then(function (r) {
+        return r.ok ? r.json() : { runs: [] };
+      }).then(function (data) {
+        renderHistory(data.runs || []);
+      }).catch(function () {
+        status.innerHTML = '<p class="text-muted text-sm">Could not load digest history.</p>';
+      });
+    }
+
+    function runNews(forceSend) {
+      var btn = forceSend ? forceBtn : runBtn;
+      btn.disabled = true;
+      var original = btn.textContent;
+      btn.textContent = "Running…";
+      fetch("/api/news/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ force_send: !!forceSend }),
+      }).then(function (r) {
+        return r.json();
+      }).then(function (data) {
+        btn.disabled = false;
+        btn.textContent = original;
+        loadHistory();
+      }).catch(function () {
+        btn.disabled = false;
+        btn.textContent = original;
+        alert("News digest run failed. Check the server log.");
+      });
+    }
+
+    function showPreview() {
+      previewBtn.disabled = true;
+      var original = previewBtn.textContent;
+      previewBtn.textContent = "Loading…";
+      fetch("/api/news/preview").then(function (r) {
+        return r.json();
+      }).then(function (data) {
+        previewBtn.disabled = false;
+        previewBtn.textContent = original;
+        if (data.error) {
+          previewBody.textContent = "Error: " + data.error;
+        } else {
+          previewBody.textContent = data.message_preview || "(empty)";
+        }
+        previewBox.removeAttribute("hidden");
+        previewBox.querySelector("details").open = true;
+      }).catch(function () {
+        previewBtn.disabled = false;
+        previewBtn.textContent = original;
+      });
+    }
+
+    if (runBtn) runBtn.addEventListener("click", function () { runNews(false); });
+    if (forceBtn) forceBtn.addEventListener("click", function () { runNews(true); });
+    if (previewBtn) previewBtn.addEventListener("click", showPreview);
     loadHistory();
   })();
 </script>

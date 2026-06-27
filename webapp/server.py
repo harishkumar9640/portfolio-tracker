@@ -261,6 +261,66 @@ def api_mf_alert_log() -> dict:
     return {"runs": list(reversed(runs[-30:]))}
 
 
+@app.post("/api/news/run")
+def api_news_run(payload: Optional[dict] = None) -> dict:
+    """
+    Manually trigger one news-digest run. Same logic the daily
+    scheduler runs at 8:55 AM IST, but on demand.
+
+    Body (JSON, optional):
+        {
+            "force_send": true    # send even if no significant news
+        }
+    """
+    from news_alert import run_once as news_run_once
+    force_send = bool((payload or {}).get("force_send", False))
+    return news_run_once(force_send=force_send)
+
+
+@app.get("/api/news/log")
+def api_news_log() -> dict:
+    """Return the last 30 news-digest runs (most recent first)."""
+    from news_alert import LOG_FILE
+    if not LOG_FILE.exists():
+        return {"runs": []}
+    try:
+        runs = json.loads(LOG_FILE.read_text())
+    except (json.JSONDecodeError, OSError):
+        runs = []
+    return {"runs": list(reversed(runs[-30:]))}
+
+
+@app.get("/api/news/preview")
+def api_news_preview() -> dict:
+    """
+    Build a Telegram-style preview of today's digest WITHOUT sending.
+    Useful for the user to verify the categories are working before
+    relying on the daily cron.
+    """
+    from news_alert import (
+        fetch_articles, _filter_fresh, _categorise_and_dedup,
+        _load_seen, _save_seen, render_telegram,
+    )
+    from datetime import datetime, timezone, timedelta
+    try:
+        articles = fetch_articles()
+    except Exception as e:
+        return {"error": f"fetch failed: {e}"}
+    fresh = _filter_fresh(articles)
+    seen = _load_seen()
+    buckets = _categorise_and_dedup(fresh, seen)
+    # Don't persist seen cache for previews (we haven't actually sent)
+    _save_seen(_load_seen())  # no-op write to be safe
+    msg = render_telegram(buckets, date_str=datetime.now().strftime("%d %b %Y"))
+    return {
+        "articles_total": len(articles),
+        "articles_fresh": len(fresh),
+        "categories": {c: len(buckets[c]) for c in buckets},
+        "message_length": len(msg) if msg else 0,
+        "message_preview": msg or "(no significant news today)",
+    }
+
+
 @app.get("/api/fairvalue/search")
 def api_fairvalue_search(q: str = "", limit: int = 10) -> dict:
     """
@@ -406,6 +466,16 @@ def main() -> None:
             start_daily_scheduler()
         except Exception as e:
             log.warning("could not start mf_holdings_alert scheduler: %s", e)
+
+    # Start the daily global-news alert scheduler (8:55 AM IST).
+    # Same opt-out pattern. On missing Telegram bot creds the alert
+    # runs in dry-run mode (logs the message body instead of sending).
+    if not os.environ.get("NEWS_DISABLED"):
+        try:
+            from news_alert import start_daily_scheduler as start_news_scheduler
+            start_news_scheduler()
+        except Exception as e:
+            log.warning("could not start news_alert scheduler: %s", e)
 
     log.info("starting Portfolio Tracker on http://%s:%d", args.host, args.port)
     uvicorn.run(
