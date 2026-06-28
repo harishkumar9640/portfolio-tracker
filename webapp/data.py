@@ -236,3 +236,97 @@ def get_holdings_summary() -> dict:
         "sgbs": load_sgbs(),
         "tickers": load_tickers(),
     }
+
+
+# ---------- FII/DII + bulk/block deals snapshot ----------
+def get_flows_snapshot() -> dict:
+    """Return FII/DII history + recent bulk/block deals for the dashboard.
+
+    Reads from the history files written by flows_alert.run_once().
+    """
+    PROJECT = Path(__file__).resolve().parent.parent
+    fii_dii_file = PROJECT / "fii_dii_history.json"
+    deals_file = PROJECT / "bulk_block_history.json"
+
+    fii_dii = []
+    if fii_dii_file.exists():
+        try:
+            with fii_dii_file.open("r", encoding="utf-8") as f:
+                fii_dii = json.load(f)
+        except Exception:
+            log.exception("could not parse %s", fii_dii_file)
+
+    deals = []
+    if deals_file.exists():
+        try:
+            with deals_file.open("r", encoding="utf-8") as f:
+                deals = json.load(f)
+        except Exception:
+            log.exception("could not parse %s", deals_file)
+
+    # Today's FII/DII summary (most-recent row per category)
+    today_fii = None
+    today_dii = None
+    for row in fii_dii:
+        if row.get("category") == "FII/FPI" and (
+            today_fii is None or row.get("date", "") > today_fii.get("date", "")
+        ):
+            today_fii = row
+        elif row.get("category") == "DII" and (
+            today_dii is None or row.get("date", "") > today_dii.get("date", "")
+        ):
+            today_dii = row
+
+    # Last 30 days of FII/DII for the chart
+    def _to_date(s: str):
+        # NSE format: "25-Jun-2026"
+        try:
+            return datetime.strptime(s, "%d-%b-%Y").date()
+        except (ValueError, TypeError):
+            return None
+
+    chart_rows: list[dict] = []
+    if fii_dii:
+        # Build date → {fii, dii} map
+        by_date: dict = {}
+        for r in fii_dii:
+            d = _to_date(r.get("date", ""))
+            if d is None:
+                continue
+            cat = "fii" if r["category"] == "FII/FPI" else "dii"
+            by_date.setdefault(d, {"date": d.isoformat()})[cat] = r.get("net_value_cr", 0)
+        chart_rows = sorted(by_date.values(), key=lambda x: x["date"])[-30:]
+
+    # Recent portfolio-matched deals (last 7 days)
+    portfolio_deals = []
+    portfolio_symbols = set(_portfolio_tickers())
+    for d in deals:
+        if d.get("symbol") in portfolio_symbols:
+            d_date = _to_date(d.get("date", ""))
+            if d_date is None:
+                continue
+            days_ago = (date.today() - d_date).days
+            if days_ago <= 7:
+                portfolio_deals.append(d)
+    portfolio_deals.sort(key=lambda x: x.get("date", ""), reverse=True)
+
+    # Last 5 deals across all stocks (for context)
+    all_recent = sorted(deals, key=lambda x: x.get("date", ""), reverse=True)[:10]
+
+    return {
+        "today_fii": today_fii,
+        "today_dii": today_dii,
+        "chart": chart_rows,
+        "portfolio_deals": portfolio_deals,
+        "recent_deals": all_recent,
+        "asof": datetime.now().isoformat(timespec="seconds"),
+    }
+
+
+def _portfolio_tickers() -> list[str]:
+    """Return the list of portfolio stock tickers (for filtering deals)."""
+    try:
+        from portfolio_impact import PORTFOLIO_EXPOSURE
+        return list(PORTFOLIO_EXPOSURE.keys())
+    except Exception:
+        return []

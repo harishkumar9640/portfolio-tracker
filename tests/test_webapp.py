@@ -240,6 +240,34 @@ class TestAPI:
         assert r.status_code == 202
         assert r.json()["kinds"] == ["fairvalue"]
 
+    def test_flows_page_renders(self, client):
+        r = client.get("/flows")
+        assert r.status_code == 200
+        assert "FII" in r.text
+        assert "DII" in r.text
+        # nav link should be present and active
+        assert 'href="/flows"' in r.text
+        assert "is-active" in r.text
+
+    def test_api_flows_returns_valid_json(self, client):
+        r = client.get("/api/flows")
+        assert r.status_code == 200
+        data = r.json()
+        assert "today_fii" in data
+        assert "today_dii" in data
+        assert "chart" in data
+        assert "portfolio_deals" in data
+        assert "recent_deals" in data
+        assert "asof" in data
+
+    def test_flows_nav_link_present_on_all_pages(self, client):
+        """Every page should show the 'Flows' link in the nav."""
+        for path in ["/portfolio", "/fairvalue", "/flows"]:
+            r = client.get(path)
+            assert 'href="/flows"' in r.text, (
+                f"missing Flows nav link on {path}"
+            )
+
 
 # ---------- Responsive design verification ----------
 class TestResponsiveOutput:

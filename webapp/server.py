@@ -12,11 +12,13 @@ Then open http://localhost:8000
 Routes (all responsive HTML, no SPA / JS framework):
   GET  /                    -> redirect to /portfolio
   GET  /portfolio           -> today's portfolio + indices + holdings
+  GET  /flows               -> FII/DII flows + bulk/block deals
   GET  /fairvalue           -> fair-value table (screener.in data)
   GET  /history             -> historical portfolio snapshots (Plotly embed)
   GET  /settings            -> manage tickers / mfs.json / sgbs.json
   GET  /api/health          -> JSON: last-run info, snapshot count
   GET  /api/portfolio       -> JSON: portfolio snapshot
+  GET  /api/flows           -> JSON: FII/DII + deals
   GET  /api/fairvalue       -> JSON: fair-value rows
   GET  /api/refresh         -> trigger background refresh (returns 202)
   POST /api/refresh         -> same, but POST
@@ -44,6 +46,7 @@ from webapp.data import (
     get_mf_holdings_snapshot,
     get_health,
     get_holdings_summary,
+    get_flows_snapshot,
     start_background_refresh,
 )
 
@@ -144,6 +147,22 @@ def portfolio_page(request: Request) -> HTMLResponse:
     )
 
 
+@app.get("/flows", response_class=HTMLResponse)
+def flows_page(request: Request) -> HTMLResponse:
+    """Render the FII/DII + bulk/block-deals page. Reads from the local
+    history files written by flows_alert.run_once(); no network calls."""
+    snap = get_flows_snapshot()
+    return templates.TemplateResponse(
+        request,
+        "flows.html",
+        _ctx(
+            active_nav="flows",
+            page_title="FII / DII & Smart Money",
+            snapshot=snap,
+        ),
+    )
+
+
 @app.get("/fairvalue", response_class=HTMLResponse)
 def fairvalue_page(request: Request) -> HTMLResponse:
     snap = get_fairvalue_snapshot()
@@ -197,6 +216,12 @@ def api_health() -> dict:
 @app.get("/api/portfolio")
 def api_portfolio() -> dict:
     return get_portfolio_snapshot()
+
+
+@app.get("/api/flows")
+def api_flows() -> dict:
+    """JSON: FII/DII history + bulk/block deals for charting/automation."""
+    return get_flows_snapshot()
 
 
 @app.get("/api/intraday")

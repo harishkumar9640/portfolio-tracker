@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="flex-between mb-4">
+  <div>
+    <h1 class="mb-0">FII / DII flows &amp; smart money</h1>
+    <p class="text-muted mb-0">
+      {{ snapshot.asof or '—' }} · auto-updated daily from NSE
+    </p>
+  </div>
+</header>
+
+{# ----- KPI tiles: today's FII + DII net flow ----- #}
+<section class="grid grid-2 grid-4 mb-4">
+  <div class="kpi">
+    <div class="kpi-label">FII/FPI today</div>
+    {% if snapshot.today_fii %}
+      <div class="kpi-value {% if snapshot.today_fii.net_value_cr >= 0 %}is-positive{% else %}is-negative{% endif %}">
+        {% if snapshot.today_fii.net_value_cr >= 0 %}+{% endif %}₹{{ "{:,.0f}".format(snapshot.today_fii.net_value_cr) }} cr
+      </div>
+      <div class="kpi-sub text-muted">
+        Buy ₹{{ "{:,.0f}".format(snapshot.today_fii.buy_value_cr) }} cr ·
+        Sell ₹{{ "{:,.0f}".format(snapshot.today_fii.sell_value_cr) }} cr
+      </div>
+      <div class="kpi-sub text-muted">{{ snapshot.today_fii.date }}</div>
+    {% else %}
+      <div class="kpi-value text-muted">—</div>
+      <div class="kpi-sub text-muted">No data yet today</div>
+    {% endif %}
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">DII today</div>
+    {% if snapshot.today_dii %}
+      <div class="kpi-value {% if snapshot.today_dii.net_value_cr >= 0 %}is-positive{% else %}is-negative{% endif %}">
+        {% if snapshot.today_dii.net_value_cr >= 0 %}+{% endif %}₹{{ "{:,.0f}".format(snapshot.today_dii.net_value_cr) }} cr
+      </div>
+      <div class="kpi-sub text-muted">
+        Buy ₹{{ "{:,.0f}".format(snapshot.today_dii.buy_value_cr) }} cr ·
+        Sell ₹{{ "{:,.0f}".format(snapshot.today_dii.sell_value_cr) }} cr
+      </div>
+      <div class="kpi-sub text-muted">{{ snapshot.today_dii.date }}</div>
+    {% else %}
+      <div class="kpi-value text-muted">—</div>
+      <div class="kpi-sub text-muted">No data yet today</div>
+    {% endif %}
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">Net (FII + DII)</div>
+    {% set fii_net = snapshot.today_fii.net_value_cr if snapshot.today_fii else 0 %}
+    {% set dii_net = snapshot.today_dii.net_value_cr if snapshot.today_dii else 0 %}
+    {% set total = fii_net + dii_net %}
+    <div class="kpi-value {% if total >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {% if total >= 0 %}+{% endif %}₹{{ "{:,.0f}".format(total) }} cr
+    </div>
+    <div class="kpi-sub text-muted">FII + DII combined</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">My deals (7 days)</div>
+    <div class="kpi-value">{{ snapshot.portfolio_deals|length }}</div>
+    <div class="kpi-sub text-muted">Bulk + block on your stocks</div>
+  </div>
+</section>
+
+{# ----- 30-day FII/DII chart ----- #}
+<section class="card mb-4">
+  <div class="flex-between mb-3">
+    <h2 class="mb-0">30-day FII/DII net flows (₹ cr)</h2>
+    <span class="text-muted">positive = buying, negative = selling</span>
+  </div>
+  {% if snapshot.chart %}
+  <div id="fii-dii-chart" style="width:100%; height:340px;"></div>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script>
+    (function () {
+      var chartData = {{ snapshot.chart|tojson }};
+      var fiiTrace = {
+        x: chartData.map(function(d) { return d.date; }),
+        y: chartData.map(function(d) { return d.fii || 0; }),
+        name: 'FII/FPI',
+        type: 'bar',
+        marker: { color: '#d9534f' }
+      };
+      var diiTrace = {
+        x: chartData.map(function(d) { return d.date; }),
+        y: chartData.map(function(d) { return d.dii || 0; }),
+        name: 'DII',
+        type: 'bar',
+        marker: { color: '#5cb85c' }
+      };
+      var layout = {
+        barmode: 'group',
+        margin: { t: 20, r: 20, b: 40, l: 60 },
+        xaxis: { title: '', tickangle: -45 },
+        yaxis: { title: 'Net flow (₹ cr)', zeroline: true,
+                 zerolinecolor: '#888', zerolinewidth: 1 },
+        legend: { orientation: 'h', y: -0.2 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+      };
+      Plotly.newPlot('fii-dii-chart', [fiiTrace, diiTrace], layout,
+        { responsive: true, displayModeBar: false });
+    })();
+  </script>
+  {% else %}
+  <p class="text-muted">No FII/DII history yet. The daily 6:45 PM IST run
+    will populate this chart.</p>
+  {% endif %}
+</section>
+
+{# ----- Bulk/block deals on your portfolio (last 7 days) ----- #}
+<section class="card mb-4">
+  <h2 class="mb-3">Smart-money activity in your portfolio (last 7 days)</h2>
+  {% if snapshot.portfolio_deals %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Stock</th>
+          <th>Type</th>
+          <th>Side</th>
+          <th>Client</th>
+          <th class="text-right">Qty</th>
+          <th class="text-right">Price</th>
+          <th class="text-right">Value (₹ cr)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in snapshot.portfolio_deals %}
+        <tr>
+          <td>{{ d.date }}</td>
+          <td><strong>{{ d.symbol }}</strong><br>
+              <span class="text-muted">{{ d.security_name }}</span></td>
+          <td>{{ d.deal_type|upper }}</td>
+          <td class="{% if d.side == 'BUY' %}is-positive{% else %}is-negative{% endif %}">
+            <strong>{{ d.side }}</strong>
+          </td>
+          <td>{{ d.client_name }}</td>
+          <td class="text-right">{{ "{:,}".format(d.quantity) }}</td>
+          <td class="text-right">₹{{ "%.2f"|format(d.price) }}</td>
+          <td class="text-right">
+            ₹{{ "%.2f"|format((d.quantity * d.price) / 1e7) }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted">No bulk or block deals on your portfolio stocks in
+    the last 7 days. You'll get a Telegram alert the moment one fires.</p>
+  {% endif %}
+</section>
+
+{# ----- Recent deals (any stock) for context ----- #}
+<section class="card">
+  <h2 class="mb-3">Recent bulk / block deals (any stock)</h2>
+  {% if snapshot.recent_deals %}
+  <details>
+    <summary class="text-muted">Show last {{ snapshot.recent_deals|length }} deals</summary>
+    <div class="table-wrap mt-3">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Stock</th>
+            <th>Type</th>
+            <th>Side</th>
+            <th>Client</th>
+            <th class="text-right">Value (₹ cr)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in snapshot.recent_deals %}
+          <tr>
+            <td>{{ d.date }}</td>
+            <td>{{ d.symbol }}</td>
+            <td>{{ d.deal_type|upper }}</td>
+            <td class="{% if d.side == 'BUY' %}is-positive{% else %}is-negative{% endif %}">
+              {{ d.side }}
+            </td>
+            <td>{{ d.client_name }}</td>
+            <td class="text-right">
+              ₹{{ "%.2f"|format((d.quantity * d.price) / 1e7) }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+  {% else %}
+  <p class="text-muted">No deals recorded yet.</p>
+  {% endif %}
+</section>
+
+{% endblock %}
