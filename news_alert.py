@@ -537,6 +537,41 @@ CATEGORY_DISPLAY = {
 }
 
 
+def _escape_md(text: str) -> str:
+    """
+    Escape Telegram MarkdownV1 special chars that aren't part of an
+    intentional formatting element.
+
+    Telegram's Markdown parser is strict: an unmatched '_' or '*' anywhere
+    in the message kills the whole send. We only use Markdown for:
+      - bold (*text*)
+      - italic (_text_)
+      - inline links [text](url)
+    Anything else (like a stray underscore in a stock name or footer) must
+    be backslash-escaped.
+    """
+    if not text:
+        return ""
+    # First protect intentional formatting by replacing with sentinels
+    placeholders = {}
+    counter = [0]
+    def stash(m):
+        key = f"\x00PH{counter[0]}\x00"
+        counter[0] += 1
+        placeholders[key] = m.group(0)
+        return key
+    # Stash [text](url) links
+    text = re.sub(r"\[[^\]]+\]\([^)]+\)", stash, text)
+    # Stash *bold*
+    text = re.sub(r"\*[^*\n]+\*", stash, text)
+    # Now escape remaining special chars
+    text = re.sub(r"([_*`\[])", r"\\\1", text)
+    # Restore the stashed formatting
+    for key, original in placeholders.items():
+        text = text.replace(key, original)
+    return text
+
+
 def _truncate(s: str, n: int) -> str:
     if len(s) <= n:
         return s
@@ -568,7 +603,7 @@ def render_telegram(
     if total == 0:
         lines.append("No significant alerts in the last 36 hours.")
         lines.append("")
-        lines.append("_— sent by Portfolio Tracker_")
+        lines.append("— sent by Portfolio Tracker")
         return "\n".join(lines)
 
     # Show categories in priority order
@@ -580,8 +615,7 @@ def render_telegram(
         for a in items:
             title = _truncate(a.title, 160)
             url = a.url if a.url else ""
-            # Telegram Markdown: [text](url). Escape _ * [ ] in title.
-            md_title = re.sub(r"([_*\[\]])", r"\\\1", title)
+            md_title = _escape_md(title)
             if url:
                 lines.append(f"  • [{md_title}]({url})")
             else:
@@ -591,10 +625,10 @@ def render_telegram(
                 desc = _normalize_text(re.sub(r"<[^>]+>", "", a.description))
                 desc = _truncate(desc, 180)
                 if desc and not desc.lower().startswith(title.lower()[:30]):
-                    lines.append(f"    _{desc}_")
+                    lines.append(f"    _{_escape_md(desc)}_")
         lines.append("")
 
-    lines.append("_— sent by Portfolio Tracker • news_alert.py_")
+    lines.append("— sent by Portfolio Tracker • news_alert.py")
 
     msg = "\n".join(lines)
     if len(msg) > 3800:
@@ -646,6 +680,13 @@ def send_telegram(text: str) -> dict:
     """
     Send a message via Telegram Bot API.
 
+    We deliberately use plain text (no parse_mode) because:
+      1. Telegram's Markdown parser is strict — any unbalanced `_*\`` in
+         a 3500-char RSS-derived message causes the WHOLE send to fail
+      2. The URLs in our links already render as clickable links in
+         Telegram even without [text](url) markdown
+      3. Plain text is more reliable for system-generated messages
+
     Returns {"sent": bool, "mode": "telegram"|"dry_run", "chat_id": str,
              "message_length": int, "error": str (if any)}
     """
@@ -667,10 +708,12 @@ def send_telegram(text: str) -> dict:
 
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     try:
+        # No parse_mode — Telegram will auto-detect links and make them
+        # clickable. This avoids the "Can't parse entities" error when
+        # our generated message has stray markdown chars.
         r = requests.post(url, json={
             "chat_id": chat_id,
             "text": text,
-            "parse_mode": "Markdown",
             "disable_web_page_preview": True,
         }, timeout=30)
         r.raise_for_status()

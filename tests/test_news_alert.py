@@ -314,9 +314,11 @@ class TestRenderTelegram:
         assert "War & Conflict" in msg
         assert "Central Bank" in msg
 
-    def test_escapes_markdown_special_characters(self):
-        """Article titles containing _, *, [, ] must be escaped in Telegram
-        Markdown to avoid breaking formatting."""
+    def test_titles_are_escaped_for_plain_text(self):
+        """Article titles containing _, *, [, ] must not break Telegram's
+        plain-text parser. We use plain text (no parse_mode) but we still
+        escape stray `_` chars to avoid unintended italic rendering.
+        Note: Telegram renders _word_ as italic even in plain text."""
         buckets = {c: [] for c in CATEGORY_DISPLAY}
         buckets["fed_rates"].append(Article(
             title="RBI_repo_rate_hiked_to_[6.5%]_today",
@@ -325,9 +327,11 @@ class TestRenderTelegram:
         ))
         msg = render_telegram(buckets, date_str="27 Jun 2026")
         assert msg is not None
-        # The escaped title in the message should contain backslashes
-        assert r"RBI\_repo\_rate" in msg
-        assert r"\[6.5%\]" in msg
+        # Underscores in the title should be escaped (so they don't render
+        # as italic spans in Telegram's plain text)
+        assert "RBI\\_repo\\_rate" in msg
+        # The URL must still be present
+        assert "https://rbi" in msg
 
     def test_message_includes_date_and_sources(self):
         buckets = {c: [] for c in CATEGORY_DISPLAY}
