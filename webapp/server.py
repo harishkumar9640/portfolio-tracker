@@ -290,6 +290,58 @@ def api_news_log() -> dict:
     return {"runs": list(reversed(runs[-30:]))}
 
 
+@app.post("/api/shareholding/run")
+def api_shareholding_run(payload: Optional[dict] = None) -> dict:
+    """
+    Manually trigger one shareholding-pattern alert check.
+
+    Body (JSON, optional):
+        {
+            "force_email": true    # send email even if no changes
+        }
+    """
+    from shareholding_alert import run_once as shp_run_once
+    force_email = bool((payload or {}).get("force_email", False))
+    return shp_run_once(force_email=force_email)
+
+
+@app.get("/api/shareholding/log")
+def api_shareholding_log() -> dict:
+    """Return the last 30 shareholding-alert runs (most recent first)."""
+    from shareholding_alert import LOG_FILE
+    if not LOG_FILE.exists():
+        return {"runs": []}
+    try:
+        runs = json.loads(LOG_FILE.read_text())
+    except (json.JSONDecodeError, OSError):
+        runs = []
+    return {"runs": list(reversed(runs[-30:]))}
+
+
+@app.get("/api/shareholding/snapshot")
+def api_shareholding_snapshot() -> dict:
+    """
+    Fetch the latest shareholding data for all 8 tickers without
+    persisting or comparing. Useful for the UI / on-demand display.
+    """
+    from shareholding_alert import fetch_all
+    try:
+        snap = fetch_all(parallel=True)
+    except Exception as e:
+        return {"error": f"fetch failed: {e}", "tickers": {}}
+    # Serialise
+    out = {}
+    for tkr, ts in snap.items():
+        out[tkr] = {
+            "ticker": ts.ticker,
+            "name": ts.name,
+            "url": ts.url,
+            "fetched_at": ts.fetched_at,
+            "quarters": [q.to_dict() for q in ts.quarters],
+        }
+    return {"tickers": out}
+
+
 @app.get("/api/news/preview")
 def api_news_preview() -> dict:
     """
@@ -476,6 +528,15 @@ def main() -> None:
             start_news_scheduler()
         except Exception as e:
             log.warning("could not start news_alert scheduler: %s", e)
+
+    # Start the daily shareholding-pattern alert scheduler (16:35 IST).
+    # Reuses the same SMTP creds as mf_holdings_alert.
+    if not os.environ.get("SHP_ALERT_DISABLED"):
+        try:
+            from shareholding_alert import start_daily_scheduler as start_shp_scheduler
+            start_shp_scheduler()
+        except Exception as e:
+            log.warning("could not start shareholding_alert scheduler: %s", e)
 
     log.info("starting Portfolio Tracker on http://%s:%d", args.host, args.port)
     uvicorn.run(

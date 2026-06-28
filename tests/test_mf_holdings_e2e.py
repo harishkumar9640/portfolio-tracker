@@ -130,14 +130,20 @@ class TestMFHoldingsSection:
         assert first_ticker == "RELIANCE", f"expected RELIANCE first, got {first_ticker}"
 
     def test_net_change_displayed_correctly(self, page, server_url):
-        """The first row should show +50,783,807 (RELIANCE's net change)."""
+        """The first row should show RELIANCE's net change in millions
+        (the exact value changes with each quarterly update)."""
         page.goto(f"{server_url}/portfolio", wait_until="networkidle")
         rows = page.query_selector_all("#mf-holdings-section .mf-row")
+        # First row should be RELIANCE (biggest |net_change|)
+        assert rows[0].get_attribute("data-ticker") == "RELIANCE"
         net_el = rows[0].query_selector(".mf-net")
         assert net_el is not None
         text = net_el.inner_text().replace(",", "").strip()
-        # The cell shows "+50,783,807" → stripped to "+50783807"
-        assert "+50783807" in text or text == "+50783807"
+        # Should be a "+"-prefixed number in the tens-of-millions
+        assert text.startswith("+"), f"expected + prefix, got: {text!r}"
+        # Strip the + and parse the integer; should be >10M
+        magnitude = int(text.lstrip("+"))
+        assert magnitude > 10_000_000, f"RELIANCE net should be >10M, got {magnitude}"
 
 
 # ---------- Glossary ----------

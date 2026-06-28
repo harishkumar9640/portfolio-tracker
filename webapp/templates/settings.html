@@ -12,6 +12,28 @@
 </header>
 
 <section class="card mb-4">
+  <h2 class="mb-2">📊 Shareholding Pattern Alerts</h2>
+  <p class="text-sm text-muted mb-3">
+    Every day at 16:35 IST (right after the MF holdings check) the server
+    pulls the latest 12 quarters of shareholding-pattern data from Trendlyne
+    for your 8 stocks and emails you when anything changes above the
+    significance threshold (Promoter ≥0.1%, FII/DII/MF/Banks/Insurance/Public/Others
+    ≥0.5%). Shares the same SMTP creds as the MF alerts.
+  </p>
+
+  <div id="shp-alert-status" class="mb-3" aria-live="polite">
+    <p class="text-muted text-sm">Loading shareholding history…</p>
+  </div>
+
+  <div class="flex-gap-2 flex-wrap">
+    <button id="runShpBtn" class="btn">Run shareholding check now</button>
+    <button id="forceShpBtn" class="btn btn-secondary" title="Send the email even if nothing changed">
+      Force-send email
+    </button>
+  </div>
+</section>
+
+<section class="card mb-4">
   <h2 class="mb-2">📰 Global News Digest</h2>
   <p class="text-sm text-muted mb-3">
     Every day at 8:55 AM IST the server scans 16 RSS feeds + GDACS disaster
@@ -405,6 +427,93 @@ NEWS_DRY_RUN=0</pre>
     if (runBtn) runBtn.addEventListener("click", function () { runNews(false); });
     if (forceBtn) forceBtn.addEventListener("click", function () { runNews(true); });
     if (previewBtn) previewBtn.addEventListener("click", showPreview);
+    loadHistory();
+  })();
+
+  // Shareholding alerts: history + run-now + force-send buttons
+  (function () {
+    var status = document.getElementById("shp-alert-status");
+    var runBtn = document.getElementById("runShpBtn");
+    var forceBtn = document.getElementById("forceShpBtn");
+    if (!status || !runBtn) return;
+
+    function fmtTime(iso) {
+      if (!iso) return "—";
+      try {
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return iso;
+        return d.toLocaleString();
+      } catch (e) { return iso; }
+    }
+
+    function renderHistory(runs) {
+      if (!runs || !runs.length) {
+        status.innerHTML = '<p class="text-muted text-sm">No shareholding runs yet. Click "Run shareholding check now" to test.</p>';
+        return;
+      }
+      var rows = runs.slice(0, 8).map(function (r) {
+        var kept = r.stocks_with_changes || 0;
+        var statusLabel = kept > 0
+          ? '<span class="alert-result-changed">' + kept + ' stocks changed</span>'
+          : '<span class="alert-result-unchanged">no changes</span>';
+        var email = r.email
+          ? (r.email.sent
+              ? '<span class="alert-email-sent">email sent</span>'
+              : (r.email.reason || r.email.mode || "skipped"))
+          : '—';
+        var tickers = (r.tickers_changed || []).join(", ") || '—';
+        return '<tr>'
+          + '<td>' + fmtTime(r.ran_at) + '</td>'
+          + '<td>' + statusLabel + '</td>'
+          + '<td>' + tickers + '</td>'
+          + '<td>' + email + '</td>'
+          + '</tr>';
+      }).join("");
+      status.innerHTML =
+        '<table class="alert-log-table">'
+        + '<thead><tr>'
+        + '<th>When</th>'
+        + '<th>Result</th>'
+        + '<th>Tickers changed</th>'
+        + '<th>Email</th>'
+        + '</tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>';
+    }
+
+    function loadHistory() {
+      fetch("/api/shareholding/log").then(function (r) {
+        return r.ok ? r.json() : { runs: [] };
+      }).then(function (data) {
+        renderHistory(data.runs || []);
+      }).catch(function () {
+        status.innerHTML = '<p class="text-muted text-sm">Could not load shareholding history.</p>';
+      });
+    }
+
+    function runShp(forceEmail) {
+      var btn = forceEmail ? forceBtn : runBtn;
+      btn.disabled = true;
+      var original = btn.textContent;
+      btn.textContent = "Running…";
+      fetch("/api/shareholding/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ force_email: !!forceEmail }),
+      }).then(function (r) {
+        return r.json();
+      }).then(function (data) {
+        btn.disabled = false;
+        btn.textContent = original;
+        loadHistory();
+      }).catch(function () {
+        btn.disabled = false;
+        btn.textContent = original;
+        alert("Shareholding run failed. Check the server log.");
+      });
+    }
+
+    if (runBtn) runBtn.addEventListener("click", function () { runShp(false); });
+    if (forceBtn) forceBtn.addEventListener("click", function () { runShp(true); });
     loadHistory();
   })();
 </script>

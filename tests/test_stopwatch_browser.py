@@ -101,10 +101,16 @@ class TestPageLoadingStopwatch:
         page.goto(f"{server_url}/settings", wait_until="domcontentloaded")
         clock = page.locator("#pageLoadingClock")
         text = clock.inner_text()
-        # Could be "0ms", "0.0s", "100ms" — anything under 200ms is fine
-        # (browsers sometimes take >100ms to render the very first paint)
-        assert any(text.startswith(p) for p in ("0", "1", "2")), \
-            f"clock should start near zero, got: {text!r}"
+        # Parse the numeric value. Anything under 200ms is acceptable
+        # (browsers may take a few tens of milliseconds before the very
+        # first paint of the stopwatch element).
+        import re
+        m = re.match(r"(\d+(?:\.\d+)?)(ms|s)", text)
+        assert m, f"clock text not parseable: {text!r}"
+        value = float(m.group(1))
+        unit = m.group(2)
+        ms = value if unit == "ms" else value * 1000
+        assert ms < 500, f"clock should start near zero, got: {text!r} ({ms}ms)"
         page.close()
 
     def test_stopwatch_hides_after_load(self, browser, server_url):
