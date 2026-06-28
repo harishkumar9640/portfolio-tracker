@@ -365,7 +365,11 @@ def _render_impact_alert(
     from sentiment import detect_indian_themes, format_indian_theme_block
     theme_hits = detect_indian_themes(article.title, article.description)
     if theme_hits:
-        lines.append(format_indian_theme_block(theme_hits))
+        lines.append(format_indian_theme_block(
+            theme_hits,
+            article_title=article.title,
+            article_desc=article.description,
+        ))
         lines.append("")
     lines.append("— Portfolio Tracker • portfolio_impact.py")
     return "\n".join(lines)
@@ -410,7 +414,11 @@ def _render_generic_alert(article, tickers: list[str]) -> str:
     from sentiment import detect_indian_themes, format_indian_theme_block
     theme_hits = detect_indian_themes(article.title, article.description)
     if theme_hits:
-        lines.append(format_indian_theme_block(theme_hits))
+        lines.append(format_indian_theme_block(
+            theme_hits,
+            article_title=article.title,
+            article_desc=article.description,
+        ))
         lines.append("")
     cat_pretty = cat.replace("_", " ")
     lines.append(f"_This is a market-wide {cat_pretty} move; review your"

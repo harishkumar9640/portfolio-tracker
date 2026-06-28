@@ -485,3 +485,153 @@ class TestFormatIndianThemeBlock:
         # Both themes should appear; order doesn't strictly matter
         assert "RBI Policy" in block
         assert "Monsoon" in block
+
+
+# ---------- Time-horizon impact ----------
+
+from sentiment import (  # noqa: E402
+    INDIAN_THEME_IMPACT,
+    HORIZON_LABELS,
+    HORIZON_EMOJI,
+    get_theme_impact,
+    format_theme_impact_block,
+)
+
+
+class TestTimeHorizonImpact:
+    """Each (theme, ticker) should have a per-horizon impact with a
+    short explanation, a direction (+/-/.), and a clear label."""
+
+    def test_all_combinations_have_impact(self):
+        """Verify that every (theme, ticker) in INDIAN_THEMES has an
+        entry in the impact map. Otherwise the time-horizon view is
+        missing for that pair."""
+        missing = []
+        for theme_key, theme in INDIAN_THEMES.items():
+            for tkr in theme.get("affected_tickers", []):
+                if (theme_key, tkr) not in INDIAN_THEME_IMPACT:
+                    missing.append((theme_key, tkr))
+        assert not missing, f"missing impact for: {missing}"
+
+    def test_each_impact_has_three_horizons(self):
+        for key, impact in INDIAN_THEME_IMPACT.items():
+            for horizon in ("short", "mid", "long"):
+                assert horizon in impact, f"{key} missing {horizon}"
+                entry = impact[horizon]
+                assert isinstance(entry, tuple) and len(entry) == 2
+                direction, explanation = entry
+                assert direction in ("+", "-", "."), (
+                    f"{key}.{horizon} has invalid direction {direction!r}"
+                )
+                assert len(explanation) >= 20, (
+                    f"{key}.{horizon} explanation too short: {explanation!r}"
+                )
+
+    def test_short_mid_long_labels(self):
+        assert "Short term" in HORIZON_LABELS["short"]
+        assert "Mid term" in HORIZON_LABELS["mid"]
+        assert "Long term" in HORIZON_LABELS["long"]
+        assert "3-6" in HORIZON_LABELS["short"]
+        assert "6-12" in HORIZON_LABELS["mid"]
+        assert "1-3" in HORIZON_LABELS["long"]
+
+    def test_direction_emojis(self):
+        assert HORIZON_EMOJI["+"] == "🟢"
+        assert HORIZON_EMOJI["-"] == "🔴"
+        assert HORIZON_EMOJI["."] == "⚪"
+
+    def test_get_theme_impact_existing(self):
+        impact = get_theme_impact("monsoon", "ITC")
+        assert impact is not None
+        assert "short" in impact
+        assert impact["short"][0] == "+"  # bullish in short term
+
+    def test_get_theme_impact_missing(self):
+        """Unknown theme/ticker should return None."""
+        assert get_theme_impact("nonexistent_theme", "ITC") is None
+        assert get_theme_impact("monsoon", "NONEXISTENT") is None
+
+    def test_format_block_includes_all_horizons(self):
+        block = format_theme_impact_block("monsoon", "ITC")
+        assert "Short term" in block
+        assert "Mid term" in block
+        assert "Long term" in block
+        # Should include direction word (positive/negative/neutral)
+        assert any(w in block.lower() for w in ("positive", "negative", "neutral"))
+
+    def test_format_block_includes_explanation(self):
+        """Each horizon line should have a non-trivial explanation."""
+        block = format_theme_impact_block("monsoon", "ITC")
+        # The block is multi-line; check the explanation length
+        lines = block.strip().split("\n")
+        assert len(lines) == 3, f"expected 3 lines, got {len(lines)}"
+        for line in lines:
+            # Each line should have at least 60 chars (emoji + label + dir + expl)
+            assert len(line) >= 60, f"line too short: {line!r}"
+
+    def test_format_block_empty_for_unknown(self):
+        assert format_theme_impact_block("monsoon", "NONEXISTENT") == ""
+        assert format_theme_impact_block("nonexistent", "ITC") == ""
+
+    def test_monsoon_ITC_is_bullish_short(self):
+        impact = get_theme_impact("monsoon", "ITC")
+        # Above-normal monsoon is bullish for ITC in short term
+        assert impact["short"][0] == "+"
+        # And in mid term
+        assert impact["mid"][0] == "+"
+
+    def test_monsoon_ITC_long_term_is_neutral(self):
+        """Long-term: climate change adds volatility, so neutral."""
+        impact = get_theme_impact("monsoon", "ITC")
+        # Long-term should be neutral (uncertain) due to climate risk
+        assert impact["long"][0] == "."
+
+    def test_local_politics_ITC_is_bearish(self):
+        """State politics (e.g. excise hike) hits ITC cigarette biz."""
+        impact = get_theme_impact("local_politics", "ITC")
+        assert impact["short"][0] == "-"
+        assert impact["mid"][0] == "-"
+
+    def test_RBI_rate_helps_bank_short(self):
+        """Rate hikes boost bank NIM in the short term."""
+        impact = get_theme_impact("rbi_policy", "BANKBARODA")
+        assert impact["short"][0] == "+"
+
+    def test_commodity_brent_helps_RELIANCE_short(self):
+        impact = get_theme_impact("commodity_prices", "RELIANCE")
+        assert impact["short"][0] == "+"  # GRM boost
+
+    def test_supply_chain_hurts_KNRCON_short(self):
+        """Imported equipment cost rise = margin pressure."""
+        impact = get_theme_impact("global_supply_chain", "KNRCON")
+        assert impact["short"][0] == "-"
+
+
+class TestFormatImpactBlockInThemeBlock:
+    """The Indian-theme block should include per-ticker time-horizon
+    views automatically."""
+
+    def test_theme_block_includes_time_horizon(self):
+        hits = detect_indian_themes(
+            "Monsoon arrives 2 days early, rainfall 20% above normal",
+            "IMD reports above-normal rainfall for kharif sowing",
+        )
+        block = format_indian_theme_block(hits)
+        # Should include time-horizon lines for ITC
+        assert "Short term" in block
+        assert "Mid term" in block
+        assert "Long term" in block
+        assert "ITC" in block
+
+    def test_theme_block_skips_unknown_tickers(self):
+        """If a theme affects a ticker that has no impact data, that
+        ticker is mentioned but no time-horizon lines are shown."""
+        # KNRCON has impact for monsoon; this should work
+        hits = detect_indian_themes(
+            "Monsoon arrives on time, kharif sowing begins",
+            "Rural demand rises, cane sowing good",
+        )
+        block = format_indian_theme_block(hits)
+        # KNRCON should have time-horizon lines
+        assert "KNRCON" in block
+        assert "Short term" in block

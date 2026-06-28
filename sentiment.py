@@ -615,6 +615,221 @@ INDIAN_THEMES: dict[str, dict] = {
 }
 
 
+# ============================================================
+# Time-horizon impact map: (theme, ticker) -> per-horizon effect
+# ============================================================
+# Each entry is:
+#   short:  3-6 months effect on the stock (revenue, demand, costs)
+#   mid:    6-12 months effect (capex, contracts, market share)
+#   long:   1-3 years effect (policy, secular trends, demographics)
+# Plus a 'direction' and 'confidence' for the per-ticker view.
+#
+# Direction values: "+" (bullish), "-" (bearish), "." (neutral / context-dependent)
+#
+# This is intentionally compact: a few lines per (theme, ticker)
+# that capture the dominant transmission mechanism. The user can
+# drill into the per-ticker analysis block for details.
+INDIAN_THEME_IMPACT: dict[tuple[str, str], dict] = {
+    # ---------- Monsoon ----------
+    ("monsoon", "ITC"): {
+        "short": ("+", "Above-normal rainfall lifts rural FMCG demand "
+                       "in the festive and sowing season (3-6 months)."),
+        "mid":   ("+", "Sustained rural income supports volume growth and "
+                       "distribution expansion into tier-3/4 markets."),
+        "long":  (".", "Climate change makes monsoons more volatile — long-run "
+                       "risk to agricultural input chains and rural demand."),
+    },
+    ("monsoon", "BALRAMCHIN"): {
+        "short": ("+", "Good monsoon + timely sowing expands cane area; "
+                       "sugar output rises in the next crushing season."),
+        "mid":   (".", "Sugar realisation is also driven by global prices and "
+                       "export policy — monsoon alone doesn't determine "
+                       "mid-term margins."),
+        "long":  (".", "Climate volatility increases sugar-cane yield risk over "
+                       "the long term; ethanol diversification provides a "
+                       "structural buffer."),
+    },
+    ("monsoon", "KNRCON"): {
+        "short": ("+", "Good monsoon boosts rural road construction demand "
+                       "(PMGSY, rural connectivity projects)."),
+        "mid":   (".", "Project award timing depends on NHAI / state budgets — "
+                       "monsoon improves demand but not order book pace."),
+        "long":  (".", "Climate change may shift infrastructure priorities "
+                       "(flood-control, irrigation) but road-construction TAM "
+                       "remains large."),
+    },
+    # ---------- Local politics ----------
+    ("local_politics", "BANKBARODA"): {
+        "short": (".", "State elections rarely move PSU bank valuations "
+                       "directly; brief sentiment impact on stock price."),
+        "mid":   (".", "Post-election state budgets can shift MSME credit demand; "
+                       "long-term PSU privatisation (if any) is the bigger "
+                       "structural variable."),
+        "long":  (".", "PSU bank consolidation / privatisation is a multi-year "
+                       "policy question, not driven by single state elections."),
+    },
+    ("local_politics", "KNRCON"): {
+        "short": ("+", "State-level capex push (new CM's infra agenda) can "
+                       "lead to fast-track NHAI / state highway project awards."),
+        "mid":   ("+", "Coalition governments that prioritise infra tend to "
+                       "maintain capex momentum over a 2-3 year horizon."),
+        "long":  (".", "Long-term infra spending depends on central + state "
+                       "finances, not political colour. Bullish under most "
+                       "regimes, neutral under severe fiscal stress."),
+    },
+    ("local_politics", "IRCON"): {
+        "short": ("+", "New state CMs typically signal continued railway + infra "
+                       "capex; existing PSU contracts get prioritised."),
+        "mid":   ("+", "Central railway capex is largely insulated from state "
+                       "politics; state projects tied to political stability."),
+        "long":  (".", "IRCON's order book is policy-driven (railways, DFCC, "
+                       "high-speed rail); long-term trajectory is a function of "
+                       "central capex, not state."),
+    },
+    ("local_politics", "ITC"): {
+        "short": ("-", "State VAT / excise hikes on tobacco / cigarettes "
+                       "directly compress ITC margins in those states."),
+        "mid":   ("-", "Persistent state-level tax increases compound; "
+                       "pricing power is limited due to regulatory environment."),
+        "long":  (".", "Diversification into FMCG non-tobacco reduces long-run "
+                       "state-tax exposure, but cigarette business is "
+                       "structurally challenged."),
+    },
+    # ---------- Festival / Wedding ----------
+    ("festival_wedding", "ITC"): {
+        "short": ("+", "Festive season (Diwali, Akshaya Tritiya) is the "
+                       "biggest consumption quarter for cigarettes, snacks, "
+                       "and discretionary FMCG."),
+        "mid":   (".", "Mid-term depends on rural income (post-monsoon) — "
+                       "festivals alone don't move structural demand."),
+        "long":  (".", "Wedding season is a perennial demand driver; structural "
+                       "shift is in the product mix (FMCG vs tobacco) rather than "
+                       "festive intensity."),
+    },
+    # ---------- RBI / SEBI / Government Policy ----------
+    ("rbi_policy", "BANKBARODA"): {
+        "short": ("+", "Rate hikes widen NIM within 1-2 quarters; rate cuts "
+                       "compress NIM almost immediately."),
+        "mid":   ("+", "Sustained tight policy boosts treasury income and credit "
+                       "growth; loose policy compresses NIM but boosts loan "
+                       "volumes."),
+        "long":  (".", "Long-term valuation depends on structural growth, "
+                       "digital adoption, and credit-cost ratios — not policy "
+                       "rate alone."),
+    },
+    ("rbi_policy", "JIOFIN"): {
+        "short": ("+", "Rate cuts lower cost of funds; rate hikes compress "
+                       "margins. NBFC P&L is highly rate-sensitive."),
+        "mid":   ("+", "Easing cycle supports AUM growth and disbursement "
+                       "volumes; tightening cycle slows growth but improves "
+                       "asset quality."),
+        "long":  (".", "Long-term moat depends on Jio's distribution scale, "
+                       "digital lending penetration — not policy rates."),
+    },
+    ("rbi_policy", "RELIANCE"): {
+        "short": (".", "Reliance is diversified; rate impact comes through "
+                       "Jio (telecom capex) and retail (consumer credit demand)."),
+        "mid":   (".", "Easing cycle boosts consumer credit demand for retail; "
+                       "tightening cycle pressures telecom capex returns."),
+        "long":  (".", "Reliance's long-term value is driven by refining margins, "
+                       "Jio ARPU, and retail — policy rates are a tertiary factor."),
+    },
+    ("rbi_policy", "ITC"): {
+        "short": (".", "Rate cuts support FMCG demand via cheaper consumer "
+                       "credit; rate hikes compress it. Net effect is mild."),
+        "mid":   (".", "Mid-term: rural FMCG volumes are more sensitive to "
+                       "monsoon and inflation than to repo rate."),
+        "long":  (".", "Long-term: macro trends (rural income, FMCG penetration) "
+                       "matter more than any single rate cycle."),
+    },
+    # ---------- Commodity Prices ----------
+    ("commodity_prices", "RELIANCE"): {
+        "short": ("+", "Brent crude price increases boost GRM (refining margin) "
+                       "within a quarter; oil & gas E&P also benefits."),
+        "mid":   (".", "Mid-term: high crude eventually hurts marketing margins "
+                       "(downstream); offset by O2C segment."),
+        "long":  (".", "Long-term: energy transition reduces crude's structural "
+                       "importance; renewables + green hydrogen are the long "
+                       "play."),
+    },
+    ("commodity_prices", "BALRAMCHIN"): {
+        "short": ("+", "Sugar price rise directly improves realisations; "
+                       "ethanol price hike boosts margin per litre."),
+        "mid":   (".", "Sugar prices are cyclical; mid-term depends on global "
+                       "supply-demand balance and Indian export quota policy."),
+        "long":  (".", "Long-term: ethanol blending policy and energy-transition "
+                       "demand for ethanol provides structural support."),
+    },
+    ("commodity_prices", "KNRCON"): {
+        "short": ("-", "Steel / cement / bitumen price rise directly compresses "
+                       "project margins; pass-through to clients is delayed."),
+        "mid":   (".", "Mid-term: input costs settle; competitive bidding "
+                       "adjusts; net effect depends on order-mix and contract "
+                       "structure (HAM vs EPC)."),
+        "long":  (".", "Long-term: input cost volatility is the new normal; "
+                       "players with scale + backward integration (steel, "
+                       "cement) have an edge."),
+    },
+    # ---------- Global Supply Chain ----------
+    ("global_supply_chain", "RELIANCE"): {
+        "short": (".", "Reliance is largely self-sufficient; supply chain shocks "
+                       "have minor impact (O2C imports some catalysts)."),
+        "mid":   (".", "Mid-term: Jio's 5G equipment is imported; semiconductor "
+                       "shortages can delay rollout and capex absorption."),
+        "long":  (".", "Long-term: shift to domestic supply chain (PLI scheme) "
+                       "reduces Reliance's exposure over time."),
+    },
+    ("global_supply_chain", "KNRCON"): {
+        "short": ("-", "Container rate / shipping cost rise increases imported "
+                       "equipment costs (specialised road-building machinery)."),
+        "mid":   (".", "Mid-term: pass-through to NHAI in HAM/EPC contracts is "
+                       "delayed; margins can compress in the interim."),
+        "long":  (".", "Long-term: as domestic construction equipment "
+                       "manufacturing scales, import dependence reduces."),
+    },
+}
+
+
+# Map time horizons to short labels
+HORIZON_LABELS = {
+    "short": "Short term (3-6 mo)",
+    "mid":   "Mid term (6-12 mo)",
+    "long":  "Long term (1-3 yr)",
+}
+HORIZON_EMOJI = {
+    "+": "🟢",  # bullish
+    "-": "🔴",  # bearish
+    ".": "⚪",  # neutral / context-dependent
+}
+
+
+def get_theme_impact(theme: str, ticker: str) -> dict | None:
+    """Look up the time-horizon impact for (theme, ticker)."""
+    return INDIAN_THEME_IMPACT.get((theme, ticker))
+
+
+def format_theme_impact_block(
+    theme: str, ticker: str, article_sentiment: str | None = None
+) -> str:
+    """
+    Build the per-(theme, ticker) time-horizon impact block.
+    Renders as: Short term / Mid term / Long term with direction
+    emoji and one-line explanation.
+    """
+    impact = get_theme_impact(theme, ticker)
+    if not impact:
+        return ""
+    lines = []
+    for horizon in ("short", "mid", "long"):
+        direction, explanation = impact[horizon]
+        emoji = HORIZON_EMOJI[direction]
+        label = HORIZON_LABELS[horizon]
+        # Use a stable direction label
+        dir_label = {"+": "positive", "-": "negative", ".": "neutral"}[direction]
+        lines.append(f"    {emoji} *{label}*: {dir_label} — {explanation}")
+    return "\n".join(lines)
+
+
 @dataclass
 class IndianThemeHit:
     """One Indian-theme match for the article."""
@@ -676,17 +891,35 @@ def detect_indian_themes(title: str, description: str) -> list[IndianThemeHit]:
     return hits
 
 
-def format_indian_theme_block(hits: list[IndianThemeHit]) -> str:
+def format_indian_theme_block(
+    hits: list[IndianThemeHit],
+    article_title: str = "",
+    article_desc: str = "",
+) -> str:
     """
     Build the "Indian context" block shown in the alert message.
     Returns an empty string if no themes were detected.
+
+    For each theme, shows:
+      - the theme name and which tickers it affects
+      - per-ticker time-horizon impact (Short / Mid / Long)
+        with direction (positive/negative/neutral) and a one-line
+        explanation of WHY the effect happens over that horizon
     """
     if not hits:
         return ""
     lines = ["🇮🇳 *Indian context:*"]
     for h in hits:
-        tickers = ", ".join(f"*{t}*" for t in h.affected_tickers) or "all"
+        tickers_str = ", ".join(f"*{t}*" for t in h.affected_tickers) or "all"
         sigs = ", ".join(f"`{s}`" for s in h.signals_matched[:3])
         lines.append(f"  • {h.theme_name} (matched: {sigs})")
-        lines.append(f"    Affects: {tickers}")
+        lines.append(f"    Affects: {tickers_str}")
+        # For each affected ticker, show the time-horizon impact
+        for tkr in h.affected_tickers:
+            impact_block = format_theme_impact_block(
+                h.theme, tkr,
+            )
+            if impact_block:
+                lines.append(f"    📊 *{tkr}* over time:")
+                lines.append(impact_block)
     return "\n".join(lines)
