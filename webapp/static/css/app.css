@@ -1275,6 +1275,71 @@ body.modal-open { overflow: hidden; }
 .alert-log-table td { padding: 6px 8px; }
 .alert-log-table tbody tr { border-top: 1px solid var(--c-border); }
 
+/* ============================================================
+   Shareholding pattern section (portfolio.html)
+   ============================================================ */
+.shp-table { width: 100%; }
+.shp-table thead th {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-fg-muted);
+  font-weight: 600;
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 2px solid var(--c-border);
+}
+.shp-table tbody td {
+  padding: var(--s-3);
+  border-bottom: 1px solid var(--c-border);
+  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
+}
+.shp-row:hover { background: var(--c-bg-card); }
+.shp-ticker {
+  font-weight: 600;
+  color: var(--c-fg);
+  font-size: var(--fs-base);
+}
+.shp-cell strong { font-size: var(--fs-base); }
+.shp-promoter-yes {
+  color: var(--c-fg);
+}
+.shp-glossary {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: var(--s-2) var(--s-3);
+  background: var(--c-bg-card);
+}
+.shp-glossary summary {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+.shp-glossary summary:hover { color: var(--c-primary); }
+.shp-glossary-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--s-1) var(--s-3);
+  margin: var(--s-3) 0 0;
+  font-size: var(--fs-sm);
+}
+.shp-glossary-list dt {
+  font-weight: 600;
+  color: var(--c-fg);
+  font-family: var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace);
+}
+.shp-glossary-list dd {
+  margin: 0;
+  color: var(--c-fg-muted);
+}
+
+/* Mobile: tighten columns so table fits on small screens */
+@media (max-width: 640px) {
+  .shp-table thead th,
+  .shp-table tbody td { padding: var(--s-2); font-size: var(--fs-xs); }
+  .shp-table { min-width: 600px; }   /* let it scroll horizontally */
+}
+
 /* News digest preview block */
 .news-preview-body {
   background: var(--c-bg);

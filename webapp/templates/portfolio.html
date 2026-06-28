@@ -257,6 +257,105 @@
   {% endif %}
 </section>
 
+{# ----- Shareholding pattern snapshot (Trendlyne quarterly data) -----
+   Reads from data/shareholding_prev.json (updated daily by the
+   shareholding alert pipeline). Shows the latest quarter for each
+   of the user's 8 tickers, broken down by category. #}
+<section class="card mb-4" id="shareholding-section">
+  <div class="flex-between mb-3">
+    <h2 class="mb-0">Shareholding Pattern</h2>
+    <span class="text-muted text-sm">
+      {% if shareholding.row_count > 0 %}
+        Latest quarter: <strong>{{ shareholding.asof }}</strong>
+        · Data from <a href="/settings" class="text-sm">Settings → Shareholding Alerts</a>
+      {% else %}
+        No data yet — shareholding alert has not run for the first time.
+      {% endif %}
+    </span>
+  </div>
+
+  {% if shareholding.row_count > 0 %}
+    <div class="table-wrap">
+      <table class="shp-table">
+        <thead>
+          <tr>
+            <th>Stock</th>
+            <th class="text-right">Promoter</th>
+            <th class="text-right">FII</th>
+            <th class="text-right">DII</th>
+            <th class="text-right">Mutual Funds</th>
+            <th class="text-right">Banks</th>
+            <th class="text-right">Insurance</th>
+            <th class="text-right">Public</th>
+            <th class="text-right">Others</th>
+          </tr>
+        </thead>
+        <tbody>
+          {# Sort: Promoter % descending (most promoter-held first) #}
+          {% set sorted_tickers = shareholding.tickers.values() | list | sort(attribute='promoter', reverse=true) %}
+          {% for r in sorted_tickers %}
+            <tr class="shp-row">
+              <td>
+                <div class="shp-ticker">{{ r.name }}</div>
+                <div class="text-muted text-xs">{{ r.quarter }}</div>
+              </td>
+              <td class="text-right shp-cell {% if r.promoter > 0 %}shp-promoter-yes{% endif %}">
+                <strong>{{ "%.2f"|format(r.promoter) }}%</strong>
+                {% if r.promoter_pledged and r.promoter_pledged > 0 %}
+                  <div class="text-muted text-xs"
+                       title="Shares pledged by promoter">
+                    pledged {{ "%.2f"|format(r.promoter_pledged) }}%
+                  </div>
+                {% endif %}
+              </td>
+              <td class="text-right">{{ "%.2f"|format(r.fii) }}%</td>
+              <td class="text-right">{{ "%.2f"|format(r.dii) }}%</td>
+              <td class="text-right">{{ "%.2f"|format(r.mutual_funds) }}%</td>
+              <td class="text-right">{{ "%.2f"|format(r.banks) }}%</td>
+              <td class="text-right">{{ "%.2f"|format(r.insurance) }}%</td>
+              <td class="text-right">{{ "%.2f"|format(r.public) }}%</td>
+              <td class="text-right">{{ "%.2f"|format(r.others) }}%</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# Inline glossary for non-experts #}
+    <details class="shp-glossary mt-3">
+      <summary class="text-sm text-muted">What do these terms mean?</summary>
+      <dl class="shp-glossary-list">
+        <dt>Promoter</dt>
+        <dd>The people/entities who founded or control the company
+            (e.g. the Ambani family for Reliance). 0% means the company
+            is "professionally managed" with no single controlling owner.</dd>
+        <dt>FII</dt>
+        <dd>Foreign Institutional Investors — overseas funds (BlackRock,
+            Vanguard, Norwegian sovereign wealth fund, etc.) that hold
+            Indian shares.</dd>
+        <dt>DII</dt>
+        <dd>Domestic Institutional Investors — Indian institutions like
+            mutual funds, banks, insurance companies. (DII = MF + Banks
+            + Insurance + Other DI.)</dd>
+        <dt>Mutual Funds</dt>
+        <dd>Indian mutual fund schemes that hold this stock.</dd>
+        <dt>Banks</dt>
+        <dd>Indian banks holding this stock.</dd>
+        <dt>Insurance</dt>
+        <dd>Indian insurance companies (LIC, etc.) holding this stock.</dd>
+        <dt>Public</dt>
+        <dd>Retail investors and other non-institutional holders.</dd>
+        <dt>Others</dt>
+        <dd>Trusts, ESOPs, foreign bodies corporate, etc. that don't
+            fit the above buckets.</dd>
+        <dt>Pledged</dt>
+        <dd>Shares the promoter has pledged as collateral for a loan.
+            High pledged % is a red flag (risk of forced selling).</dd>
+      </dl>
+    </details>
+  {% endif %}
+</section>
+
 <div class="grid grid-2">
   {# ----- Equity holdings ----- #}
   <section class="card">

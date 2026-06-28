@@ -31,3 +31,4 @@ logs/
 # User portfolio lists (real holdings — never commit)
 mfs.json
 sgbs.json
+runs/

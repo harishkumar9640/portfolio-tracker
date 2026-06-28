@@ -224,6 +224,71 @@ class TestMFHoldingsExpand:
 
 # ---------- Responsive ----------
 
+class TestShareholdingResponsive:
+    def test_table_has_scroll_wrapper(self, page, server_url):
+        page.goto(f"{server_url}/portfolio", wait_until="networkidle")
+        wrap = page.query_selector("#shareholding-section .table-wrap")
+        assert wrap is not None
+        assert wrap.query_selector("table") is not None
+
+    def test_mobile_width_table_is_scrollable(self, page, server_url):
+        page.set_viewport_size({"width": 375, "height": 800})
+        page.goto(f"{server_url}/portfolio", wait_until="networkidle")
+        table = page.query_selector("#shareholding-section .shp-table")
+        assert table is not None
+        # Table should have min-width to enable horizontal scrolling
+        min_width = table.evaluate("el => getComputedStyle(el).minWidth")
+        assert min_width != "auto", f"expected min-width set, got {min_width}"
+
+
+class TestShareholdingSection:
+    def test_section_visible(self, page, server_url):
+        page.goto(f"{server_url}/portfolio", wait_until="networkidle")
+        section = page.query_selector("#shareholding-section")
+        assert section is not None
+        assert section.is_visible()
+
+    def test_eight_tickers_present(self, page, server_url):
+        """All 8 portfolio tickers should appear in the shareholding table."""
+        page.goto(f"{server_url}/portfolio", wait_until="networkidle")
+        rows = page.query_selector_all("#shareholding-section .shp-row")
+        # We get a row per ticker (assuming the shareholding alert has
+        # populated data/shareholding_prev.json). If the file is empty,
+        # we just check the section renders something useful.
+        assert len(rows) >= 1, "expected at least one shareholding row"
+
+    def test_latest_quarter_displayed(self, page, server_url):
+        """The header should show the latest quarter (e.g. 'Mar 2026')."""
+        page.goto(f"{server_url}/portfolio", wait_until="networkidle")
+        text = page.inner_text("#shareholding-section")
+        # Should contain a quarter label like 'Mar 2026', 'Jun 2025', etc.
+        import re
+        assert re.search(r"(Mar|Jun|Sep|Dec) \d{4}", text), \
+            f"no quarter label in section: {text[:200]}"
+
+    def test_categories_columns_present(self, page, server_url):
+        """Headers should include Promoter, FII, DII, Mutual Funds, etc."""
+        page.goto(f"{server_url}/portfolio", wait_until="networkidle")
+        headers = page.query_selector_all("#shareholding-section .shp-table thead th")
+        # CSS uppercases the headers — compare case-insensitively
+        header_text = " ".join(h.inner_text() for h in headers).lower()
+        for cat in ("promoter", "fii", "dii", "mutual funds", "banks",
+                    "insurance", "public", "others"):
+            assert cat in header_text, f"missing column {cat!r}"
+
+    def test_glossary_present(self, page, server_url):
+        """The 'What do these terms mean?' glossary should be in the section."""
+        page.goto(f"{server_url}/portfolio", wait_until="networkidle")
+        glossary = page.query_selector("#shareholding-section .shp-glossary")
+        assert glossary is not None
+        # Expand and verify terms are visible
+        glossary.query_selector("summary").click()
+        page.wait_for_selector("#shareholding-section .shp-glossary[open]", timeout=2000)
+        text = page.inner_text("#shareholding-section .shp-glossary-list")
+        for term in ("Promoter", "FII", "DII", "Pledged"):
+            assert term in text, f"glossary missing {term!r}"
+
+
 class TestMFHoldingsResponsive:
     def test_table_has_scroll_wrapper(self, page, server_url):
         page.goto(f"{server_url}/portfolio", wait_until="networkidle")

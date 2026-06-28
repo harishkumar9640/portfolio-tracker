@@ -75,6 +75,46 @@ def _ctx(**extra) -> dict:
     return base
 
 
+# ---------- Shareholding helper for portfolio page ----------
+# We don't want /portfolio to make Trendlyne network calls (it's already
+# slow enough on cold cache). Instead we read from the persisted
+# data/shareholding_prev.json — which is updated daily by the shareholding
+# alert pipeline. If the file is missing or empty, we return an empty dict
+# and the UI shows a "No data" placeholder.
+def _get_shareholding_for_portfolio() -> dict:
+    from shareholding_alert import PREV_FILE
+    if not PREV_FILE.exists():
+        return {"asof": None, "tickers": {}, "row_count": 0}
+    try:
+        data = json.loads(PREV_FILE.read_text())
+    except (json.JSONDecodeError, OSError):
+        return {"asof": None, "tickers": {}, "row_count": 0}
+    out = {}
+    latest_quarter = None
+    for tkr, payload in data.items():
+        quarters = payload.get("quarters") or []
+        if not quarters:
+            continue
+        latest = quarters[0]
+        if not latest_quarter or latest.get("quarter") > latest_quarter:
+            latest_quarter = latest.get("quarter")
+        out[tkr] = {
+            "name": payload.get("name", tkr),
+            "url": payload.get("url"),
+            "quarter": latest.get("quarter"),
+            "promoter": latest.get("promoter", 0.0),
+            "promoter_pledged": latest.get("promoter_pledged", 0.0),
+            "fii": latest.get("fii", 0.0),
+            "dii": latest.get("dii", 0.0),
+            "mutual_funds": latest.get("mutual_funds", 0.0),
+            "banks": latest.get("banks", 0.0),
+            "insurance": latest.get("insurance", 0.0),
+            "public": latest.get("public", 0.0),
+            "others": latest.get("others", 0.0),
+        }
+    return {"asof": latest_quarter, "tickers": out, "row_count": len(out)}
+
+
 # ---------- Pages ----------
 @app.get("/", response_class=RedirectResponse)
 def root() -> str:
@@ -90,6 +130,7 @@ def portfolio_page(request: Request) -> HTMLResponse:
     """
     snap = get_portfolio_snapshot()
     mf_holdings = get_mf_holdings_snapshot()
+    shareholding = _get_shareholding_for_portfolio()
     return templates.TemplateResponse(
         request,
         "portfolio.html",
@@ -98,6 +139,7 @@ def portfolio_page(request: Request) -> HTMLResponse:
             page_title="Portfolio — Today",
             snapshot=snap,
             mf_holdings=mf_holdings,
+            shareholding=shareholding,
         ),
     )
 
