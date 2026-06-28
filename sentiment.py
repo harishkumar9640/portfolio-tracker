@@ -492,3 +492,201 @@ def format_analysis_block(sent: SentimentResult, ticker: str) -> str:
     lines.append(format_sentiment_line(sent))
     lines.append(f"   Analysis: {sent.key_reason}")
     return "\n".join(lines)
+
+
+# ============================================================
+# Indian-context themes (monsoon, local politics, festivals,
+# regulatory). Run BEFORE the per-ticker classifier so we can
+# surface context like "monsoon onset impacts FMCG & cement"
+# in the alert message.
+# ============================================================
+
+# A signal is a keyword/phrase that maps to one of these themes.
+# Each theme has a list of tickers it impacts and the direction
+# (mostly neutral on theme alone; the per-ticker table handles
+# ticker-specific direction).
+INDIAN_THEMES: dict[str, dict] = {
+    "monsoon": {
+        "name": "Monsoon / Rainfall",
+        "description": "India's southwest monsoon (Jun-Sep) drives rural "
+                       "demand, kharif sowing, and reservoir levels. "
+                       "Deficient monsoons hurt FMCG, cement, and two-wheelers; "
+                       "above-normal monsoons boost them.",
+        "signals": [
+            "monsoon", "rainfall", "deficient monsoon", "below normal monsoon",
+            "above normal monsoon", "excess rainfall", "drought",
+            "kharif sowing", "kharif season", "reservoir level",
+            "imd", "met department", "weather department",
+            "monsoon forecast", "monsoon onset", "monsoon withdrawal",
+        ],
+        "affected_tickers": ["ITC", "BALRAMCHIN", "KNRCON"],
+        "context": "Monsoon onset/progress impacts rural demand, agri output, "
+                   "and construction activity",
+    },
+    "local_politics": {
+        "name": "State / Local Politics",
+        "description": "State elections, coalition changes, and state-level "
+                       "policy affect mining, alcohol/tobacco taxation, "
+                       "real estate approvals, and PSU contracts.",
+        "signals": [
+            "state election", "state government", "coalition government",
+            "state budget", "state cabinet", "chief minister",
+            "assembly election", "lok sabha election", "general election",
+            "by-election", "byelection", "by poll", "bypoll",
+            "political instability", "no-confidence motion", "trust vote",
+            "rajya sabha", "lok sabha", "bill passed", "ordinance",
+            "president rule", "governor's rule",
+            "delhi", "mumbai", "karnataka", "tamil nadu", "west bengal",
+            "uttar pradesh", "maharashtra", "gujarat", "rajasthan",
+            "andhra pradesh", "telangana", "kerala", "punjab",
+        ],
+        "affected_tickers": ["BANKBARODA", "KNRCON", "IRCON", "ITC"],
+        "context": "State-level political changes can affect PSUs, "
+                   "infrastructure, and FMCG (state taxes)",
+    },
+    "festival_wedding": {
+        "name": "Festivals & Wedding Season",
+        "description": "Diwali, Dhanteras, Akshaya Tritiya, and the "
+                       "Oct-Jan wedding season drive gold, jewellery, "
+                       "consumer durables, and discretionary spending.",
+        "signals": [
+            "diwali", "dhanteras", "akshaya tritiya", "karva chauth",
+            "navratri", "dussehra", "holi", "ganesh chaturthi",
+            "wedding season", "marriage season", "festive season",
+            "festive demand", "festive sales", "festive buying",
+            "wedding demand", "wedding jewellery",
+        ],
+        "affected_tickers": ["ITC"],
+        "context": "Festive/wedding seasons boost consumer spending "
+                   "(FMCG, gold, durables) and rural income",
+    },
+    "rbi_policy": {
+        "name": "RBI / SEBI / Government Policy",
+        "description": "RBI rate decisions, SEBI rules, FII/DII flows, "
+                       "and GST council decisions move all stocks.",
+        "signals": [
+            "rbi policy", "rbi governor", "rbi rate", "repo rate",
+            "reverse repo", "msf rate", "crr", "slr", "monetary policy committee",
+            "fpi flows", "fii flows", "dii flows",
+            "sebi", "sebi board", "sebi chairman", "sebi circular",
+            "gst council", "gst rate", "gst hike", "gst cut",
+            "budget 2024", "budget 2025", "budget 2026", "union budget",
+            "finance bill", "finance minister", "nirmala sitharaman",
+            "policy stance", "monetary policy", "laf", "msf",
+        ],
+        "affected_tickers": ["BANKBARODA", "JIOFIN", "RELIANCE", "ITC"],
+        "context": "RBI policy + FII flows + GST = broad market impact",
+    },
+    "commodity_prices": {
+        "name": "Commodity Prices",
+        "description": "Brent crude, gold, silver, copper, steel, cement, "
+                       "and coal prices directly impact input costs or "
+                       "realisations of specific stocks.",
+        "signals": [
+            "crude oil", "brent", "wti", "opec",
+            "gold price", "silver price", "bullion",
+            "copper price", "aluminium price", "zinc price",
+            "steel price", "iron ore", "coking coal", "thermal coal",
+            "cement price", " clinker",
+            "natural gas", "lng", "lng price", "gas price",
+            "palm oil", "soybean oil", "edible oil",
+            "sugar price", "wheat price", "rice price", "wheat", "rice",
+        ],
+        "affected_tickers": ["RELIANCE", "BALRAMCHIN", "KNRCON"],
+        "context": "Commodity prices feed into input costs or top-line revenue",
+    },
+    "global_supply_chain": {
+        "name": "Global Supply Chain / Trade",
+        "description": "Container rates, China slowdown, semiconductor "
+                       "shortages, and global trade tensions affect "
+                       "export-oriented sectors.",
+        "signals": [
+            "container rate", "shipping rate", "freight rate", "container shortage",
+            "china slowdown", "china demand", "china export",
+            "semiconductor", "chip shortage", "chip supply",
+            "taiwan", "south korea export", "global trade",
+            "trade war", "tariff hike", "tariff cut", "import duty",
+            "export ban", "export duty", "anti-dumping",
+            "red sea", "suez canal", "shipping disruption",
+        ],
+        "affected_tickers": ["RELIANCE", "KNRCON"],
+        "context": "Supply chain shocks hit input costs and export demand",
+    },
+}
+
+
+@dataclass
+class IndianThemeHit:
+    """One Indian-theme match for the article."""
+    theme: str           # key into INDIAN_THEMES
+    theme_name: str      # human label
+    signals_matched: list[str]
+    affected_tickers: list[str]
+
+
+def detect_indian_themes(title: str, description: str) -> list[IndianThemeHit]:
+    """
+    Detect Indian-context themes in the article (monsoon, local
+    politics, festivals, RBI policy, commodity prices, supply chain).
+    Returns a list of matched themes with the tickers they affect.
+    """
+    text_lower = (title + " " + description).lower()
+    text_words_list = re.sub(r"\s+", " ", re.sub(r"[^a-z0-9\s]", " ", text_lower)).split()
+    text_words = set(text_words_list)
+
+    def _adjacent_match(signal: str) -> bool:
+        sig_words = [w for w in re.findall(r"[a-z]+", signal) if w]
+        if not sig_words or not text_words_list:
+            return False
+        if len(sig_words) == 1:
+            if len(sig_words[0]) < 4:
+                return False
+            return sig_words[0] in text_words
+        positions = []
+        last_pos = -1
+        n = len(text_words_list)
+        for sw in sig_words:
+            found = False
+            for i in range(max(last_pos + 1, 0), n):
+                if text_words_list[i] == sw:
+                    positions.append(i)
+                    last_pos = i
+                    found = True
+                    break
+            if not found:
+                return False
+        # Multi-word signals need adjacency (<= 3 words apart)
+        for i in range(1, len(positions)):
+            if positions[i] - positions[i-1] > 3:
+                return False
+        return True
+
+    hits: list[IndianThemeHit] = []
+    for theme_key, theme in INDIAN_THEMES.items():
+        matched_signals = [
+            s for s in theme["signals"] if _adjacent_match(s)
+        ]
+        if matched_signals:
+            hits.append(IndianThemeHit(
+                theme=theme_key,
+                theme_name=theme["name"],
+                signals_matched=matched_signals,
+                affected_tickers=list(theme.get("affected_tickers", [])),
+            ))
+    return hits
+
+
+def format_indian_theme_block(hits: list[IndianThemeHit]) -> str:
+    """
+    Build the "Indian context" block shown in the alert message.
+    Returns an empty string if no themes were detected.
+    """
+    if not hits:
+        return ""
+    lines = ["🇮🇳 *Indian context:*"]
+    for h in hits:
+        tickers = ", ".join(f"*{t}*" for t in h.affected_tickers) or "all"
+        sigs = ", ".join(f"`{s}`" for s in h.signals_matched[:3])
+        lines.append(f"  • {h.theme_name} (matched: {sigs})")
+        lines.append(f"    Affects: {tickers}")
+    return "\n".join(lines)

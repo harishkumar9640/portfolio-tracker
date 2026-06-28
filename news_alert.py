@@ -129,6 +129,28 @@ NEWS_FEEDS: list[dict] = [
 
     # WHO outbreak news
     {"name": "WHO Outbreaks", "url": "https://www.who.int/feeds/entity/csr/disease-outbreak-news/rss.xml", "category": "pandemic"},
+
+    # ----------------------------------------------------------------
+    # Indian-context feeds (monsoon, local politics, festivals, RBI,
+    # government policy, commodities, supply chain).
+    # These are pinned to "economic" since their ticker-specific
+    # direction depends on context (e.g. "monsoon" is bullish for
+    # ITC rural demand but bearish for BALRAMCHIN if it disrupts
+    # cane harvest). The portfolio_impact scanner applies per-ticker
+    # sentiment for the actual direction.
+    # ----------------------------------------------------------------
+    {"name": "PIB India",          "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3", "category": "economic"},
+    {"name": "MoneyControl Economy","url": "https://www.moneycontrol.com/rss/economy.xml", "category": "economic"},
+    {"name": "MoneyControl Markets","url": "https://www.moneycontrol.com/rss/marketreports.xml", "category": "economic"},
+    {"name": "Business Standard Economy", "url": "https://www.business-standard.com/rss/economy-105.rss", "category": "economic"},
+    {"name": "Business Standard Finance", "url": "https://www.business-standard.com/rss/finance-103.rss", "category": "economic"},
+    {"name": "LiveMint Politics",  "url": "https://www.livemint.com/rss/politics", "category": "geopolitical"},
+    {"name": "LiveMint Companies", "url": "https://www.livemint.com/rss/companies", "category": "economic"},
+    {"name": "Hindu BusinessLine", "url": "https://www.thehindubusinessline.com/?service=rss", "category": "economic"},
+    {"name": "NDTV Top Stories",   "url": "https://feeds.feedburner.com/NDTV-LatestNews", "category": "geopolitical"},
+    {"name": "Times of India India","url": "https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms", "category": "geopolitical"},
+    {"name": "Indian Express",     "url": "https://indianexpress.com/section/india/feed/", "category": "geopolitical"},
+    {"name": "The Hindu National", "url": "https://www.thehindu.com/news/national/feeder/default.rss", "category": "geopolitical"},
 ]
 
 # Category keywords for matching articles from general-purpose feeds.

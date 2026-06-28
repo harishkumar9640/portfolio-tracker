@@ -361,6 +361,12 @@ def _render_impact_alert(
                      f"({sent.confidence} confidence, score {sent.net_score:+d})")
         lines.append(f"    Analysis: {sent.key_reason}")
     lines.append("")
+    # Indian-context themes (monsoon, local politics, festivals, etc.)
+    from sentiment import detect_indian_themes, format_indian_theme_block
+    theme_hits = detect_indian_themes(article.title, article.description)
+    if theme_hits:
+        lines.append(format_indian_theme_block(theme_hits))
+        lines.append("")
     lines.append("— Portfolio Tracker • portfolio_impact.py")
     return "\n".join(lines)
 
@@ -400,6 +406,12 @@ def _render_generic_alert(article, tickers: list[str]) -> str:
                      f" ({sent.confidence}, score {sent.net_score:+d})"
                      f" — {sent.key_reason}")
     lines.append("")
+    # Indian-context themes (always shown for generic alerts)
+    from sentiment import detect_indian_themes, format_indian_theme_block
+    theme_hits = detect_indian_themes(article.title, article.description)
+    if theme_hits:
+        lines.append(format_indian_theme_block(theme_hits))
+        lines.append("")
     cat_pretty = cat.replace("_", " ")
     lines.append(f"_This is a market-wide {cat_pretty} move; review your"
                  " sector exposure for second-order effects._")
@@ -517,14 +529,24 @@ def scan_once(send: bool = True, min_score: int = 4) -> dict:
                 log.warning("telegram send failed for %s: %s",
                             article.url, result.get("error"))
         # Always log to file even if not sent (so we have a record)
-        # Compute sentiment for each affected ticker for the log
-        from sentiment import analyze_sentiment_for_ticker
+        # Compute sentiment + Indian themes for each affected ticker for the log
+        from sentiment import analyze_sentiment_for_ticker, detect_indian_themes
         sentiment_log = {}
         for t, _, _ in impacts:
             s = analyze_sentiment_for_ticker(
                 article.title, article.description, t
             )
             sentiment_log[t] = s.to_dict()
+        theme_hits_log = detect_indian_themes(article.title, article.description)
+        themes_log = [
+            {
+                "theme": th.theme,
+                "name": th.theme_name,
+                "signals": th.signals_matched,
+                "affected_tickers": th.affected_tickers,
+            }
+            for th in theme_hits_log
+        ]
         _append_log({
             "ran_at": ran_at,
             "url": article.url,
@@ -533,6 +555,7 @@ def scan_once(send: bool = True, min_score: int = 4) -> dict:
             "impacts": [{"ticker": t, "score": s, "reason": r}
                         for t, s, r in impacts],
             "sentiment": sentiment_log,
+            "indian_themes": themes_log,
             "is_generic_only": is_generic_only,
             "telegram_sent": send,
         })

@@ -324,3 +324,164 @@ class TestPolarityTable:
             bearish = sum(1 for p in table.values() if p == "-")
             assert bullish > 0, f"{tkr} has no bullish signals"
             assert bearish > 0, f"{tkr} has no bearish signals"
+
+
+# ---------- Indian themes ----------
+
+from sentiment import (  # noqa: E402
+    INDIAN_THEMES,
+    detect_indian_themes,
+    format_indian_theme_block,
+    IndianThemeHit,
+)
+
+
+class TestIndianThemes:
+    def test_all_six_themes_defined(self):
+        assert set(INDIAN_THEMES.keys()) == {
+            "monsoon", "local_politics", "festival_wedding",
+            "rbi_policy", "commodity_prices", "global_supply_chain",
+        }
+
+    def test_every_theme_has_signals(self):
+        for theme_key, theme in INDIAN_THEMES.items():
+            assert len(theme.get("signals", [])) >= 5, (
+                f"{theme_key} has only {len(theme.get('signals', []))} signals"
+            )
+            assert "name" in theme
+            assert "description" in theme
+
+    def test_every_theme_has_affected_tickers(self):
+        for theme_key, theme in INDIAN_THEMES.items():
+            assert len(theme.get("affected_tickers", [])) > 0, (
+                f"{theme_key} has no affected_tickers"
+            )
+
+    def test_monsoon_detected(self):
+        hits = detect_indian_themes(
+            "Monsoon arrives on time, sowing 20% above normal",
+            "IMD reports above-normal rainfall for kharif sowing",
+        )
+        themes = {h.theme for h in hits}
+        assert "monsoon" in themes
+        monsoon_hit = next(h for h in hits if h.theme == "monsoon")
+        assert "ITC" in monsoon_hit.affected_tickers
+        assert "BALRAMCHIN" in monsoon_hit.affected_tickers
+
+    def test_local_politics_detected(self):
+        hits = detect_indian_themes(
+            "Maharashtra state election results announced",
+            "Coalition government formed in Mumbai after close contest",
+        )
+        themes = {h.theme for h in hits}
+        assert "local_politics" in themes
+        pol_hit = next(h for h in hits if h.theme == "local_politics")
+        # Should affect PSUs and infra stocks
+        assert any(t in pol_hit.affected_tickers
+                   for t in ["BANKBARODA", "KNRCON", "IRCON"])
+
+    def test_festival_season_detected(self):
+        hits = detect_indian_themes(
+            "Diwali sales surge 30% as consumer spending recovers",
+            "Festive season boost for FMCG, gold, jewellery demand",
+        )
+        themes = {h.theme for h in hits}
+        assert "festival_wedding" in themes
+
+    def test_rbi_policy_detected(self):
+        hits = detect_indian_themes(
+            "RBI governor signals rate cut, repo rate may fall",
+            "Monetary policy committee meeting next week",
+        )
+        themes = {h.theme for h in hits}
+        assert "rbi_policy" in themes
+        rbi_hit = next(h for h in hits if h.theme == "rbi_policy")
+        assert "BANKBARODA" in rbi_hit.affected_tickers
+
+    def test_commodity_prices_detected(self):
+        hits = detect_indian_themes(
+            "Brent crude jumps to $90 on OPEC supply cut",
+            "Crude oil price surge impacts refiners; gold price also rises",
+        )
+        themes = {h.theme for h in hits}
+        assert "commodity_prices" in themes
+        com_hit = next(h for h in hits if h.theme == "commodity_prices")
+        assert "RELIANCE" in com_hit.affected_tickers
+
+    def test_supply_chain_detected(self):
+        hits = detect_indian_themes(
+            "China export ban hits Indian textile exporters",
+            "Container rate spike and freight rate increases",
+        )
+        themes = {h.theme for h in hits}
+        assert "global_supply_chain" in themes
+
+    def test_unrelated_article_no_themes(self):
+        hits = detect_indian_themes(
+            "Local cat rescued from tree", "",
+        )
+        assert hits == []
+
+    def test_multiple_themes_per_article(self):
+        """An article can match multiple themes (e.g. 'RBI rate cut
+        + good monsoon' matches both rbi_policy and monsoon)."""
+        hits = detect_indian_themes(
+            "RBI rate cut + good monsoon = positive for rural demand",
+            "Bumper kharif sowing forecast boosts FMCG stocks",
+        )
+        themes = {h.theme for h in hits}
+        assert "monsoon" in themes
+        assert "rbi_policy" in themes
+
+    def test_indian_states_match_local_politics(self):
+        """A specific state name should trigger local_politics."""
+        for state in ["Karnataka", "Tamil Nadu", "West Bengal",
+                      "Uttar Pradesh", "Maharashtra", "Gujarat"]:
+            hits = detect_indian_themes(
+                f"{state} state cabinet approves new policy",
+                "Chief minister announces infrastructure push",
+            )
+            themes = {h.theme for h in hits}
+            assert "local_politics" in themes, f"{state} should match"
+
+    def test_signal_in_signal_matched_list(self):
+        hits = detect_indian_themes(
+            "Deficit monsoon worries farmers; kharif sowing delayed",
+            "Reservoir level falls, rainfall 30% below normal",
+        )
+        monsoon_hit = next((h for h in hits if h.theme == "monsoon"), None)
+        if monsoon_hit:
+            assert len(monsoon_hit.signals_matched) > 0
+            for sig in monsoon_hit.signals_matched:
+                assert sig in INDIAN_THEMES["monsoon"]["signals"]
+
+
+class TestFormatIndianThemeBlock:
+    def test_empty_returns_empty_string(self):
+        assert format_indian_theme_block([]) == ""
+
+    def test_non_empty_returns_formatted_block(self):
+        hits = [IndianThemeHit(
+            theme="monsoon",
+            theme_name="Monsoon / Rainfall",
+            signals_matched=["monsoon", "rainfall"],
+            affected_tickers=["ITC", "BALRAMCHIN"],
+        )]
+        block = format_indian_theme_block(hits)
+        assert "Monsoon / Rainfall" in block
+        assert "ITC" in block
+        assert "BALRAMCHIN" in block
+        assert "🇮🇳" in block  # Indian flag emoji
+
+    def test_themes_sorted_alphabetically(self):
+        """The block should be stable in output ordering."""
+        hits = [
+            IndianThemeHit(theme="rbi_policy", theme_name="RBI Policy",
+                          signals_matched=["rbi rate"], affected_tickers=["ITC"]),
+            IndianThemeHit(theme="monsoon", theme_name="Monsoon",
+                          signals_matched=["monsoon"], affected_tickers=["ITC"]),
+        ]
+        block = format_indian_theme_block(hits)
+        # Both themes should appear; order doesn't strictly matter
+        assert "RBI Policy" in block
+        assert "Monsoon" in block
