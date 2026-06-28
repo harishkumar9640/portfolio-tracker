@@ -12,6 +12,34 @@
 </header>
 
 <section class="card mb-4">
+  <h2 class="mb-2">🎯 Portfolio Impact Scanner</h2>
+  <p class="text-sm text-muted mb-3">
+    Every 30 minutes during market hours (9 AM – 3:30 PM IST) the scanner
+    pulls the latest news and cross-references each story against your 8
+    holdings. If a news item mentions one of your stocks by company name,
+    sector, or known risk driver (e.g. "crude oil" for RELIANCE,
+    "railway capex" for IRCON), you get a Telegram alert with the
+    affected ticker(s) and a "why this matters" explanation.
+  </p>
+
+  <div id="impact-alert-status" class="mb-3" aria-live="polite">
+    <p class="text-muted text-sm">Loading alert history…</p>
+  </div>
+
+  <div class="flex-gap-2 flex-wrap">
+    <button id="runImpactBtn" class="btn">Scan now (live mode)</button>
+    <button id="runImpactDryBtn" class="btn btn-secondary">Scan now (dry-run)</button>
+  </div>
+
+  <details class="mt-3">
+    <summary class="text-sm text-muted">Your portfolio exposure map</summary>
+    <div class="mt-2" id="impactExposureMap">
+      <p class="text-sm text-muted">Loading…</p>
+    </div>
+  </details>
+</section>
+
+<section class="card mb-4">
   <h2 class="mb-2">📊 Shareholding Pattern Alerts</h2>
   <p class="text-sm text-muted mb-3">
     Every day at 16:35 IST (right after the MF holdings check) the server
@@ -515,6 +543,114 @@ NEWS_DRY_RUN=0</pre>
     if (runBtn) runBtn.addEventListener("click", function () { runShp(false); });
     if (forceBtn) forceBtn.addEventListener("click", function () { runShp(true); });
     loadHistory();
+  })();
+
+  // Portfolio impact scanner: live alerts on news that affects your holdings
+  (function () {
+    var status = document.getElementById("impact-alert-status");
+    var runBtn = document.getElementById("runImpactBtn");
+    var dryBtn = document.getElementById("runImpactDryBtn");
+    var mapDiv = document.getElementById("impactExposureMap");
+    if (!status || !runBtn) return;
+
+    function fmtTime(iso) {
+      if (!iso) return "—";
+      try {
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return iso;
+        return d.toLocaleString();
+      } catch (e) { return iso; }
+    }
+
+    function renderLog(alerts) {
+      if (!alerts || !alerts.length) {
+        status.innerHTML = '<p class="text-muted text-sm">No impact alerts yet. Click "Scan now" to test.</p>';
+        return;
+      }
+      var rows = alerts.slice(0, 8).map(function (a) {
+        var sent = a.is_generic_only
+          ? '<span class="alert-result-unchanged">generic (all holdings)</span>'
+          : '<span class="alert-result-changed">specific</span>';
+        var ticks = (a.impacts || []).map(function (i) { return i.ticker; })
+                       .filter(function (v, i, arr) { return arr.indexOf(v) === i; })
+                       .slice(0, 3).join(", ");
+        var tickCell = a.is_generic_only ? "all 8" : ticks;
+        return '<tr>'
+          + '<td>' + fmtTime(a.ran_at) + '</td>'
+          + '<td>' + sent + '</td>'
+          + '<td>' + tickCell + '</td>'
+          + '<td>' + (a.title || "").substring(0, 80) + '</td>'
+          + '</tr>';
+      }).join("");
+      status.innerHTML =
+        '<table class="alert-log-table">'
+        + '<thead><tr>'
+        + '<th>When</th>'
+        + '<th>Type</th>'
+        + '<th>Tickers</th>'
+        + '<th>Headline</th>'
+        + '</tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>';
+    }
+
+    function loadLog() {
+      fetch("/api/portfolio_impact/log").then(function (r) {
+        return r.ok ? r.json() : { alerts: [] };
+      }).then(function (data) {
+        renderLog(data.alerts || []);
+      }).catch(function () {
+        status.innerHTML = '<p class="text-muted text-sm">Could not load impact log.</p>';
+      });
+    }
+
+    function runImpact(dryRun) {
+      var btn = dryRun ? dryBtn : runBtn;
+      btn.disabled = true;
+      var original = btn.textContent;
+      btn.textContent = "Scanning…";
+      fetch("/api/portfolio_impact/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dry_run: !!dryRun }),
+      }).then(function (r) {
+        return r.json();
+      }).then(function (data) {
+        btn.disabled = false;
+        btn.textContent = original;
+        loadLog();
+      }).catch(function () {
+        btn.disabled = false;
+        btn.textContent = original;
+        alert("Impact scan failed. Check the server log.");
+      });
+    }
+
+    function loadExposure() {
+      fetch("/api/portfolio_impact/exposure").then(function (r) {
+        return r.json();
+      }).then(function (data) {
+        var ex = data.exposure || {};
+        var keys = Object.keys(ex);
+        if (!keys.length) {
+          mapDiv.innerHTML = '<p class="text-sm text-muted">No exposure map.</p>';
+          return;
+        }
+        var html = keys.map(function (tkr) {
+          var info = ex[tkr];
+          var sectors = (info.sectors || []).slice(0, 4).join(", ");
+          return '<div class="impact-exposure-row">'
+            + '<strong>' + tkr + '</strong> — ' + (info.name || "") + '<br>'
+            + '<span class="impact-exposure-sectors">Sectors: ' + sectors + '</span>'
+            + '</div>';
+        }).join("");
+        mapDiv.innerHTML = html;
+      });
+    }
+
+    if (runBtn) runBtn.addEventListener("click", function () { runImpact(false); });
+    if (dryBtn) dryBtn.addEventListener("click", function () { runImpact(true); });
+    loadLog();
+    loadExposure();
   })();
 </script>
 

@@ -1275,6 +1275,15 @@ body.modal-open { overflow: hidden; }
 .alert-log-table td { padding: 6px 8px; }
 .alert-log-table tbody tr { border-top: 1px solid var(--c-border); }
 
+/* Portfolio exposure map (settings.html) */
+.impact-exposure-row {
+  margin-bottom: var(--s-2);
+}
+.impact-exposure-sectors {
+  color: var(--c-fg-muted);
+  font-size: var(--fs-xs);
+}
+
 /* ============================================================
    Shareholding pattern section (portfolio.html)
    ============================================================ */

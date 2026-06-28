@@ -384,6 +384,46 @@ def api_shareholding_snapshot() -> dict:
     return {"tickers": out}
 
 
+@app.post("/api/portfolio_impact/scan")
+def api_portfolio_impact_scan(payload: Optional[dict] = None) -> dict:
+    """
+    Manually trigger one portfolio-impact scan. Fetches latest news,
+    cross-references against your 8 holdings, and sends Telegram alerts
+    for any story that affects one of your stocks.
+
+    Body (JSON, optional):
+        {
+            "dry_run": true    # log the alerts instead of sending
+        }
+    """
+    from portfolio_impact import scan_once
+    dry_run = bool((payload or {}).get("dry_run", False))
+    return scan_once(send=not dry_run)
+
+
+@app.get("/api/portfolio_impact/log")
+def api_portfolio_impact_log() -> dict:
+    """Return the last 50 portfolio-impact alerts (most recent first)."""
+    from portfolio_impact import IMPACT_LOG_FILE
+    if not IMPACT_LOG_FILE.exists():
+        return {"alerts": []}
+    try:
+        log_data = json.loads(IMPACT_LOG_FILE.read_text())
+    except (json.JSONDecodeError, OSError):
+        log_data = []
+    return {"alerts": list(reversed(log_data[-50:]))}
+
+
+@app.get("/api/portfolio_impact/exposure")
+def api_portfolio_impact_exposure() -> dict:
+    """
+    Return the portfolio exposure map (ticker → sectors + risk drivers).
+    Useful for the UI / debugging.
+    """
+    from portfolio_impact import PORTFOLIO_EXPOSURE
+    return {"exposure": PORTFOLIO_EXPOSURE}
+
+
 @app.get("/api/news/preview")
 def api_news_preview() -> dict:
     """
@@ -579,6 +619,16 @@ def main() -> None:
             start_shp_scheduler()
         except Exception as e:
             log.warning("could not start shareholding_alert scheduler: %s", e)
+
+    # Start the portfolio-impact scanner (every 30 min during market hours).
+    # Cross-references news against your 8 holdings and sends Telegram
+    # alerts when a story affects one of your stocks.
+    if not os.environ.get("PORTFOLIO_IMPACT_DISABLED"):
+        try:
+            from portfolio_impact import start_daily_scheduler as start_impact_scheduler
+            start_impact_scheduler(interval_minutes=30)
+        except Exception as e:
+            log.warning("could not start portfolio_impact scheduler: %s", e)
 
     log.info("starting Portfolio Tracker on http://%s:%d", args.host, args.port)
     uvicorn.run(
