@@ -317,7 +317,14 @@ def _render_impact_alert(
     article,
     impacts: list[tuple[str, int, str]],
 ) -> str:
-    """Build the Telegram message for a portfolio-impact alert."""
+    """Build the Telegram message for a portfolio-impact alert.
+
+    Each affected ticker gets its own sentiment analysis (bullish /
+    bearish / neutral) with confidence and a one-line key reason.
+    """
+    from sentiment import (
+        analyze_sentiment_for_ticker, format_analysis_block,
+    )
     cat = article.category or "economic"
     emoji, cat_label = CATEGORY_EMOJI.get(cat, ("📰", cat))
     title = article.title[:160]
@@ -344,9 +351,15 @@ def _render_impact_alert(
         seen_tkrs.add(tkr)
         info = PORTFOLIO_EXPOSURE.get(tkr, {})
         name = info.get("name", tkr)
+        # Sentiment analysis (per-ticker)
+        sent = analyze_sentiment_for_ticker(article.title, article.description, tkr)
+        emoji_s = {"bullish": "🟢", "bearish": "🔴", "neutral": "⚪"}.get(sent.direction, "⚪")
         lines.append(f"  • *{tkr}* ({name})")
         lines.append(f"    Match strength: {score} pts")
         lines.append(f"    Reason: {reason}")
+        lines.append(f"    {emoji_s} *{sent.direction.upper()}* "
+                     f"({sent.confidence} confidence, score {sent.net_score:+d})")
+        lines.append(f"    Analysis: {sent.key_reason}")
     lines.append("")
     lines.append("— Portfolio Tracker • portfolio_impact.py")
     return "\n".join(lines)
@@ -356,8 +369,12 @@ def _render_generic_alert(article, tickers: list[str]) -> str:
     """
     Build a single Telegram message for a generic market-wide risk
     (e.g. "Fed raises rates"). Lists all tickers affected instead of
-    sending N separate alerts.
+    sending N separate alerts. Each ticker gets its own sentiment
+    analysis so the user can see which holdings are most at risk.
     """
+    from sentiment import (
+        analyze_sentiment_for_ticker, format_analysis_block,
+    )
     cat = article.category or "economic"
     emoji, cat_label = CATEGORY_EMOJI.get(cat, ("📰", cat))
     title = article.title[:160]
@@ -375,7 +392,13 @@ def _render_generic_alert(article, tickers: list[str]) -> str:
             lines.append(f"   _{desc}_")
     lines.append("")
     lines.append(f"📊 *Affects all {len(tickers)} of your holdings:*")
-    lines.append("   " + ", ".join(f"*{t}*" for t in tickers))
+    # Per-ticker sentiment (compact one-liner per ticker)
+    for tkr in tickers:
+        sent = analyze_sentiment_for_ticker(article.title, article.description, tkr)
+        emoji_s = {"bullish": "🟢", "bearish": "🔴", "neutral": "⚪"}.get(sent.direction, "⚪")
+        lines.append(f"  • *{tkr}* {emoji_s} {sent.direction.upper()}"
+                     f" ({sent.confidence}, score {sent.net_score:+d})"
+                     f" — {sent.key_reason}")
     lines.append("")
     cat_pretty = cat.replace("_", " ")
     lines.append(f"_This is a market-wide {cat_pretty} move; review your"
@@ -494,6 +517,14 @@ def scan_once(send: bool = True, min_score: int = 4) -> dict:
                 log.warning("telegram send failed for %s: %s",
                             article.url, result.get("error"))
         # Always log to file even if not sent (so we have a record)
+        # Compute sentiment for each affected ticker for the log
+        from sentiment import analyze_sentiment_for_ticker
+        sentiment_log = {}
+        for t, _, _ in impacts:
+            s = analyze_sentiment_for_ticker(
+                article.title, article.description, t
+            )
+            sentiment_log[t] = s.to_dict()
         _append_log({
             "ran_at": ran_at,
             "url": article.url,
@@ -501,6 +532,7 @@ def scan_once(send: bool = True, min_score: int = 4) -> dict:
             "category": article.category,
             "impacts": [{"ticker": t, "score": s, "reason": r}
                         for t, s, r in impacts],
+            "sentiment": sentiment_log,
             "is_generic_only": is_generic_only,
             "telegram_sent": send,
         })
