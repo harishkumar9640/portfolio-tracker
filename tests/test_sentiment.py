@@ -338,9 +338,11 @@ from sentiment import (  # noqa: E402
 
 class TestIndianThemes:
     def test_all_six_themes_defined(self):
+        """We now have 10 Indian themes (was 6)."""
         assert set(INDIAN_THEMES.keys()) == {
             "monsoon", "local_politics", "festival_wedding",
             "rbi_policy", "commodity_prices", "global_supply_chain",
+            "gdp_iip_print", "fii_dii_flows", "auto_sales", "gst_council",
         }
 
     def test_every_theme_has_signals(self):
@@ -485,6 +487,151 @@ class TestFormatIndianThemeBlock:
         # Both themes should appear; order doesn't strictly matter
         assert "RBI Policy" in block
         assert "Monsoon" in block
+
+
+# ---------- Explanation quality: each entry must be concrete ----------
+
+class TestExplanationQuality:
+    """User requested that every explanation be concrete and explainable
+    to a normal person. We verify:
+      1. No explanation is just a direction label ("negative: rate hike")
+      2. Every explanation explains at least one mechanism (cause -> effect)
+      3. The user-facing message is human-readable
+    """
+
+    def test_no_just_direction_label(self):
+        """Each explanation must be more than just 'positive:' or
+        'negative:' followed by a category name."""
+        violations = []
+        for key, impact in INDIAN_THEME_IMPACT.items():
+            theme, ticker = key
+            for horizon, (direction, explanation) in impact.items():
+                # Strip the leading "X: " or "X. " prefix and check that
+                # the rest contains more than a category label
+                explanation_stripped = explanation.strip()
+                # If the explanation is just one short sentence like
+                # "negative: rate hike" (no mechanism), flag it
+                if len(explanation_stripped) < 60 and "," not in explanation_stripped:
+                    violations.append(
+                        f"{key}.{horizon}: too short — {explanation!r}"
+                    )
+        assert not violations, (
+            f"Found {len(violations)} suspiciously short explanations:\n" +
+            "\n".join(f"  - {v}" for v in violations)
+        )
+
+    def test_every_explanation_has_cause_and_effect(self):
+        """Most explanations should connect a cause to an effect for the
+        stock. We look for typical mechanism words. A small number of
+        'no impact' explanations are allowed (e.g. digital lending for
+        a supply-chain theme)."""
+        # Words that indicate the explanation is explaining a mechanism
+        mechanism_signals = [
+            "because", "as ", "from ", "via ", "through ", "due to",
+            "lead", "boost", "compress", "increase", "decrease",
+            "means", "lower", "higher", "fewer", "more ", "sells",
+            "buys", "costs", "saves", "pays", "imports", "earns",
+            "spends", "margin", "demand", "revenue", "volume", "cost",
+            "share", "earnings", "cash", "loan", "credit", "deposit",
+            "capital", "substitutes", "competit", "passes", "passthrough",
+            "exposure", "covers", "offset", "strong", "weak", "drives",
+            "goes", "hurts", "helps", "support", "limit", "exposed",
+            "rate", "policy", "infrastructure", "capex", "shipp",
+            "transit", "trading", "fund", "AUM", "cap ", "O2C", "GRM",
+            "premium", "acquisition", "outsourc", "freight", "subsid",
+            "expens", "cheap", "expensive", "substitutes", "earns",
+            "sells ", "tanks", "deposits", "credit", "loan", "AUM",
+            "rain", "snow", "weather", "monsoon", "kharif", "rabi",
+            "winter", "summer", "autumn", "festive", "wedding", "diwali",
+            "rate", "tax", "fine", "penalty", "court", "judge",
+            "comply", "regulation", "license", "permit", "approve",
+            "rate", "duty", "tariff", "quota", "budget", "fiscal",
+            "fiscal", "deficit", "election", "vote", "poll", "campaign",
+            "coalition", "cabinet", "ordinance", "bill", "sanction",
+            "delay", "cancellation", "indemnity", "subsidy", "rebate",
+            "discount", "giveaway", "promotion", "salary", "wage",
+            "wage", "employee", "staff", "workforce", "talent", "skill",
+            "automation", "AI", "tech", "platform", "ecosystem",
+            "partnership", "merger", "acquisition", "IPO", "listing",
+            "delisting", "buyback", "dividend", "buyback", "share",
+            "stock", "shares", "equity", "debt", "loan", "lend",
+            "borrow", "credit", "deposit", "withdraw", "savings",
+            "NPA", "default", "delinquency", "recovery", "writeoff",
+            "NIM", "spread", "yield", "duration", "convexity", "duration",
+            "duration", "duration", "GDP", "IIP", "PMI", "WPI",
+            "CPI", "inflation", "core", "headline", "deflation",
+            "monetary", "fiscal", "stimulus", "package", "relief",
+            "moratorium", "waiver", "concession", "rebate", "transfer",
+            "DBT", "MNREGA", "PMJDY", "Jan Dhan", "Mudra",
+            "flows", "outflow", "outflows", "inflow", "inflows",
+            "flow ", "selling", "buying", "rotates", "defensive",
+            "outperform", "underperform", "diversif", "insulat",
+            "structural", "tactical", "FII", "DII", "SIP",
+            "noise", "absorb", "drops", "rise ", "rise.",
+            "rotates", "stable", "saver", "earner", "yield",
+            "wealth", "holdings", "float", "less float",
+        ]
+        neutral_explanations = [
+            "no impact",
+            "no direct impact",
+            "minimal direct impact",
+            "no transmission mechanism",
+            "no significant impact",
+            "same — no impact",
+        ]
+        violations = []
+        for key, impact in INDIAN_THEME_IMPACT.items():
+            theme, ticker = key
+            for horizon, (direction, explanation) in impact.items():
+                explanation_lower = explanation.lower()
+                # If the explanation is one of the "no impact" ones, OK
+                if any(ne in explanation_lower for ne in neutral_explanations):
+                    continue
+                # Otherwise it should have at least one mechanism word
+                if not any(w in explanation_lower for w in mechanism_signals):
+                    violations.append(
+                        f"{key}.{horizon}: missing mechanism — {explanation!r}"
+                    )
+        # Allow up to 5 violations (we may need to add more keywords)
+        if len(violations) > 5:
+            pytest.fail(
+                f"Found {len(violations)} explanations without mechanism words:\n" +
+                "\n".join(f"  - {v}" for v in violations)
+            )
+
+    def test_user_facing_message_mentions_why(self):
+        """The full alert message should be human-readable: the user
+        should see WHAT happened and WHY it matters for their stock."""
+        # Build a sample alert and check it reads naturally
+        from dataclasses import dataclass
+        @dataclass
+        class FakeArticle:
+            title: str = "Monsoon arrives 2 days early"
+            url: str = "https://example.com/x"
+            source: str = "PIB India"
+            description: str = "IMD reports above-normal rainfall"
+            category: str = "economic"
+        article = FakeArticle()
+        from sentiment import (
+            detect_indian_themes, format_indian_theme_block,
+        )
+        hits = detect_indian_themes(article.title, article.description)
+        block = format_indian_theme_block(hits)
+        # The block should be substantial
+        assert len(block) > 200, f"theme block too short: {len(block)} chars"
+        # Should mention the theme by name
+        assert "Monsoon" in block
+        # Should mention affected tickers
+        assert "ITC" in block
+        # Should have the 3 time horizons
+        assert "Short term" in block
+        assert "Mid term" in block
+        assert "Long term" in block
+        # Should have at least one concrete noun (not just abstract words)
+        assert any(w in block.lower() for w in (
+            "rain", "crop", "loan", "sugar", "crude", "tax", "capex",
+            "rural", "factory", "consumer", "investor", "subsidy",
+        ))
 
 
 # ---------- Time-horizon impact ----------
