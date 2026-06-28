@@ -167,40 +167,65 @@ class TestParsePubdate:
 # ---------- Classification ----------
 
 class TestClassify:
-    def test_fed_rates_keyword_match(self):
+    def test_interest_rate_keyword_match(self):
         a = Article(title="Fed cuts rates", url="", source="x", published=None)
-        assert _classify(a) == "fed_rates"
+        assert _classify(a) == "interest_rate"
 
-    def test_war_keyword_match(self):
+    def test_geopolitical_war_keyword_match(self):
         a = Article(title="Israel strikes Gaza",
                     url="", source="x", published=None,
                     description="military strikes")
-        assert _classify(a) == "war"
+        assert _classify(a) == "geopolitical"
 
     def test_pandemic_keyword_match(self):
         a = Article(title="WHO declares outbreak emergency",
                     url="", source="x", published=None)
         assert _classify(a) == "pandemic"
 
-    def test_disasters_keyword_match(self):
-        a = Article(title="Earthquake of magnitude 6.2 hits Philippines",
+    def test_exchange_rate_keyword_match(self):
+        a = Article(title="Rupee hits record low vs dollar",
                     url="", source="x", published=None)
-        assert _classify(a) == "disasters"
+        assert _classify(a) == "exchange_rate"
+
+    def test_purchasing_power_keyword_match(self):
+        a = Article(title="CPI inflation data shows price pressures rising",
+                    url="", source="x", published=None)
+        assert _classify(a) == "purchasing_power"
+
+    def test_market_risk_keyword_match(self):
+        a = Article(title="S&P 500 plunges 5% in broad market sell-off",
+                    url="", source="x", published=None)
+        assert _classify(a) == "market_risk"
 
     def test_economic_keyword_match(self):
-        a = Article(title="GDP growth slows amid inflation worries",
+        a = Article(title="GDP growth slows amid unemployment rise",
                     url="", source="x", published=None)
         assert _classify(a) == "economic"
 
-    def test_crisis_keyword_match(self):
-        a = Article(title="Banking crisis deepens as major bank fails",
+    def test_default_risk_keyword_match(self):
+        a = Article(title="Major airline files for bankruptcy",
                     url="", source="x", published=None)
-        assert _classify(a) == "crisis"
+        assert _classify(a) == "default_risk"
 
-    def test_political_keyword_match(self):
-        a = Article(title="PM resigns after no-confidence vote",
+    def test_liquidity_risk_keyword_match(self):
+        a = Article(title="Money market fund faces redemption pressure",
                     url="", source="x", published=None)
-        assert _classify(a) == "political"
+        assert _classify(a) == "liquidity_risk"
+
+    def test_financial_risk_keyword_match(self):
+        a = Article(title="Credit rating downgrade by Moody's on debt",
+                    url="", source="x", published=None)
+        assert _classify(a) == "financial_risk"
+
+    def test_business_risk_keyword_match(self):
+        a = Article(title="Tech firm issues profit warning after earnings miss",
+                    url="", source="x", published=None)
+        assert _classify(a) == "business_risk"
+
+    def test_management_risk_keyword_match(self):
+        a = Article(title="CEO resigns after accounting scandal",
+                    url="", source="x", published=None)
+        assert _classify(a) == "management_risk"
 
     def test_giraffe_returns_none(self):
         """Light human-interest story should be skipped (None category)."""
@@ -216,18 +241,20 @@ class TestClassify:
                     url="", source="BBC Business", published=None)
         assert _classify(a) == "economic"
 
-    def test_war_priority_over_political(self):
-        """A 'military strike' article should match 'war', not 'political'
-        (priority order matters)."""
-        a = Article(title="PM announces military strike on neighbour",
-                    url="", source="x", published=None)
-        # "military strike" hits war; "PM" hits political only with
-        # "prime minister" — so war wins
-        assert _classify(a) == "war"
+    def test_overlapping_article_only_counted_once(self):
+        """An article matching multiple categories should be assigned to
+        the FIRST matching one (priority order matters)."""
+        # 'inflation' + 'rate cut' could match both purchasing_power and
+        # interest_rate. We expect interest_rate to win (higher priority).
+        a = Article(
+            title="Fed signals rate cut as inflation eases",
+            url="", source="x", published=None,
+        )
+        assert _classify(a) == "interest_rate"
 
     def test_case_insensitive(self):
         a = Article(title="FED CUTS RATES", url="", source="x", published=None)
-        assert _classify(a) == "fed_rates"
+        assert _classify(a) == "interest_rate"
 
 
 # ---------- Filter fresh ----------
@@ -263,16 +290,16 @@ class TestCategoriseAndDedup:
                    published=datetime.now()),  # should be skipped
         ]
         buckets = _categorise_and_dedup(articles, seen={})
-        assert len(buckets["fed_rates"]) == 1
+        assert len(buckets["interest_rate"]) == 1
         assert len(buckets["pandemic"]) == 1
-        assert len(buckets["political"]) == 0  # giraffe filtered out
-        assert len(buckets["war"]) == 0
+        assert len(buckets["geopolitical"]) == 0  # giraffe filtered out
+        assert len(buckets["default_risk"]) == 0
 
     def test_dedups_against_seen_cache(self):
         a = Article(title="Fed cuts rates", url="https://fed",
                     source="x", published=datetime.now())
         buckets = _categorise_and_dedup([a], seen={"https://fed": "2026-01-01"})
-        assert len(buckets["fed_rates"]) == 0
+        assert len(buckets["interest_rate"]) == 0
 
     def test_caps_at_max_per_category(self):
         articles = [
@@ -281,7 +308,18 @@ class TestCategoriseAndDedup:
             for i in range(20)
         ]
         buckets = _categorise_and_dedup(articles, seen={})
-        assert len(buckets["fed_rates"]) == na.MAX_PER_CATEGORY
+        assert len(buckets["interest_rate"]) == na.MAX_PER_CATEGORY
+
+    def test_overlapping_article_assigned_to_first_match(self):
+        """An article that matches both interest_rate and purchasing_power
+        should land in interest_rate (higher priority)."""
+        a = Article(
+            title="Fed signals rate cut as inflation eases",
+            url="https://x", source="x", published=datetime.now(),
+        )
+        buckets = _categorise_and_dedup([a], seen={})
+        assert len(buckets["interest_rate"]) == 1
+        assert len(buckets["purchasing_power"]) == 0  # not duplicated
 
 
 # ---------- Render telegram ----------
@@ -299,20 +337,20 @@ class TestRenderTelegram:
 
     def test_renders_all_populated_categories(self):
         buckets = {c: [] for c in CATEGORY_DISPLAY}
-        buckets["war"].append(Article(
+        buckets["geopolitical"].append(Article(
             title="Israel strikes Gaza", url="https://war1",
-            source="x", published=datetime.now(), category="war",
+            source="x", published=datetime.now(), category="geopolitical",
         ))
-        buckets["fed_rates"].append(Article(
+        buckets["interest_rate"].append(Article(
             title="Fed cuts rates", url="https://fed1",
-            source="x", published=datetime.now(), category="fed_rates",
+            source="x", published=datetime.now(), category="interest_rate",
         ))
         msg = render_telegram(buckets, date_str="27 Jun 2026")
         assert msg is not None
         assert "Israel strikes Gaza" in msg
         assert "Fed cuts rates" in msg
-        assert "War & Conflict" in msg
-        assert "Central Bank" in msg
+        assert "Geopolitical" in msg or "War" in msg
+        assert "Interest Rate" in msg
 
     def test_titles_are_escaped_for_plain_text(self):
         """Article titles containing _, *, [, ] must not break Telegram's
@@ -320,10 +358,10 @@ class TestRenderTelegram:
         escape stray `_` chars to avoid unintended italic rendering.
         Note: Telegram renders _word_ as italic even in plain text."""
         buckets = {c: [] for c in CATEGORY_DISPLAY}
-        buckets["fed_rates"].append(Article(
+        buckets["interest_rate"].append(Article(
             title="RBI_repo_rate_hiked_to_[6.5%]_today",
             url="https://rbi", source="x", published=datetime.now(),
-            category="fed_rates",
+            category="interest_rate",
         ))
         msg = render_telegram(buckets, date_str="27 Jun 2026")
         assert msg is not None
@@ -335,9 +373,9 @@ class TestRenderTelegram:
 
     def test_message_includes_date_and_sources(self):
         buckets = {c: [] for c in CATEGORY_DISPLAY}
-        buckets["war"].append(Article(
+        buckets["geopolitical"].append(Article(
             title="Test war", url="https://w", source="x",
-            published=datetime.now(), category="war",
+            published=datetime.now(), category="geopolitical",
         ))
         msg = render_telegram(buckets, date_str="27 Jun 2026")
         assert "27 Jun 2026" in msg
@@ -470,14 +508,18 @@ class TestEdgeCases:
                    published=datetime.now()),
         ]
         buckets = _categorise_and_dedup(articles, seen={})
-        assert len(buckets["fed_rates"]) == 1
+        assert len(buckets["interest_rate"]) == 1
         assert len(buckets["pandemic"]) == 1
 
     def test_message_length_within_telegram_limit(self):
         """Even with a heavy news day, message should stay under 4096 chars."""
         buckets = {c: [] for c in CATEGORY_DISPLAY}
-        for cat in ["war", "fed_rates", "pandemic", "crisis",
-                    "economic", "political", "disasters"]:
+        # Use the new category names
+        cat_list = ["market_risk", "interest_rate", "purchasing_power",
+                    "exchange_rate", "default_risk", "liquidity_risk",
+                    "financial_risk", "business_risk", "management_risk",
+                    "geopolitical", "pandemic", "economic"]
+        for cat in cat_list:
             for i in range(na.MAX_PER_CATEGORY):
                 buckets[cat].append(Article(
                     title=f"Headline {i} for {cat}",

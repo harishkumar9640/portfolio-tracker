@@ -3,14 +3,24 @@ news_alert.py
 -------------
 Daily global news digest, sent to Telegram at 8:55 AM IST.
 
-Categories (each maps to your requested alert types):
-  🌍  economic      — recession, sovereign debt, banking crisis, GDP
-  ⚔️   war           — armed conflict, invasion, ceasefire, sanctions
-  🏦  fed_rates     — Fed / RBI / ECB / BoE / BoJ rate decisions, QT/QE
-  🦠  pandemic      — WHO outbreak news, epidemic, containment
-  📉  crisis        — financial crisis, market crash, default
-  🌋  disasters     — earthquakes (M5.5+), floods, cyclones, wildfires
-  🏛️  political    — elections, coups, treaties, resignations
+Categories (each maps to a risk type):
+  📊  market_risk      — stock market moves, volatility, bubbles
+  🏦  interest_rate    — central bank actions, yield curve, QT/QE
+  💸  purchasing_power — inflation, CPI, currency debasement
+  💱  exchange_rate    — dollar index, USD/INR, FX intervention
+  ⚔️  geopolitical     — war, political, sanctions, treaties
+  🏢  business_risk    — earnings misses, lawsuits, product recalls
+  📑  financial_risk    — leverage, debt, ratings, going concern
+  💥  default_risk      — bankruptcies, missed payments, sovereign default
+  💧  liquidity_risk    — trading halts, money-market freezes, bank runs
+  👔  management_risk   — CEO/CFO exits, fraud, governance
+  🦠  pandemic          — global health crises
+  🌍  economic          — general macro / economic news (catch-all)
+  🌋  natural_disaster  — earthquakes, floods, cyclones (GDACS only)
+
+Categories are checked in priority order; the FIRST match wins, so an
+article matching multiple categories appears only once. This avoids
+duplicate headlines for the same story.
 
 Sources (all free, no API key needed):
   RSS:
@@ -113,31 +123,51 @@ NEWS_FEEDS: list[dict] = [
     {"name": "FT World",    "url": "https://www.ft.com/world?format=rss",             "category": None},
     {"name": "FT Companies", "url": "https://www.ft.com/companies?format=rss",         "category": "economic"},
 
-    # Central banks — always relevant for fed_rates
-    {"name": "Fed Press",   "url": "https://www.federalreserve.gov/feeds/press_all.xml", "category": "fed_rates"},
-    {"name": "RBI Press",   "url": "https://www.rbi.org.in/scripts/BS_PressReleaseRSS.aspx", "category": "fed_rates"},
+    # Central banks — always relevant for interest rate risk
+    {"name": "Fed Press",   "url": "https://www.federalreserve.gov/feeds/press_all.xml", "category": "interest_rate"},
+    {"name": "RBI Press",   "url": "https://www.rbi.org.in/scripts/BS_PressReleaseRSS.aspx", "category": "interest_rate"},
 
     # WHO outbreak news
     {"name": "WHO Outbreaks", "url": "https://www.who.int/feeds/entity/csr/disease-outbreak-news/rss.xml", "category": "pandemic"},
 ]
 
-# Category keywords for matching articles from general-purpose feeds
-# (an article is "categorized" by whichever list its title hits first;
-# if no match, it gets dropped — keeps the digest focused)
-CATEGORY_KEYWORDS: dict[str, list[str]] = {
-    "war": [
-        "war ", "wars", "warfare", "invasion", "invades", "invaded",
-        "military strike", "airstrike", "air strike", "missile",
-        "ceasefire", "cease-fire", "truce",
-        "troops", "soldier", "frontline", "front line",
-        " israel", " gaza", "hamas", "hezbollah", "iran attack",
-        "russia-ukraine", "ukraine war", "russia ukraine",
-        "north korea", "taiwan strait", "south china sea",
-        "conflict", "armed conflict", "hostilities",
-        "nato ", "nuclear threat", "sanctions on", "weapon",
-    ],
-    "fed_rates": [
-        # Central bank names (with various word boundaries)
+# Category keywords for matching articles from general-purpose feeds.
+# Categories are listed in priority order — the FIRST matching category
+# wins, and overlapping articles are NOT duplicated across categories.
+#
+# Design (risk taxonomy: systematic + unsystematic):
+#   systematic risks (market-wide)
+#     - market_risk        broad market moves, volatility, bubbles
+#     - interest_rate      central bank actions, yield curve
+#     - purchasing_power   inflation, CPI, currency debasement
+#     - exchange_rate      dollar index, rupee, forex
+#     - geopolitical       war, political (already covered above)
+#   unsystematic risks (company-specific)
+#     - business_risk      earnings, lawsuits, product issues
+#     - financial_risk     debt, leverage, ratings
+#     - default_risk       defaults, bankruptcies, missed payments
+#     - liquidity_risk     trading halts, money market freezes
+#     - management_risk    CEO/CFO exits, fraud, governance
+#   other categories (covered separately)
+#     - pandemic           global health crises
+#     - natural_disaster   earthquakes, floods (GDACS handles this)
+CATEGORY_KEYWORDS: dict[str, list[str]] = [
+    # ---- Pandemic first (high specificity) ----
+    ("pandemic", [
+        "pandemic", "epidemic", "outbreak", "who declares",
+        "world health organization",
+        " virus", " viral", " infection", "infected",
+        "vaccine", "vaccination",
+        "covid", "monkeypox", "mpox", "ebola", "nipah",
+        "h5n1", "bird flu", "avian flu", "swine flu",
+        "cholera", "plague", "marburg", "lassa",
+        "quarantine", "containment", "public health emergency",
+        "global health emergency",
+    ]),
+
+    # ---- Interest rate risk ----
+    ("interest_rate", [
+        # Central bank names (various word boundaries)
         "federal reserve", "the fed", "fed reserve", "fomc",
         " fed ", "fed.", "fed,", "fed:", "fed cuts", "fed hikes",
         "fed raises", "fed lowers", "fed keeps", "fed holds",
@@ -145,8 +175,8 @@ CATEGORY_KEYWORDS: dict[str, list[str]] = {
         "ecb ", "ecb.", "ecb,", "european central bank",
         "bank of england", "boe ", "boe.", "boe,",
         "bank of japan", "boj ", "boj.", "boj,",
-        "central bank",
-        # Rate decisions (singular AND plural forms)
+        "central bank", "central banks",
+        # Rate decisions
         "interest rate", "interest rates",
         "rate cut", "rate cuts", "rate hike", "rate hikes",
         "rates cut", "rates hike", "rates raised", "rates lowered",
@@ -155,72 +185,202 @@ CATEGORY_KEYWORDS: dict[str, list[str]] = {
         # Officials
         "powell", "lagarde", "bailey", "ueda", "das ", " subbarao",
         # Monetary policy terms
-        "monetary policy", "rate-setting", "rate setting",
+        "monetary policy", "monetary tightening",
+        "rate-setting", "rate setting",
         "quantitative easing", "quantitative tightening",
         "balance sheet", "tapering",
-    ],
-    "pandemic": [
-        "pandemic", "epidemic", "outbreak",
-        "who declares", "world health organization",
-        " virus", " viral", " infection", "infected",
-        "vaccine", "vaccination",
-        "covid", "monkeypox", "mpox", "ebola", "nipah",
-        "h5n1", "bird flu", "avian flu", "swine flu",
-        "cholera", "plague", "marburg", "lassa",
-        "quarantine", "containment", "public health emergency",
-        "global health emergency",
-    ],
-    "crisis": [
-        "recession", "depression",
-        "sovereign default", "debt default", "debt crisis",
-        "banking crisis", "bank run", "bank failure",
+        # Yield curve
+        "yield curve", "10-year yield", "bond yield", "bond yields",
+        "treasury yield", "treasury yields",
+    ]),
+
+    # ---- Exchange rate / FX risk ----
+    ("exchange_rate", [
+        # Currency names + moves
+        "exchange rate", "exchange rates", "forex", "fx market",
+        "currency war", "currency wars", "currency crisis",
+        "currency devaluation", "currency depreciation",
+        " rupee ", "rupee falls", "rupee rises", "rupee slides",
+        "rupee hits", "rupee weakens", "rupee strengthens",
+        " dollar index", "dxy ", "dxy.", "dxy,",
+        "weakens vs", "strengthens vs", "falls vs dollar",
+        "rises vs dollar", "hits record low", "hits record high",
+        "debasement", "dollarisation", "dollarization",
+        "currency intervention", "forex reserves",
+        "foreign exchange reserves",
+    ]),
+
+    # ---- Purchasing power / inflation risk ----
+    ("purchasing_power", [
+        "inflation", "deflation", "disinflation", "stagflation",
+        " cpi ", "cpi.", "cpi,", "cpi:", "cpi data", "cpi report",
+        "consumer price index",
+        " ppi ", "ppi.", "ppi,", "producer price index",
+        "wholesale price", "wpi ",
+        "core inflation", "headline inflation", "cpi inflation",
+        "real wages", "cost of living", "living costs",
+        "purchasing power", "price pressures", "price pressures",
+        "hyperinflation",
+    ]),
+
+    # ---- Market risk (broad market moves, volatility, bubbles) ----
+    ("market_risk", [
+        # Indices and broad market terms
+        "stock market", "stock markets",
+        "sensex", "nifty", "nifty50", "nifty 50",
+        "s&p 500", "s&p500", "dow jones", "dow jones industrial",
+        "nasdaq",
+        "ftse 100", "ftse100", "dax ", "cac 40", "hang seng",
+        "nikkei 225", "nikkei", "kospi",
+        "shanghai composite", "shanghai", "bse ", "nse ",
+        # Volatility
+        "vix", "volatility index", "market volatility",
+        "fear index", "fear gauge",
+        # Crashes / corrections
         "market crash", "stock market crash", "circuit breaker",
-        "credit crisis", "liquidity crisis",
-        "inflation surge", "stagflation",
-        "imf bailout", "imf warns",
-        "rating downgrade", "junk status",
-        "chapter 11", "chapter 15", "bankruptcy",
-    ],
-    "economic": [
-        "gdp", "gross domestic product",
-        "inflation", "deflation", "cpi ", "ppi ",
-        "unemployment", "jobs report", "nonfarm payroll",
-        "trade deficit", "trade surplus",
-        "currency crisis", "rupee", "dollar", "euro ",
-        "tariff", "trade war", "sanctions",
-        "imf ", "world bank",
-        "recession warning", "growth forecast",
-        "fiscal deficit", "budget deficit",
-    ],
-    "political": [
-        # Elections & votes
+        "trading halt", "trading halts",
+        "market correction", "sell-off", "selloff",
+        "bear market", "bull market",
+        "free fall", "free-fall", "plunge", "tumble",
+        "rout", "bloodbath",
+        # Bubbles
+        "bubble", "asset bubble", "stock bubble", "housing bubble",
+        "bubble burst", "dot-com", "irrational exuberance",
+        # Sector rotations
+        "risk-on", "risk-off", "flight to safety",
+        "safe haven", "safe-haven", "haven flows",
+        "risk aversion", "risk appetite",
+    ]),
+
+    # ---- Financial risk (leverage, debt, balance sheet) ----
+    # Comes before default_risk because credit-rating news is more often
+    # a "financial_risk" signal than an imminent default.
+    ("financial_risk", [
+        "leverage", "leveraged", "deleveraging",
+        "high debt", "debt burden", "debt load",
+        "balance sheet", "liabilities", "off-balance-sheet",
+        "credit rating", "credit ratings", "rating agency",
+        "moody", " s&p ", " fitch ", "rating outlook",
+        "downgrade watch", "negative outlook",
+        "going concern", "going-concern",
+        "covenant breach", "covenant violation",
+        " debt-to-equity", "debt to equity",
+        "interest coverage", "debt service",
+        "credit event", "credit downgrade",
+    ]),
+
+    # ---- Default risk ----
+    ("default_risk", [
+        "default", "defaulted", "defaulting",
+        "sovereign default", "debt default",
+        "missed payment", "missed coupon", "missed interest",
+        "rating downgrade", "downgrade to junk", "junk status",
+        "chapter 11", "chapter 15", "chapter 7",
+        "bankruptcy", "bankruptcy filing", "files for bankruptcy",
+        "insolvent", "insolvency", "winding up",
+        " fdic ", " fdic.", "fdic,",
+        "resolution corp", "bad bank",
+    ]),
+
+    # ---- Liquidity risk ----
+    ("liquidity_risk", [
+        "liquidity crisis", "liquidity crunch",
+        "liquidity squeeze", "liquidity stress",
+        "cash crunch", "cash squeeze",
+        "money market freeze", "money market fund",
+        "franklin templeton",  # the famous 2020 India MF freeze
+        "withdrawal freeze", "redemption freeze",
+        "redemption pressure", "investor redemptions",
+        "bank run", "bank runs", "depositor panic",
+        "deposit flight",
+    ]),
+
+    # ---- Business risk (company-specific operations) ----
+    ("business_risk", [
+        # Earnings
+        "earnings miss", "earnings beat", "earnings warning",
+        "profit warning", "revenue miss", "revenue beat",
+        "guidance cut", "cuts guidance", "lowers guidance",
+        "downgrades outlook", "outlook cut",
+        # Operations / product
+        "product recall", "recall ", "recall.",
+        "lawsuit", "class action", " sues ", " sues.",
+        "verdict", "settlement",
+        "antitrust", "monopoly", "price-fixing",
+        "regulatory action", "regulator ", "sec charges",
+        "ftc ", "fda rejection", "fda approval",
+        "data breach", "cyberattack", "ransomware",
+        # Sector-specific
+        "plant shutdown", "factory fire", "mine collapse",
+        "production halt", "supply disruption",
+        "chip shortage", "semiconductor shortage",
+    ]),
+
+    # ---- Management risk ----
+    ("management_risk", [
+        # CEO/CFO exits
+        "ceo resigns", "ceo quits", "ceo steps down",
+        "cfo resigns", "cfo quits", "cfo steps down",
+        "chairman resigns", "chairman quits",
+        "md resigns", "managing director resigns",
+        "coo resigns", "cto resigns", "cfo departure",
+        "founder exits", "founder quits", "founder leaves",
+        # Fraud / governance
+        "fraud", " accounting fraud", "accounting scandal",
+        "insider trading", "market manipulation",
+        "ponzi", " ponzi ", " ponzi.", " ponzi,",
+        "whistleblower", "whistle-blower",
+        "related-party transaction", "related party transaction",
+        "governance", "corporate governance",
+        "boardroom", "board of directors",
+        "activist investor", "proxy fight", "hostile takeover",
+        # Investigations / regulatory action against companies
+        " sebi ", "sebi.", "sebi,",
+        " insider trading probe",
+        "fraud charges", "indicted",
+        " cfo arrested", "ceo arrested",
+        "executive arrested", "executive charged",
+    ]),
+
+    # ---- Geopolitical / political (last so it doesn't steal war/political news) ----
+    ("geopolitical", [
+        "war ", "wars", "warfare", "invasion", "invades", "invaded",
+        "military strike", "airstrike", "air strike", "missile",
+        "ceasefire", "cease-fire", "truce",
+        "troops", "soldier", "frontline", "front line",
+        " israel", " gaza", "hamas", "hezbollah",
+        "russia-ukraine", "ukraine war", "russia ukraine",
+        "north korea", "taiwan strait", "south china sea",
+        "conflict", "armed conflict", "hostilities",
+        "nato ", "nuclear threat", "weapon",
+        "geopolitical", "geopolitics",
+        # Elections / political change
         "election", "elected", "referendum",
-        # Government formations / collapses
-        "prime minister", "chancellor", "parliament", "coalition government",
-        "cabinet ", "cabinet minister", "cabinet reshuffle",
-        # Coups & regime change
-        "coup", "regime change", "revolution", "civil war",
-        # Impeachment / resignation of leaders
+        "prime minister", "chancellor", "cabinet ",
+        "coup", "regime change", "revolution",
         "impeach", "impeachment", "president resigns", "pm resigns",
-        # Treaties & international agreements
-        "brexit", "treaty", "peace accord", "summit", "signs agreement",
-        # UN bodies
-        "un security council", "un general assembly", "security council",
-        # Diplomatic / geopolitical
-        "diplomatic", "bilateral", "foreign minister", "geopolitical",
+        "brexit", "treaty", "peace accord", "summit",
+        "un security council", "security council",
+        "diplomatic", "bilateral", "foreign minister",
         "nato summit", "g7 summit", "g20 summit", "brics summit",
-    ],
-    "disasters": [
-        "earthquake", "quake", "magnitude ", "richter",
-        "tsunami",
-        "flood", "flooding", "floods", "flash flood",
-        "cyclone", "hurricane", "typhoon",
-        "wildfire", "forest fire", "bushfire",
-        "drought", "landslide", "mudslide",
-        "volcano", "volcanic", "eruption",
-        "tornado",
-    ],
-}
+    ]),
+
+    # ---- General economic news (catch-all for econ/macro news that
+    # doesn't fit a specific risk bucket above) ----
+    ("economic", [
+        "gdp", "gross domestic product",
+        "unemployment", "jobs report", "nonfarm payroll",
+        "trade deficit", "trade surplus", "trade balance",
+        "current account",
+        "imf ", "world bank",
+        "growth forecast", "recession warning",
+        "fiscal deficit", "budget deficit", "sovereign debt",
+        "tariff", "trade war", "sanctions", "embargo",
+        "supply chain", "global trade",
+    ]),
+]
+
+CATEGORY_KEYWORDS = dict(CATEGORY_KEYWORDS)
 
 # Article-age cap: drop items older than this (in hours) so the digest
 # stays focused on what happened in the last day
@@ -329,7 +489,7 @@ def _classify(article: Article) -> Optional[str]:
     if the article doesn't match any of your alert types (so we can skip it).
 
     For feeds that already have a category assigned in NEWS_FEEDS, we honour
-    that (BBC Business -> "economic", Fed Press -> "fed_rates", etc.).
+    that (BBC Business -> "economic", Fed Press -> "interest_rate", etc.).
     """
     # If the feed pinned a category, use it directly
     pinned = next(
@@ -339,14 +499,32 @@ def _classify(article: Article) -> Optional[str]:
     if pinned:
         return pinned
 
-    # Otherwise match title + description against keyword lists. We try each
-    # category in priority order (more-specific first) so a "war" article
-    # doesn't get misclassified as "political".
+    # Otherwise match title + description against keyword lists. We try
+    # each category in priority order (most-specific first). An article
+    # that matches multiple categories is assigned to the FIRST match —
+    # this prevents the same article from appearing under multiple
+    # risk categories in the digest.
     text = (article.title + " " + article.description).lower()
-    priority = ["pandemic", "fed_rates", "war", "disasters", "crisis",
-                "political", "economic"]
+    # Priority mirrors the order of CATEGORY_KEYWORDS list, but we make
+    # it explicit here for clarity. Pandemic and unsystematic risks
+    # (business/management) are most specific, so they win over broad
+    # categories like market_risk or geopolitical.
+    priority = [
+        "pandemic",
+        "interest_rate",
+        "exchange_rate",
+        "purchasing_power",
+        "market_risk",
+        "financial_risk",
+        "default_risk",
+        "liquidity_risk",
+        "business_risk",
+        "management_risk",
+        "geopolitical",
+        "economic",
+    ]
     for cat in priority:
-        keywords = CATEGORY_KEYWORDS[cat]
+        keywords = CATEGORY_KEYWORDS.get(cat, [])
         if any(kw in text for kw in keywords):
             return cat
     return None
@@ -411,7 +589,7 @@ def _gdacs_to_articles() -> list[Article]:
             title=title, url=gdacs_url, source="GDACS",
             published=from_dt.replace(tzinfo=None) if from_str else None,
             description=" · ".join(desc_parts),
-            category="disasters", importance=2,
+            category="natural_disaster", importance=2,
         ))
     return out
 
@@ -526,14 +704,26 @@ def _categorise_and_dedup(
 
 # ---------- Render Telegram message ----------
 
+# Display metadata for each category. Order here = display order in the
+# digest. Risk-bucket categories come first (systematic then
+# unsystematic), then contextual categories (pandemic, geopolitical).
 CATEGORY_DISPLAY = {
-    "war":       ("⚔️",  "War & Conflict"),
-    "fed_rates": ("🏦",  "Central Bank / Rate Decisions"),
-    "pandemic":  ("🦠",  "Pandemic / Health Crises"),
-    "crisis":    ("📉",  "Financial / Economic Crises"),
-    "economic":  ("🌍",  "Global Economic News"),
-    "political": ("🏛️",  "Political Changes"),
-    "disasters": ("🌋",  "Natural Disasters (M5.5+ quakes, floods, cyclones)"),
+    # ---- Systematic risks ----
+    "market_risk":      ("📊",  "Market Risk (index moves, volatility, bubbles)"),
+    "interest_rate":    ("🏦",  "Interest Rate Risk (Fed/RBI/ECB, yield curve)"),
+    "purchasing_power": ("💸",  "Purchasing Power Risk (inflation, CPI, debasement)"),
+    "exchange_rate":    ("💱",  "Exchange Rate Risk (USD/INR, dollar index, FX)"),
+    "geopolitical":     ("⚔️ ",  "Geopolitical / Political / War"),
+    # ---- Unsystematic risks ----
+    "business_risk":     ("🏢",  "Business Risk (earnings, lawsuits, product issues)"),
+    "financial_risk":    ("📑",  "Financial Risk (leverage, debt, ratings)"),
+    "default_risk":      ("💥",  "Default Risk (bankruptcy, missed payments, sovereign default)"),
+    "liquidity_risk":    ("💧",  "Liquidity Risk (trading halts, money-market freezes, bank runs)"),
+    "management_risk":   ("👔",  "Management Risk (CEO/CFO exits, fraud, governance)"),
+    # ---- Other ----
+    "pandemic":          ("🦠",  "Pandemic / Health Crises"),
+    "economic":          ("🌍",  "Other Macro / Economic News"),
+    "natural_disaster":  ("🌋",  "Natural Disasters (M5.5+ quakes, floods, cyclones)"),
 }
 
 
@@ -620,8 +810,8 @@ def render_telegram(
                 lines.append(f"  • [{md_title}]({url})")
             else:
                 lines.append(f"  • {md_title}")
-            # Optional one-liner description (skip for disasters — already compact)
-            if a.description and cat != "disasters":
+            # Optional one-liner description (skip for natural disasters — already compact)
+            if a.description and cat != "natural_disaster":
                 desc = _normalize_text(re.sub(r"<[^>]+>", "", a.description))
                 desc = _truncate(desc, 180)
                 if desc and not desc.lower().startswith(title.lower()[:30]):
@@ -681,8 +871,8 @@ def send_telegram(text: str) -> dict:
     Send a message via Telegram Bot API.
 
     We deliberately use plain text (no parse_mode) because:
-      1. Telegram's Markdown parser is strict — any unbalanced `_*\`` in
-         a 3500-char RSS-derived message causes the WHOLE send to fail
+      1. Telegram's Markdown parser is strict — any unbalanced `_` or `*` char
+         in a 3500-char RSS-derived message causes the WHOLE send to fail
       2. The URLs in our links already render as clickable links in
          Telegram even without [text](url) markdown
       3. Plain text is more reliable for system-generated messages
@@ -883,11 +1073,11 @@ def _cli():
     if args.render_only:
         # Build a fake message from sample buckets (for debugging the template)
         sample_buckets = {c: [] for c in CATEGORY_DISPLAY}
-        sample_buckets["fed_rates"].append(Article(
+        sample_buckets["interest_rate"].append(Article(
             title="(sample) Fed cuts rates by 25 bps",
             url="https://example.com/fed", source="sample",
             published=datetime.now(), description="Sample description.",
-            category="fed_rates", importance=2,
+            category="interest_rate", importance=2,
         ))
         print(render_telegram(sample_buckets, date_str="27 Jun 2026"))
         return
