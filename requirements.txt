@@ -18,3 +18,7 @@ python-multipart>=0.0.9
 httpx2>=0.0.1   # for FastAPI TestClient in tests
 # Fair-value checker
 beautifulsoup4>=4.12.0
+# Headless-browser fetcher for NSE/Moneycontrol earnings calendar
+# (NSE's API rejects plain urllib requests; the Playwright fallback
+# uses a real browser session to bypass Akamai blocking)
+playwright>=1.40.0
