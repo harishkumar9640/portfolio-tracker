@@ -110,7 +110,11 @@
     </div>
   </footer>
 
+  {# Toast container: shown on every page so feedback works everywhere. #}
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <script src="/static/js/app.js" defer></script>
+  <script src="/static/js/dashboard.js" defer></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

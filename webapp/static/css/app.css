@@ -471,6 +471,24 @@ table { border-collapse: collapse; width: 100%; }
   z-index: 200;
 }
 .toast.is-visible { opacity: 1; transform: translateY(0); }
+.toast.is-success { background: #2f7a3d; }
+.toast.is-error   { background: #b3382c; }
+.toast.is-warning { background: #c08a1a; }
+
+/* ---------- Re-scan button states ---------- */
+.btn.is-loading {
+  opacity: 0.7;
+  cursor: progress;
+  pointer-events: none;
+}
+.btn-small { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
+
+/* ---------- Empty state ---------- */
+.empty-state {
+  text-align: center;
+  padding: var(--s-5) var(--s-4);
+}
+.empty-state h3 { margin-top: 0; }
 
 /* ---------- Code / preformatted ---------- */
 pre, code {

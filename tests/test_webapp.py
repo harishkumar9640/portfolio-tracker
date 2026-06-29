@@ -7,6 +7,7 @@ All network calls are mocked so the tests run offline.
 from __future__ import annotations
 
 import sys
+import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -240,6 +241,26 @@ class TestAPI:
         assert r.status_code == 202
         assert r.json()["kinds"] == ["fairvalue"]
 
+    def test_api_refresh_kind_flows(self, client):
+        """Adding flows kind to refresh endpoint."""
+        r = client.post("/api/refresh?kind=flows")
+        assert r.status_code == 202
+        assert "flows" in r.json()["kinds"]
+
+    def test_api_refresh_kind_concalls(self, client):
+        """Adding concalls kind to refresh endpoint."""
+        r = client.post("/api/refresh?kind=concalls")
+        assert r.status_code == 202
+        assert "concalls" in r.json()["kinds"]
+
+    def test_api_refresh_kind_all_includes_new_kinds(self, client):
+        r = client.post("/api/refresh?kind=all")
+        assert r.status_code == 202
+        kinds = r.json()["kinds"]
+        assert "portfolio" in kinds
+        assert "flows" in kinds
+        assert "concalls" in kinds
+
     def test_flows_page_renders(self, client):
         r = client.get("/flows")
         assert r.status_code == 200
@@ -267,6 +288,72 @@ class TestAPI:
             assert 'href="/flows"' in r.text, (
                 f"missing Flows nav link on {path}"
             )
+
+    def test_flows_page_has_interactive_elements(self, client):
+        """The /flows page must have the elements dashboard.js expects."""
+        r = client.get("/flows")
+        assert r.status_code == 200
+        # Re-scan button (id selector dashboard.js looks for)
+        assert 'id="rescanBtn"' in r.text
+        assert 'data-kind="flows"' in r.text
+        # data-page-asof for live timestamps
+        assert 'data-page-asof=' in r.text
+        # data-tile on each KPI (4 tiles)
+        assert r.text.count('data-tile=') >= 4
+        # Inline SVG chart container (NOT plotly CDN)
+        assert 'data-fii-dii-chart' in r.text
+        assert "cdn.plot.ly" not in r.text, (
+            "should use local SVG chart, not CDN"
+        )
+
+    def test_concalls_page_has_interactive_elements(self, client):
+        """The /concalls page must have the elements dashboard.js expects."""
+        r = client.get("/concalls")
+        assert r.status_code == 200
+        assert 'id="rescanBtn"' in r.text
+        assert 'data-kind="concalls"' in r.text
+        assert 'data-page-asof=' in r.text
+        assert r.text.count('data-tile=') >= 4
+        # Bullet lists must have data-expandable so dashboard.js can
+        # collapse them
+        assert 'data-expandable=' in r.text
+        # Filter chips must show per-ticker counts
+        assert "IRCON (1)" in r.text or "IRCON (0)" in r.text
+
+    def test_toast_div_present_on_all_pages(self, client):
+        """The toast div must be in base.html so every page gets feedback."""
+        for path in ["/portfolio", "/fairvalue", "/flows", "/concalls",
+                     "/history", "/settings"]:
+            r = client.get(path)
+            assert 'id="toast"' in r.text, (
+                f"missing toast container on {path}"
+            )
+
+    def test_dashboard_js_is_served(self, client):
+        """The new dashboard.js must be served by the static handler."""
+        r = client.get("/static/js/dashboard.js")
+        assert r.status_code == 200
+        # Confirm it contains our key functions
+        assert "refreshTiles" in r.text
+        assert "setupRescan" in r.text
+        assert "timeAgo" in r.text
+
+    def test_flows_chart_data_is_html_escaped(self, client):
+        """The data-chart attribute must escape inner quotes correctly."""
+        r = client.get("/flows")
+        # If the chart has any data, the inner quotes must be escaped
+        import re
+        m = re.search(r"data-chart='([^']*)'", r.text)
+        if m:
+            attr = m.group(1)
+            # The raw attribute should be parseable as JSON
+            # after un-escaping &quot; -> "
+            import html
+            unescaped = html.unescape(attr)
+            parsed = json.loads(unescaped)
+            assert isinstance(parsed, list)
+            assert len(parsed) >= 1
+            assert "fii" in parsed[0] and "dii" in parsed[0]
 
 
 # ---------- Responsive design verification ----------

@@ -609,15 +609,21 @@ def api_fairvalue_lookup(payload: dict) -> dict:
 @app.post("/api/refresh")
 def api_refresh(kind: str = "all") -> JSONResponse:
     """Trigger a background re-fetch. Returns 202 immediately."""
+    valid_kinds = ("portfolio", "fairvalue", "mf_holdings",
+                   "flows", "concalls")
     if kind in ("portfolio", "all"):
         start_background_refresh("portfolio")
     if kind in ("fairvalue", "all"):
         start_background_refresh("fairvalue")
     if kind in ("mf_holdings", "all"):
         start_background_refresh("mf_holdings")
+    if kind in ("flows", "all"):
+        start_background_refresh("flows")
+    if kind in ("concalls", "all"):
+        start_background_refresh("concalls")
     return JSONResponse(
-        {"status": "queued", "kinds": [k for k in ("portfolio", "fairvalue", "mf_holdings")
-                                       if kind in (k, "all")]},
+        {"status": "queued",
+         "kinds": [k for k in valid_kinds if kind in (k, "all")]},
         status_code=202,
     )
 

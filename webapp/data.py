@@ -219,6 +219,15 @@ def start_background_refresh(kind: str = "portfolio") -> None:
                 get_fairvalue_snapshot(force=True)
             elif kind == "mf_holdings":
                 get_mf_holdings_snapshot(force=True)
+            elif kind == "flows":
+                # flows_alert fetches + archives + sends; run dry-run here
+                # (Telegram sending is left to the scheduled 18:45 IST run).
+                import flows_alert
+                flows_alert.run_once(force_send=False)
+            elif kind == "concalls":
+                # concalls fetches + summarises (Ollama) + sends alert.
+                import concalls
+                concalls.run_once(days_back=7, force_send=False)
         except Exception as e:
             log.error("background refresh failed: %s", e)
 
@@ -313,14 +322,35 @@ def get_flows_snapshot() -> dict:
     # Last 5 deals across all stocks (for context)
     all_recent = sorted(deals, key=lambda x: x.get("date", ""), reverse=True)[:10]
 
+    asof_iso = datetime.now().isoformat(timespec="seconds")
     return {
         "today_fii": today_fii,
         "today_dii": today_dii,
         "chart": chart_rows,
         "portfolio_deals": portfolio_deals,
         "recent_deals": all_recent,
-        "asof": datetime.now().isoformat(timespec="seconds"),
+        "asof": asof_iso,
+        "asof_human": _format_human_time(asof_iso),
     }
+
+
+def _format_human_time(iso: str) -> str:
+    """Render an ISO timestamp as 'just now' / '5m ago' / '2h ago'."""
+    try:
+        d = datetime.fromisoformat(iso)
+    except (ValueError, TypeError):
+        return iso or "—"
+    delta = datetime.now() - d
+    sec = int(delta.total_seconds())
+    if sec < 10:
+        return "just now"
+    if sec < 60:
+        return f"{sec}s ago"
+    if sec < 3600:
+        return f"{sec // 60}m ago"
+    if sec < 86400:
+        return f"{sec // 3600}h ago"
+    return f"{sec // 86400}d ago"
 
 
 def _portfolio_tickers() -> list[str]:
@@ -389,13 +419,21 @@ def get_concalls_snapshot(filter_ticker: Optional[str] = None) -> dict:
         if s["filing"].get("filing_date", "") >= cutoff
     )
 
+    # Per-ticker counts for the filter chips
+    ticker_counts: dict[str, int] = {}
+    for s in summaries:
+        t = s["filing"].get("ticker", "")
+        ticker_counts[t] = ticker_counts.get(t, 0) + 1
+
     return {
         "summaries": summaries,
         "recent_count": recent_count,
         "tone_counts": tone_counts,
+        "ticker_counts": ticker_counts,
         "all_tickers": sorted(_portfolio_tickers()),
         "filter_ticker": filter_ticker,
         "asof": datetime.now().isoformat(timespec="seconds"),
+        "asof_human": _format_human_time(datetime.now().isoformat(timespec="seconds")),
     }
 
 

@@ -5,8 +5,16 @@
   <div>
     <h1 class="mb-0">FII / DII flows &amp; smart money</h1>
     <p class="text-muted mb-0">
-      {{ snapshot.asof or '—' }} · auto-updated daily from NSE
+      <span data-page-asof="{{ snapshot.asof or '' }}">
+        Updated {{ snapshot.asof_human or '—' }}
+      </span>
+      · auto-updated daily from NSE
     </p>
+  </div>
+  <div class="flex-gap-2">
+    <button id="rescanBtn" data-kind="flows" class="btn btn-secondary">
+      🔄 Re-scan now
+    </button>
   </div>
 </header>
 
@@ -15,7 +23,8 @@
   <div class="kpi">
     <div class="kpi-label">FII/FPI today</div>
     {% if snapshot.today_fii %}
-      <div class="kpi-value {% if snapshot.today_fii.net_value_cr >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      <div class="kpi-value {% if snapshot.today_fii.net_value_cr >= 0 %}is-positive{% else %}is-negative{% endif %}"
+           data-tile="fii">
         {% if snapshot.today_fii.net_value_cr >= 0 %}+{% endif %}₹{{ "{:,.0f}".format(snapshot.today_fii.net_value_cr) }} cr
       </div>
       <div class="kpi-sub text-muted">
@@ -24,7 +33,7 @@
       </div>
       <div class="kpi-sub text-muted">{{ snapshot.today_fii.date }}</div>
     {% else %}
-      <div class="kpi-value text-muted">—</div>
+      <div class="kpi-value text-muted" data-tile="fii">—</div>
       <div class="kpi-sub text-muted">No data yet today</div>
     {% endif %}
   </div>
@@ -32,7 +41,8 @@
   <div class="kpi">
     <div class="kpi-label">DII today</div>
     {% if snapshot.today_dii %}
-      <div class="kpi-value {% if snapshot.today_dii.net_value_cr >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      <div class="kpi-value {% if snapshot.today_dii.net_value_cr >= 0 %}is-positive{% else %}is-negative{% endif %}"
+           data-tile="dii">
         {% if snapshot.today_dii.net_value_cr >= 0 %}+{% endif %}₹{{ "{:,.0f}".format(snapshot.today_dii.net_value_cr) }} cr
       </div>
       <div class="kpi-sub text-muted">
@@ -41,7 +51,7 @@
       </div>
       <div class="kpi-sub text-muted">{{ snapshot.today_dii.date }}</div>
     {% else %}
-      <div class="kpi-value text-muted">—</div>
+      <div class="kpi-value text-muted" data-tile="dii">—</div>
       <div class="kpi-sub text-muted">No data yet today</div>
     {% endif %}
   </div>
@@ -51,7 +61,8 @@
     {% set fii_net = snapshot.today_fii.net_value_cr if snapshot.today_fii else 0 %}
     {% set dii_net = snapshot.today_dii.net_value_cr if snapshot.today_dii else 0 %}
     {% set total = fii_net + dii_net %}
-    <div class="kpi-value {% if total >= 0 %}is-positive{% else %}is-negative{% endif %}">
+    <div class="kpi-value {% if total >= 0 %}is-positive{% else %}is-negative{% endif %}"
+         data-tile="net">
       {% if total >= 0 %}+{% endif %}₹{{ "{:,.0f}".format(total) }} cr
     </div>
     <div class="kpi-sub text-muted">FII + DII combined</div>
@@ -59,54 +70,24 @@
 
   <div class="kpi">
     <div class="kpi-label">My deals (7 days)</div>
-    <div class="kpi-value">{{ snapshot.portfolio_deals|length }}</div>
+    <div class="kpi-value" data-tile="my-deals">{{ snapshot.portfolio_deals|length }}</div>
     <div class="kpi-sub text-muted">Bulk + block on your stocks</div>
   </div>
 </section>
 
-{# ----- 30-day FII/DII chart ----- #}
+{# ----- 30-day FII/DII chart (inline SVG, no CDN dependency) ----- #}
 <section class="card mb-4">
   <div class="flex-between mb-3">
     <h2 class="mb-0">30-day FII/DII net flows (₹ cr)</h2>
     <span class="text-muted">positive = buying, negative = selling</span>
   </div>
   {% if snapshot.chart %}
-  <div id="fii-dii-chart" style="width:100%; height:340px;"></div>
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
-  <script>
-    (function () {
-      var chartData = {{ snapshot.chart|tojson }};
-      var fiiTrace = {
-        x: chartData.map(function(d) { return d.date; }),
-        y: chartData.map(function(d) { return d.fii || 0; }),
-        name: 'FII/FPI',
-        type: 'bar',
-        marker: { color: '#d9534f' }
-      };
-      var diiTrace = {
-        x: chartData.map(function(d) { return d.date; }),
-        y: chartData.map(function(d) { return d.dii || 0; }),
-        name: 'DII',
-        type: 'bar',
-        marker: { color: '#5cb85c' }
-      };
-      var layout = {
-        barmode: 'group',
-        margin: { t: 20, r: 20, b: 40, l: 60 },
-        xaxis: { title: '', tickangle: -45 },
-        yaxis: { title: 'Net flow (₹ cr)', zeroline: true,
-                 zerolinecolor: '#888', zerolinewidth: 1 },
-        legend: { orientation: 'h', y: -0.2 },
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)',
-      };
-      Plotly.newPlot('fii-dii-chart', [fiiTrace, diiTrace], layout,
-        { responsive: true, displayModeBar: false });
-    })();
-  </script>
+  <div data-fii-dii-chart data-chart='{{ snapshot.chart|tojson|forceescape }}'
+       style="width:100%; height:340px;"></div>
   {% else %}
   <p class="text-muted">No FII/DII history yet. The daily 6:45 PM IST run
-    will populate this chart.</p>
+    will populate this chart — click <strong>🔄 Re-scan now</strong> to
+    fetch today's data immediately.</p>
   {% endif %}
 </section>
 
@@ -128,7 +109,7 @@
           <th class="text-right">Value (₹ cr)</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody data-expandable="8">
         {% for d in snapshot.portfolio_deals %}
         <tr>
           <td>{{ d.date }}</td>
@@ -150,8 +131,15 @@
     </table>
   </div>
   {% else %}
-  <p class="text-muted">No bulk or block deals on your portfolio stocks in
-    the last 7 days. You'll get a Telegram alert the moment one fires.</p>
+  <div class="empty-state">
+    <p class="text-muted mb-2">
+      <strong>No bulk or block deals on your portfolio stocks in the last 7 days.</strong>
+    </p>
+    <p class="text-muted">
+      You'll get a Telegram alert the moment one fires. Click
+      <strong>🔄 Re-scan now</strong> above to force a check.
+    </p>
+  </div>
   {% endif %}
 </section>
 
@@ -196,5 +184,99 @@
   <p class="text-muted">No deals recorded yet.</p>
   {% endif %}
 </section>
+{% endblock %}
 
+{# ----- Inline chart renderer (vanilla SVG, no Plotly CDN) ----- #}
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  var root = document.querySelector('[data-fii-dii-chart]');
+  if (!root) return;
+  var raw = root.getAttribute('data-chart');
+  if (!raw) return;
+  try { var data = JSON.parse(raw); } catch (e) { return; }
+  if (!data || !data.length) return;
+
+  var W = 800, H = 340;
+  var padL = 60, padR = 20, padT = 20, padB = 50;
+  var innerW = W - padL - padR;
+  var innerH = H - padT - padB;
+
+  var maxAbs = 1;
+  data.forEach(function (d) {
+    maxAbs = Math.max(maxAbs, Math.abs(d.fii || 0), Math.abs(d.dii || 0));
+  });
+  // Round up to a nice number
+  var niceMax = Math.ceil(maxAbs / 1000) * 1000;
+
+  var barW = innerW / (data.length * 2 + data.length);
+  var groupW = barW * 2;
+
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" '
+    + 'preserveAspectRatio="xMidYMid meet" '
+    + 'style="width:100%;height:100%;font-family:inherit;font-size:11px;">';
+
+  // Axes
+  svg += '<line x1="' + padL + '" y1="' + (padT + innerH/2) + '" '
+    + 'x2="' + (padL + innerW) + '" y2="' + (padT + innerH/2) + '" '
+    + 'stroke="#888" stroke-width="1"/>';
+
+  // Y-axis labels
+  var ySteps = 4;
+  for (var i = -ySteps; i <= ySteps; i++) {
+    if (i === 0) continue;
+    var v = (i / ySteps) * niceMax;
+    var y = padT + innerH/2 - (i / ySteps) * (innerH/2);
+    svg += '<line x1="' + padL + '" y1="' + y + '" x2="' + (padL + innerW) + '" y2="' + y + '" '
+      + 'stroke="#eee" stroke-width="1"/>';
+    svg += '<text x="' + (padL - 5) + '" y="' + (y + 3) + '" text-anchor="end" fill="#666">'
+      + (v >= 0 ? '+' : '') + Math.round(v).toLocaleString('en-IN') + '</text>';
+  }
+
+  // Bars
+  data.forEach(function (d, idx) {
+    var xGroup = padL + idx * (innerW / data.length);
+    var cx = xGroup + (innerW / data.length - groupW) / 2;
+
+    // FII bar (red if negative, green if positive)
+    var fii = d.fii || 0;
+    var fiiH = Math.abs(fii) / niceMax * (innerH/2);
+    var fiiY = fii >= 0 ? (padT + innerH/2 - fiiH) : (padT + innerH/2);
+    var fiiColor = fii >= 0 ? '#5cb85c' : '#d9534f';
+    svg += '<rect x="' + cx + '" y="' + fiiY + '" width="' + barW + '" height="' + fiiH + '" '
+      + 'fill="' + fiiColor + '" opacity="0.85"><title>FII '
+      + (fii >= 0 ? '+' : '') + Math.round(fii).toLocaleString('en-IN')
+      + ' cr</title></rect>';
+
+    // DII bar
+    var dii = d.dii || 0;
+    var diiH = Math.abs(dii) / niceMax * (innerH/2);
+    var diiY = dii >= 0 ? (padT + innerH/2 - diiH) : (padT + innerH/2);
+    var diiColor = dii >= 0 ? '#5cb85c' : '#d9534f';
+    svg += '<rect x="' + (cx + barW) + '" y="' + diiY + '" width="' + barW + '" height="' + diiH + '" '
+      + 'fill="' + diiColor + '" opacity="0.55"><title>DII '
+      + (dii >= 0 ? '+' : '') + Math.round(dii).toLocaleString('en-IN')
+      + ' cr</title></rect>';
+
+    // X-axis label (rotated -45°)
+    if (data.length <= 30 || idx % Math.ceil(data.length / 15) === 0) {
+      var label = d.date ? d.date.slice(5) : '';  // MM-DD
+      svg += '<text x="' + (xGroup + (innerW / data.length)/2) + '" '
+        + 'y="' + (padT + innerH + 15) + '" text-anchor="end" '
+        + 'transform="rotate(-45 ' + (xGroup + (innerW / data.length)/2) + ' '
+        + (padT + innerH + 15) + ')" fill="#666">' + label + '</text>';
+    }
+  });
+
+  // Legend
+  svg += '<rect x="' + (W - 130) + '" y="5" width="12" height="12" fill="#d9534f" opacity="0.85"/>';
+  svg += '<text x="' + (W - 113) + '" y="15" fill="#333">FII/FPI</text>';
+  svg += '<rect x="' + (W - 60) + '" y="5" width="12" height="12" fill="#5cb85c" opacity="0.85"/>';
+  svg += '<text x="' + (W - 43) + '" y="15" fill="#333">DII</text>';
+
+  svg += '</svg>';
+  root.innerHTML = svg;
+})();
+</script>
 {% endblock %}

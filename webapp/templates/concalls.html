@@ -5,15 +5,16 @@
   <div>
     <h1 class="mb-0">Con-call summaries</h1>
     <p class="text-muted mb-0">
-      {{ snapshot.asof or '—' }} · auto-summarised via local Ollama from
-      NSE transcript filings
+      <span data-page-asof="{{ snapshot.asof or '' }}">
+        Updated {{ snapshot.asof_human or '—' }}
+      </span>
+      · auto-summarised via local Ollama from NSE transcript filings
     </p>
   </div>
   <div class="flex-gap-2">
-    <button id="refreshBtn" data-kind="concalls"
-            class="btn btn-secondary"
-            hx-post="/api/concalls/run"
-            hx-swap="none">Re-scan</button>
+    <button id="rescanBtn" data-kind="concalls" class="btn btn-secondary">
+      🔄 Re-scan now
+    </button>
   </div>
 </header>
 
@@ -21,25 +22,29 @@
 <section class="grid grid-2 grid-4 mb-4">
   <div class="kpi">
     <div class="kpi-label">Total summaries</div>
-    <div class="kpi-value">{{ snapshot.summaries|length }}</div>
-    <div class="kpi-sub text-muted">across your 8 stocks</div>
+    <div class="kpi-value" data-tile="total">{{ snapshot.summaries|length }}</div>
+    <div class="kpi-sub text-muted">across your {{ snapshot.all_tickers|length }} stocks</div>
   </div>
 
   <div class="kpi">
     <div class="kpi-label">Last 7 days</div>
-    <div class="kpi-value">{{ snapshot.recent_count }}</div>
+    <div class="kpi-value" data-tile="recent">{{ snapshot.recent_count }}</div>
     <div class="kpi-sub text-muted">new transcripts / presentations</div>
   </div>
 
   <div class="kpi">
     <div class="kpi-label">Confident tone</div>
-    <div class="kpi-value">{{ snapshot.tone_counts.get('confident', 0) }}</div>
+    <div class="kpi-value is-positive" data-tile="confident">
+      {{ snapshot.tone_counts.get('confident', 0) }}
+    </div>
     <div class="kpi-sub text-muted">management was confident</div>
   </div>
 
   <div class="kpi">
     <div class="kpi-label">Cautious tone</div>
-    <div class="kpi-value">{{ snapshot.tone_counts.get('cautious', 0) }}</div>
+    <div class="kpi-value is-negative" data-tile="cautious">
+      {{ snapshot.tone_counts.get('cautious', 0) }}
+    </div>
     <div class="kpi-sub text-muted">management was cautious</div>
   </div>
 </section>
@@ -47,16 +52,19 @@
 {# ----- Filter chips ----- #}
 <section class="card mb-3">
   <div class="flex-gap-2" style="flex-wrap: wrap;">
+    <a href="/concalls"
+       class="btn btn-secondary {% if not snapshot.filter_ticker %}is-active{% endif %}"
+       style="font-size: 0.85rem;">
+      All ({{ snapshot.summaries|length }})
+    </a>
     {% for t in snapshot.all_tickers %}
-      <a href="?ticker={{ t }}"
+      {% set count = snapshot.ticker_counts.get(t, 0) %}
+      <a href="/concalls?ticker={{ t }}"
          class="btn btn-secondary {% if snapshot.filter_ticker == t %}is-active{% endif %}"
          style="font-size: 0.85rem;">
-        {{ t }}
+        {{ t }} ({{ count }})
       </a>
     {% endfor %}
-    {% if snapshot.filter_ticker %}
-      <a href="/concalls" class="btn" style="font-size: 0.85rem;">Clear</a>
-    {% endif %}
   </div>
 </section>
 
@@ -65,7 +73,9 @@
 <section class="card mb-4">
   <h2 class="mb-3">Latest summaries</h2>
   {% for s in snapshot.summaries %}
-  <article class="concalls-entry mb-4" style="border-bottom: 1px solid var(--c-border, #eee); padding-bottom: 1rem;">
+  <article class="concalls-entry mb-4"
+           style="border-bottom: 1px solid var(--c-border, #eee); padding-bottom: 1rem;">
+
     <header class="flex-between mb-2">
       <div>
         <strong style="font-size: 1.1rem;">{{ s.filing.ticker }}</strong>
@@ -104,7 +114,7 @@
     </p>
 
     {% if s.bullets %}
-    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+    <ul data-expandable="3" style="margin: 0.5rem 0; padding-left: 1.5rem;">
       {% for b in s.bullets %}
       <li>{{ b }}</li>
       {% endfor %}
@@ -133,12 +143,25 @@
 
 {% else %}
 <section class="card">
-  <p class="text-muted">
-    No con-call summaries yet for {% if snapshot.filter_ticker %}{{ snapshot.filter_ticker }}{% else %}your portfolio{% endif %}.
-    The first automatic scan runs at 7:00 PM IST daily.
-    Or run on-demand:
-  </p>
-  <pre style="background: var(--c-bg-alt, #f5f5f5); padding: 0.75rem; border-radius: 4px;"><code>python concalls.py --run-once --dry-run</code></pre>
+  <div class="empty-state">
+    <h3 class="mb-2">No con-call summaries yet</h3>
+    <p class="text-muted mb-3">
+      {% if snapshot.filter_ticker %}
+        No summaries for <strong>{{ snapshot.filter_ticker }}</strong>.
+        Try another stock, or clear the filter.
+      {% else %}
+        No con-call transcripts / investor presentations have been filed
+        for your 8 stocks in the last 7 days.
+      {% endif %}
+    </p>
+    <p class="text-muted mb-3">
+      The first automatic scan runs at <strong>7:00 PM IST</strong> daily.
+      To scan now, click the button below:
+    </p>
+    <button id="rescanBtn" data-kind="concalls" class="btn">
+      🔄 Re-scan now
+    </button>
+  </div>
 </section>
 {% endif %}
 
