@@ -50,7 +50,12 @@
 
         // 2) Poll /api/refresh/status until done (or 2-minute cap)
         refreshBtn.textContent = '🔄 Refreshing…';
-        const startAsOf = document.querySelector('[data-portfolio-asof]')?.getAttribute('data-portfolio-asof') || '';
+        // Use cache_ts (Unix timestamp of last rebuild) for completion
+        // detection — asof date string is too coarse (same day = same
+        // string even after a fresh rebuild).
+        const startCacheTs = parseFloat(
+          document.querySelector('[data-portfolio-asof]')?.getAttribute('data-cache-ts') || '0'
+        );
         const t0 = Date.now();
         const timeoutMs = 120000;
         const pollMs = 2000;
@@ -63,17 +68,20 @@
               const s = await sr.json();
               const p = s.portfolio || {};
               const elapsed = Math.floor((Date.now() - t0) / 1000);
-              refreshBtn.textContent = '🔄 Refreshing… ' + elapsed + 's';
-              // Done when: not in progress, AND asof is newer than before
-              if (!p.in_progress && p.asof && p.asof !== startAsOf) {
+              const newCacheTs = p.cache_ts || 0;
+              // Show live progress with seconds elapsed
+              if (p.in_progress) {
+                refreshBtn.textContent = '🔄 Refreshing… ' + elapsed + 's';
+              } else {
+                refreshBtn.textContent = '🔄 Finishing up… ' + elapsed + 's';
+              }
+              // Done when: not in progress, AND cache_ts is newer than
+              // the value we recorded before clicking refresh
+              if (!p.in_progress && newCacheTs > startCacheTs) {
                 refreshBtn.textContent = '✓ Done — reloading';
                 showToast('Refresh complete. Reloading…', 'success');
                 setTimeout(() => location.reload(), 600);
                 return;
-              }
-              // In progress is also fine to show
-              if (p.in_progress) {
-                refreshBtn.textContent = '🔄 Refreshing… ' + elapsed + 's';
               }
             }
           } catch (e) {

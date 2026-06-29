@@ -151,6 +151,8 @@ def get_portfolio_snapshot(force: bool = False) -> dict:
         _portfolio_cache["data"] = data
         _portfolio_cache["ts"] = now
         _portfolio_cache["asof"] = data.get("asof")
+        # Expose cache_ts in the snapshot too so templates can render it
+        data["cache_ts"] = now
         return data
     finally:
         _portfolio_in_progress = False

@@ -619,6 +619,7 @@ def api_refresh_status() -> dict:
     return {
         "market_open": _is_market_open(),
         "cache_ttl_sec": _current_cache_ttl(),
+        "now": now,
         "portfolio": {
             "in_progress": _portfolio_in_progress,
             "in_progress_for_sec": (
@@ -629,6 +630,10 @@ def api_refresh_status() -> dict:
                 now - _portfolio_cache["ts"]
                 if _portfolio_cache["ts"] else None
             ),
+            # Unix timestamp of last successful rebuild — the JS uses
+            # this to detect completion (asof date string is too coarse
+            # when both old and new builds land on the same trading day)
+            "cache_ts": _portfolio_cache["ts"] or None,
             "asof": _portfolio_cache.get("asof"),
         },
         "fairvalue": {

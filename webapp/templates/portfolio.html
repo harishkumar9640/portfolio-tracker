@@ -5,7 +5,8 @@
   <div>
     <h1 class="mb-0">Today's Portfolio</h1>
     <p class="text-muted mb-0">
-      <span data-portfolio-asof="{{ snapshot.asof or '' }}">
+      <span data-portfolio-asof="{{ snapshot.asof or '' }}"
+            data-cache-ts="{{ snapshot.cache_ts or '' }}">
         {{ snapshot.asof or '—' }}
       </span>
       <span id="market-status-badge" class="market-status-badge"
