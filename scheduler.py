@@ -98,6 +98,16 @@ def _build_schedule() -> list[tuple[int, int, str, callable]]:
     except Exception as e:
         log.warning("could not register flows_alert: %s", e)
 
+    # 19:00 IST — concalls (download PDF + summarise via local Ollama)
+    try:
+        import concalls
+        schedule.append(
+            (19, 0, "concalls.run_once",
+             lambda: concalls.run_once(days_back=7))
+        )
+    except Exception as e:
+        log.warning("could not register concalls: %s", e)
+
     return schedule
 
 

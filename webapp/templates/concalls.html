@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="flex-between mb-4">
+  <div>
+    <h1 class="mb-0">Con-call summaries</h1>
+    <p class="text-muted mb-0">
+      {{ snapshot.asof or '—' }} · auto-summarised via local Ollama from
+      NSE transcript filings
+    </p>
+  </div>
+  <div class="flex-gap-2">
+    <button id="refreshBtn" data-kind="concalls"
+            class="btn btn-secondary"
+            hx-post="/api/concalls/run"
+            hx-swap="none">Re-scan</button>
+  </div>
+</header>
+
+{# ----- KPI tiles ----- #}
+<section class="grid grid-2 grid-4 mb-4">
+  <div class="kpi">
+    <div class="kpi-label">Total summaries</div>
+    <div class="kpi-value">{{ snapshot.summaries|length }}</div>
+    <div class="kpi-sub text-muted">across your 8 stocks</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">Last 7 days</div>
+    <div class="kpi-value">{{ snapshot.recent_count }}</div>
+    <div class="kpi-sub text-muted">new transcripts / presentations</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">Confident tone</div>
+    <div class="kpi-value">{{ snapshot.tone_counts.get('confident', 0) }}</div>
+    <div class="kpi-sub text-muted">management was confident</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">Cautious tone</div>
+    <div class="kpi-value">{{ snapshot.tone_counts.get('cautious', 0) }}</div>
+    <div class="kpi-sub text-muted">management was cautious</div>
+  </div>
+</section>
+
+{# ----- Filter chips ----- #}
+<section class="card mb-3">
+  <div class="flex-gap-2" style="flex-wrap: wrap;">
+    {% for t in snapshot.all_tickers %}
+      <a href="?ticker={{ t }}"
+         class="btn btn-secondary {% if snapshot.filter_ticker == t %}is-active{% endif %}"
+         style="font-size: 0.85rem;">
+        {{ t }}
+      </a>
+    {% endfor %}
+    {% if snapshot.filter_ticker %}
+      <a href="/concalls" class="btn" style="font-size: 0.85rem;">Clear</a>
+    {% endif %}
+  </div>
+</section>
+
+{# ----- Summaries list ----- #}
+{% if snapshot.summaries %}
+<section class="card mb-4">
+  <h2 class="mb-3">Latest summaries</h2>
+  {% for s in snapshot.summaries %}
+  <article class="concalls-entry mb-4" style="border-bottom: 1px solid var(--c-border, #eee); padding-bottom: 1rem;">
+    <header class="flex-between mb-2">
+      <div>
+        <strong style="font-size: 1.1rem;">{{ s.filing.ticker }}</strong>
+        <span class="text-muted"> — {{ s.filing.company_name }}</span>
+      </div>
+      <span class="text-muted" style="font-size: 0.85rem;">
+        {{ s.filing.filing_kind|replace('_', ' ')|title }} ·
+        {{ s.filing.filing_date }}
+      </span>
+    </header>
+
+    {% set tone = s.management_tone %}
+    {% set tone_class = {
+      'confident': 'is-positive',
+      'cautious': 'is-negative',
+      'mixed': 'text-muted',
+      'defensive': 'is-negative',
+      'neutral': 'text-muted'
+    }.get(tone, 'text-muted') %}
+
+    <p class="mb-2">
+      <span class="text-muted">Tone:</span>
+      <strong class="{{ tone_class }}">{{ tone }}</strong>
+      <span class="text-muted">·</span>
+      <span class="text-muted">Guidance:</span>
+      <strong>{{ s.guidance }}</strong>
+      {% if s.pdf_pages %}
+        <span class="text-muted">·</span>
+        <span class="text-muted">{{ s.pdf_pages }}-page
+          {{ s.filing.filing_kind|replace('_', ' ')|title }}</span>
+      {% endif %}
+      {% if s.llm_duration_sec %}
+        <span class="text-muted">·</span>
+        <span class="text-muted">summarised in {{ "%.0f"|format(s.llm_duration_sec) }}s</span>
+      {% endif %}
+    </p>
+
+    {% if s.bullets %}
+    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+      {% for b in s.bullets %}
+      <li>{{ b }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if s.phrases %}
+    <details>
+      <summary class="text-muted">Management phrases</summary>
+      <ul style="margin: 0.5rem 0; padding-left: 1.5rem; font-style: italic;">
+        {% for p in s.phrases %}
+        <li>"{{ p }}"</li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endif %}
+
+    <p class="text-muted mt-2" style="font-size: 0.85rem;">
+      <a href="{{ s.filing.pdf_url }}" target="_blank" rel="noopener">
+        View original PDF ↗
+      </a>
+    </p>
+  </article>
+  {% endfor %}
+</section>
+
+{% else %}
+<section class="card">
+  <p class="text-muted">
+    No con-call summaries yet for {% if snapshot.filter_ticker %}{{ snapshot.filter_ticker }}{% else %}your portfolio{% endif %}.
+    The first automatic scan runs at 7:00 PM IST daily.
+    Or run on-demand:
+  </p>
+  <pre style="background: var(--c-bg-alt, #f5f5f5); padding: 0.75rem; border-radius: 4px;"><code>python concalls.py --run-once --dry-run</code></pre>
+</section>
+{% endif %}
+
+{% endblock %}

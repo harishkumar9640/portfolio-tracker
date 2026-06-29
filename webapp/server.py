@@ -47,6 +47,7 @@ from webapp.data import (
     get_health,
     get_holdings_summary,
     get_flows_snapshot,
+    get_concalls_snapshot,
     start_background_refresh,
 )
 
@@ -163,6 +164,25 @@ def flows_page(request: Request) -> HTMLResponse:
     )
 
 
+@app.get("/concalls", response_class=HTMLResponse)
+def concalls_page(request: Request, ticker: Optional[str] = None
+                  ) -> HTMLResponse:
+    """Render the con-call summaries page from local cache; no network.
+
+    Optional ?ticker= filter (e.g. ?ticker=ITC) restricts to one stock.
+    """
+    snap = get_concalls_snapshot(filter_ticker=ticker)
+    return templates.TemplateResponse(
+        request,
+        "concalls.html",
+        _ctx(
+            active_nav="concalls",
+            page_title="Con-call summaries",
+            snapshot=snap,
+        ),
+    )
+
+
 @app.get("/fairvalue", response_class=HTMLResponse)
 def fairvalue_page(request: Request) -> HTMLResponse:
     snap = get_fairvalue_snapshot()
@@ -222,6 +242,27 @@ def api_portfolio() -> dict:
 def api_flows() -> dict:
     """JSON: FII/DII history + bulk/block deals for charting/automation."""
     return get_flows_snapshot()
+
+
+@app.get("/api/concalls")
+def api_concalls(ticker: Optional[str] = None) -> dict:
+    """JSON: cached con-call summaries."""
+    return get_concalls_snapshot(filter_ticker=ticker)
+
+
+@app.post("/api/concalls/run")
+def api_concalls_run() -> dict:
+    """Trigger an on-demand con-call scan (runs in background thread)."""
+    def _worker():
+        try:
+            import concalls
+            concalls.run_once(days_back=7, force_send=False)
+        except Exception as e:
+            log.error("concalls on-demand run failed: %s", e)
+    t = threading.Thread(target=_worker, daemon=True,
+                         name="concalls-ondemand")
+    t.start()
+    return {"status": "queued", "kind": "concalls"}
 
 
 @app.get("/api/intraday")

@@ -330,3 +330,104 @@ def _portfolio_tickers() -> list[str]:
         return list(PORTFOLIO_EXPOSURE.keys())
     except Exception:
         return []
+
+
+# ---------- Con-call summaries ----------
+def get_concalls_snapshot(filter_ticker: Optional[str] = None) -> dict:
+    """Read cached con-call summaries from the disk cache.
+
+    Returns a dict suitable for rendering webapp/templates/concalls.html.
+    """
+    PROJECT = Path(__file__).resolve().parent.parent
+    cache_dir = PROJECT / "concalls_cache"
+
+    summaries: list[dict] = []
+    tone_counts: dict[str, int] = {}
+    if cache_dir.exists():
+        for path in sorted(cache_dir.glob("*.json"),
+                           key=lambda p: p.stat().st_mtime,
+                           reverse=True):
+            try:
+                data = json.loads(path.read_text())
+                # Apply ticker filter
+                filing_ticker = data.get("filing", {}).get("ticker", "")
+                if filter_ticker and filing_ticker != filter_ticker:
+                    continue
+                tone = data.get("management_tone", "unknown")
+                tone_counts[tone] = tone_counts.get(tone, 0) + 1
+
+                # Parse the summary_text to extract bullets + phrases
+                bullets, phrases = _parse_summary_bullets_phrases(
+                    data.get("summary_text", "")
+                )
+                guidance = _extract_field(
+                    data.get("summary_text", ""), "GUIDANCE"
+                )
+
+                summaries.append({
+                    "filing": data["filing"],
+                    "management_tone": tone,
+                    "guidance": guidance,
+                    "bullets": bullets,
+                    "phrases": phrases,
+                    "pdf_pages": data.get("pdf_pages", 0),
+                    "pdf_chars": data.get("pdf_chars", 0),
+                    "llm_model": data.get("llm_model", ""),
+                    "llm_duration_sec": data.get("llm_duration_sec", 0),
+                    "summarized_at": data.get("summarized_at", ""),
+                })
+            except Exception as e:
+                log.warning("could not read concalls cache %s: %s",
+                            path.name, e)
+                continue
+
+    # Count summaries filed in the last 7 days
+    from datetime import date, timedelta
+    cutoff = (date.today() - timedelta(days=7)).isoformat()
+    recent_count = sum(
+        1 for s in summaries
+        if s["filing"].get("filing_date", "") >= cutoff
+    )
+
+    return {
+        "summaries": summaries,
+        "recent_count": recent_count,
+        "tone_counts": tone_counts,
+        "all_tickers": sorted(_portfolio_tickers()),
+        "filter_ticker": filter_ticker,
+        "asof": datetime.now().isoformat(timespec="seconds"),
+    }
+
+
+def _extract_field(summary_text: str, field_name: str) -> str:
+    """Extract TONE:/GUIDANCE: field from stored summary_text."""
+    for line in summary_text.splitlines():
+        line = line.strip()
+        if line.upper().startswith(f"{field_name}:"):
+            return line[len(field_name) + 1:].strip().lower()
+    return "unknown"
+
+
+def _parse_summary_bullets_phrases(summary_text: str) -> tuple[list[str], list[str]]:
+    """Extract bullets and KEY_PHRASES from stored summary text."""
+    import re as _re
+    cleaned = _re.sub(r"\*\*(.*?)\*\*", r"\1", summary_text)
+    cleaned = _re.sub(r"\*(.*?)\*", r"\1", cleaned)
+
+    bullets: list[str] = []
+    phrases: list[str] = []
+    in_bullets = False
+    for line in cleaned.splitlines():
+        line = line.strip()
+        if line.upper().startswith("BULLETS:"):
+            in_bullets = True
+        elif line.upper().startswith("KEY_PHRASES:"):
+            in_bullets = False
+            ph = line[len("KEY_PHRASES:"):].strip()
+            phrases = [p.strip().strip('"\'')
+                       for p in ph.split(",") if p.strip()]
+        elif in_bullets and line.startswith("-"):
+            b = line.lstrip("-").strip()
+            if b and not b.lower().startswith("here is the combined"):
+                bullets.append(b)
+    return bullets, phrases
