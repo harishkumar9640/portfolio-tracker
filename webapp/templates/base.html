@@ -8,15 +8,19 @@
   <link rel="stylesheet" href="/static/css/app.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%88%3C/text%3E%3C/svg%3E">
   <script>
-    // Stopwatch driver: starts on first script execution (i.e. before
-    // the body even renders). Updates the on-screen clock every 100ms
-    // and hides the loader as soon as the document is interactive.
+    // Stopwatch driver: shows a loading spinner with elapsed time.
+    // HIDDEN by three signals (whichever comes first):
+    //   1. window.__portfolioReady = true  (set by the page template after
+    //      the snapshot is fully built — no stale values shown)
+    //   2. window load event (CSS + subresources done)
+    //   3. 30s hard cap (so it never sticks forever)
     (function () {
       var t0 = (window.performance && performance.now)
         ? performance.now() : Date.now();
       var clock = null;
       var loader = null;
       var clockTimer = null;
+      var hidden = false;
       function fmt(ms) {
         if (ms < 1000) return Math.round(ms) + "ms";
         return (ms / 1000).toFixed(1) + "s";
@@ -27,7 +31,12 @@
         if (clock) clock.textContent = fmt(now - t0);
       }
       function hide() {
-        if (loader) loader.classList.add("is-hidden");
+        if (hidden) return;
+        hidden = true;
+        // Look up loader element each call — attach() may not have
+        // run yet (DOMContentLoaded hasn't fired).
+        var el = loader || document.getElementById("page-loading");
+        if (el) el.classList.add("is-hidden");
         if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
       }
       function attach() {
@@ -36,17 +45,21 @@
         if (clock) tick();
         clockTimer = setInterval(tick, 100);
       }
-      // Hide on either DOMContentLoaded or window load (whichever
-      // fires first). DOMContentLoaded fires when the body has been
-      // parsed; load fires when all subresources are loaded.
+      // Templates can signal data is ready by setting this flag
+      window.__hidePageLoader = hide;
       document.addEventListener("DOMContentLoaded", function () {
         attach();
-        setTimeout(hide, 250);
+        // Don't auto-hide — wait for the data-ready signal from the
+        // page (see extra_js block). Falls back to load event + 30s cap.
       });
       window.addEventListener("load", function () {
         if (!loader) attach();
-        setTimeout(hide, 250);
+        // Backup: hide 1.5s after all subresources loaded.
+        setTimeout(hide, 1500);
       });
+      // Hard cap so the spinner never sticks forever (e.g. if a JS
+      // error prevents the data-ready signal from firing)
+      setTimeout(hide, 30000);
       window.__stopwatchT0 = t0;
     })();
   </script>

@@ -483,6 +483,26 @@ table { border-collapse: collapse; width: 100%; }
 }
 .btn-small { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
 
+/* ---------- Market status badge ---------- */
+.market-status-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.market-status-badge.is-live {
+  background: rgba(217, 83, 79, 0.12);
+  color: #b3382c;
+  border: 1px solid rgba(217, 83, 79, 0.3);
+}
+.market-status-badge.is-closed {
+  background: rgba(92, 184, 92, 0.12);
+  color: #2f7a3d;
+  border: 1px solid rgba(92, 184, 92, 0.3);
+}
+
 /* ---------- Empty state ---------- */
 .empty-state {
   text-align: center;

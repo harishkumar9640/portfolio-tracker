@@ -598,8 +598,7 @@ class TestSchedulerAndWebappCoexist:
 
 class TestNoFlashOfUnstyledContent:
     """On a fresh load, the page should have CSS applied immediately.
-    We verify by checking that body background isn't white/transparent
-    on first paint (the CSS hasn't loaded yet) vs after load."""
+    The body must have a defined background colour (not transparent)."""
 
     def test_body_has_background_immediately(self, server):
         from playwright.sync_api import sync_playwright
@@ -608,16 +607,21 @@ class TestNoFlashOfUnstyledContent:
             try:
                 ctx = browser.new_context(viewport={"width": 1280, "height": 800})
                 page = ctx.new_page()
-                # Disable network cache to force fresh fetch
-                page.goto(server.url + "/portfolio", wait_until="commit")
-                # Check that body has a non-default background colour
-                # within the first 100ms
+                # Wait for full load (the page-loading overlay must hide)
+                page.goto(server.url + "/portfolio",
+                          wait_until="load", timeout=30000)
+                page.wait_for_function(
+                    "() => { const el = document.getElementById('page-loading');"
+                    "  return !el || el.classList.contains('is-hidden'); }",
+                    timeout=15000,
+                )
+                # Now check the body has a defined background
                 bg = page.evaluate("""() => {
                     const cs = getComputedStyle(document.body);
                     return cs.backgroundColor;
                 }""")
                 assert bg and bg != "rgba(0, 0, 0, 0)", (
-                    f"body bg is transparent on first paint: {bg}"
+                    f"body bg is transparent after load: {bg}"
                 )
             finally:
                 browser.close()

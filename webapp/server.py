@@ -605,13 +605,62 @@ def api_fairvalue_lookup(payload: dict) -> dict:
     return r
 
 
+@app.get("/api/refresh/status")
+def api_refresh_status() -> dict:
+    """Return current cache state for all snapshots.
+    Used by dashboard.js to detect when a manual refresh has completed."""
+    from webapp.data import (
+        _portfolio_cache, _fairvalue_cache, _mf_holdings_cache,
+        _portfolio_in_progress, _portfolio_in_progress_ts,
+        _is_market_open, _current_cache_ttl,
+    )
+    import time
+    now = time.time()
+    return {
+        "market_open": _is_market_open(),
+        "cache_ttl_sec": _current_cache_ttl(),
+        "portfolio": {
+            "in_progress": _portfolio_in_progress,
+            "in_progress_for_sec": (
+                now - _portfolio_in_progress_ts
+                if _portfolio_in_progress else 0
+            ),
+            "cache_age_sec": (
+                now - _portfolio_cache["ts"]
+                if _portfolio_cache["ts"] else None
+            ),
+            "asof": _portfolio_cache.get("asof"),
+        },
+        "fairvalue": {
+            "cache_age_sec": (
+                now - _fairvalue_cache["ts"]
+                if _fairvalue_cache["ts"] else None
+            ),
+        },
+        "mf_holdings": {
+            "cache_age_sec": (
+                now - _mf_holdings_cache["ts"]
+                if _mf_holdings_cache["ts"] else None
+            ),
+        },
+    }
+
+
 @app.get("/api/refresh")
 @app.post("/api/refresh")
 def api_refresh(kind: str = "all") -> JSONResponse:
-    """Trigger a background re-fetch. Returns 202 immediately."""
+    """Trigger a background re-fetch. Returns 202 immediately.
+
+    For 'portfolio', the rebuild is synchronous and the response
+    includes a 'status' URL to poll for completion.
+    """
     valid_kinds = ("portfolio", "fairvalue", "mf_holdings",
                    "flows", "concalls")
+
     if kind in ("portfolio", "all"):
+        # Run portfolio rebuild in a background thread so we return
+        # 202 immediately, but the rebuild is properly serialized
+        # via the lock in webapp.data
         start_background_refresh("portfolio")
     if kind in ("fairvalue", "all"):
         start_background_refresh("fairvalue")
@@ -621,9 +670,11 @@ def api_refresh(kind: str = "all") -> JSONResponse:
         start_background_refresh("flows")
     if kind in ("concalls", "all"):
         start_background_refresh("concalls")
+
     return JSONResponse(
         {"status": "queued",
-         "kinds": [k for k in valid_kinds if kind in (k, "all")]},
+         "kinds": [k for k in valid_kinds if kind in (k, "all")],
+         "poll_url": "/api/refresh/status"},
         status_code=202,
     )
 

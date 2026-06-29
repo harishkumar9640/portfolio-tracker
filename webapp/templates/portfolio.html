@@ -5,7 +5,12 @@
   <div>
     <h1 class="mb-0">Today's Portfolio</h1>
     <p class="text-muted mb-0">
-      {{ snapshot.asof or '—' }} · auto-refreshed from Angel One, mfapi.in, NSE, IBJA
+      <span data-portfolio-asof="{{ snapshot.asof or '' }}">
+        {{ snapshot.asof or '—' }}
+      </span>
+      <span id="market-status-badge" class="market-status-badge"
+            style="margin-left: 0.5rem;"></span>
+      · auto-refreshed from Angel One, mfapi.in, NSE, IBJA
     </p>
   </div>
   <div class="flex-gap-2">
@@ -460,6 +465,47 @@
         });
       })(rows[i]);
     }
+  })();
+</script>
+
+{# Signal the page loader that the snapshot is fully rendered. #}
+<script>
+  if (window.__hidePageLoader) { window.__hidePageLoader(); }
+</script>
+
+{# Market-status badge updater. Polls /api/refresh/status every 60s
+   to show whether NSE is currently in a live trading session. #}
+<script>
+  (function () {
+    var badge = document.getElementById('market-status-badge');
+    if (!badge) return;
+    function fmt(seconds) {
+      if (seconds < 60) return seconds + 's';
+      if (seconds < 3600) return Math.floor(seconds / 60) + 'm ' + (seconds % 60) + 's';
+      return Math.floor(seconds / 60) + 'm';
+    }
+    function refresh() {
+      fetch('/api/refresh/status', { cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (s) {
+          if (!s) return;
+          var open = s.market_open;
+          var ttl = s.cache_ttl_sec;
+          var p = s.portfolio || {};
+          var age = p.cache_age_sec;
+          if (open) {
+            badge.className = 'market-status-badge is-live';
+            badge.textContent = '🔴 LIVE · refreshes every ' + ttl + 's';
+          } else {
+            badge.className = 'market-status-badge is-closed';
+            badge.textContent = '🟢 market closed · data from ' +
+              (age != null ? fmt(age) + ' ago' : 'last close');
+          }
+        })
+        .catch(function () { /* silent */ });
+    }
+    refresh();
+    setInterval(refresh, 60000);
   })();
 </script>
 

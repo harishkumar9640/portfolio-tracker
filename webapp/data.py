@@ -74,18 +74,87 @@ def _build_portfolio_snapshot() -> dict:
     return snap
 
 
+# ---------- Portfolio snapshot ----------
+# Threading primitives so we don't pile up concurrent rebuilds.
+import threading as _threading
+from datetime import datetime as _dt
+from zoneinfo import ZoneInfo as _zi
+_IST = _zi("Asia/Kolkata")
+_MKT_OPEN = _dt.strptime("09:15", "%H:%M").time()
+_MKT_CLOSE = _dt.strptime("15:30", "%H:%M").time()
+
+
+def _is_market_open() -> bool:
+    """True during NSE trading hours (Mon-Fri 9:15-15:30 IST)."""
+    n = _dt.now(_IST)
+    if n.weekday() >= 5:  # Sat/Sun
+        return False
+    return _MKT_OPEN <= n.time() <= _MKT_CLOSE
+
+
+def _current_cache_ttl() -> int:
+    """60s during market hours, 300s otherwise."""
+    return 60 if _is_market_open() else 300
+
+
+_portfolio_lock = _threading.Lock()
+_portfolio_in_progress = False
+_portfolio_in_progress_ts: float = 0.0
+
+
 def get_portfolio_snapshot(force: bool = False) -> dict:
-    """Return today's portfolio snapshot, cached for _CACHE_TTL seconds."""
+    """Return today's portfolio snapshot.
+
+    Cache semantics:
+      - Default: serve from cache if < _current_cache_ttl() seconds old.
+        60s during NSE market hours, 300s otherwise.
+      - force=True (manual Refresh button): always rebuild.
+      - If a rebuild is already in progress, return the cached value
+        instead of kicking off a second one.
+    """
     import time
+    global _portfolio_in_progress, _portfolio_in_progress_ts
+
     now = time.time()
-    if not force and _portfolio_cache["data"] is not None:
-        if (now - _portfolio_cache["ts"]) < _CACHE_TTL:
+    ttl = _current_cache_ttl()
+    cache_age = now - _portfolio_cache["ts"] if _portfolio_cache["ts"] else 1e9
+
+    # Fast path: cache hit
+    if not force and _portfolio_cache["data"] is not None and cache_age < ttl:
+        return _portfolio_cache["data"]
+
+    # If another request is already rebuilding, return stale cache
+    if _portfolio_in_progress and not force:
+        log.info("portfolio rebuild in progress; returning stale cache")
+        if _portfolio_cache["data"] is not None:
             return _portfolio_cache["data"]
-    data = _build_portfolio_snapshot()
-    _portfolio_cache["data"] = data
-    _portfolio_cache["ts"] = now
-    _portfolio_cache["asof"] = data.get("asof")
-    return data
+        # No cache yet — wait for the in-progress rebuild
+        for _ in range(50):  # 25s max
+            time.sleep(0.5)
+            if not _portfolio_in_progress:
+                break
+        if _portfolio_cache["data"] is not None:
+            return _portfolio_cache["data"]
+
+    # Acquire lock to do the rebuild (only one thread at a time)
+    if not _portfolio_lock.acquire(blocking=False):
+        # Another thread is rebuilding; wait for it
+        _portfolio_lock.acquire()
+        return _portfolio_cache["data"] or _build_portfolio_snapshot()
+
+    _portfolio_in_progress = True
+    _portfolio_in_progress_ts = now
+    try:
+        log.info("rebuilding portfolio snapshot (force=%s, age=%.0fs, ttl=%ds, market_open=%s)",
+                 force, cache_age, ttl, _is_market_open())
+        data = _build_portfolio_snapshot()
+        _portfolio_cache["data"] = data
+        _portfolio_cache["ts"] = now
+        _portfolio_cache["asof"] = data.get("asof")
+        return data
+    finally:
+        _portfolio_in_progress = False
+        _portfolio_lock.release()
 
 
 # ---------- Fair-value snapshot ----------

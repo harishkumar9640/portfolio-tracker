@@ -21,32 +21,72 @@
     });
   }
 
-  // ----- Refresh button (POST /api/refresh) -----
+  // ----- Refresh button (POST /api/refresh, then poll, then reload) -----
   const refreshBtn = document.getElementById('refreshBtn');
   const toast = document.getElementById('toast');
   let toastTimer = null;
-  function showToast(msg) {
+  function showToast(msg, kind) {
     if (!toast) return;
     toast.textContent = msg;
-    toast.classList.add('is-visible');
+    toast.className = 'toast is-visible' + (kind ? ' is-' + kind : '');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 3500);
+    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 5000);
   }
   if (refreshBtn) {
     refreshBtn.addEventListener('click', async () => {
       const kind = refreshBtn.dataset.kind || 'all';
-      refreshBtn.disabled = true;
       const orig = refreshBtn.textContent;
-      refreshBtn.textContent = 'Refreshing…';
+      refreshBtn.disabled = true;
+      refreshBtn.classList.add('is-loading');
+      refreshBtn.textContent = '🔄 Starting…';
+
       try {
-        const res = await fetch(`/api/refresh?kind=${encodeURIComponent(kind)}`,
+        // 1) Kick off the rebuild
+        const res = await fetch('/api/refresh?kind=' + encodeURIComponent(kind),
                                 { method: 'POST' });
-        if (!res.ok && res.status !== 202) throw new Error(`HTTP ${res.status}`);
-        showToast(`Refresh queued (${kind}). Reload in 30s for fresh data.`);
+        if (!res.ok && res.status !== 202) {
+          throw new Error('HTTP ' + res.status);
+        }
+
+        // 2) Poll /api/refresh/status until done (or 2-minute cap)
+        refreshBtn.textContent = '🔄 Refreshing…';
+        const startAsOf = document.querySelector('[data-portfolio-asof]')?.getAttribute('data-portfolio-asof') || '';
+        const t0 = Date.now();
+        const timeoutMs = 120000;
+        const pollMs = 2000;
+
+        while (Date.now() - t0 < timeoutMs) {
+          await new Promise(r => setTimeout(r, pollMs));
+          try {
+            const sr = await fetch('/api/refresh/status', { cache: 'no-store' });
+            if (sr.ok) {
+              const s = await sr.json();
+              const p = s.portfolio || {};
+              const elapsed = Math.floor((Date.now() - t0) / 1000);
+              refreshBtn.textContent = '🔄 Refreshing… ' + elapsed + 's';
+              // Done when: not in progress, AND asof is newer than before
+              if (!p.in_progress && p.asof && p.asof !== startAsOf) {
+                refreshBtn.textContent = '✓ Done — reloading';
+                showToast('Refresh complete. Reloading…', 'success');
+                setTimeout(() => location.reload(), 600);
+                return;
+              }
+              // In progress is also fine to show
+              if (p.in_progress) {
+                refreshBtn.textContent = '🔄 Refreshing… ' + elapsed + 's';
+              }
+            }
+          } catch (e) {
+            // ignore transient network errors
+          }
+        }
+        // Timed out — tell user to reload manually
+        showToast('Refresh is taking longer than expected. Reload manually.', 'warning');
       } catch (e) {
-        showToast(`Refresh failed: ${e.message}`);
+        showToast('Refresh failed: ' + e.message, 'error');
       } finally {
         refreshBtn.disabled = false;
+        refreshBtn.classList.remove('is-loading');
         refreshBtn.textContent = orig;
       }
     });
