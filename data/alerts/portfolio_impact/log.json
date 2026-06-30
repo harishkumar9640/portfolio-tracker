@@ -1,1103 +1,5 @@
 [
   {
-    "ran_at": "2026-06-30T15:43:46+05:30",
-    "url": "https://www.investing.com/news/company-news/hyperscale-data-reports-1067m-in-bitcoin-cash-and-silver-holdings-93CH-4767236",
-    "title": "Hyperscale Data reports $106.7m in bitcoin, cash and silver holdings",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:43:46+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:43:46+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:43:50+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:43:50+05:30",
-    "url": "https://www.investing.com/news/company-news/hyperscale-data-reports-1067m-in-bitcoin-cash-and-silver-holdings-93CH-4767236",
-    "title": "Hyperscale Data reports $106.7m in bitcoin, cash and silver holdings",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:43:50+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:43:50+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:44:00+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:44:00+05:30",
-    "url": "https://www.investing.com/news/company-news/hyperscale-data-reports-1067m-in-bitcoin-cash-and-silver-holdings-93CH-4767236",
-    "title": "Hyperscale Data reports $106.7m in bitcoin, cash and silver holdings",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:44:00+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:44:00+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:36+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:36+05:30",
-    "url": "https://www.investing.com/news/economy-news/with-independent-agencies-imperiled-fed-may-face-further-pressure-despite-cook-win-4767251",
-    "title": "With independent agencies imperiled, Fed may face further pressure despite Cook win",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:36+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:36+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:40+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:40+05:30",
-    "url": "https://www.investing.com/news/economy-news/with-independent-agencies-imperiled-fed-may-face-further-pressure-despite-cook-win-4767251",
-    "title": "With independent agencies imperiled, Fed may face further pressure despite Cook win",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:40+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:40+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:49+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:49+05:30",
-    "url": "https://www.investing.com/news/economy-news/with-independent-agencies-imperiled-fed-may-face-further-pressure-despite-cook-win-4767251",
-    "title": "With independent agencies imperiled, Fed may face further pressure despite Cook win",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:49+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:53:49+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:15+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:15+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:15+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:15+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:25+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:25+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:25+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:25+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:35+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:35+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:35+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T15:58:35+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:09:48+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
     "ran_at": "2026-06-30T16:09:48+05:30",
     "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
     "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
@@ -1554,6 +456,1236 @@
       }
     },
     "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:21:59+05:30",
+    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
+    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:21:59+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:21:59+05:30",
+    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
+    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "KNRCON",
+        "score": 6,
+        "reason": "highways, highway"
+      }
+    ],
+    "sentiment": {
+      "KNRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "delhi"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:21:59+05:30",
+    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
+    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:21:59+05:30",
+    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
+    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:21:59+05:30",
+    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
+    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 9,
+        "reason": "rail, rail project, high-speed rail"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "bullet train",
+          "high-speed rail"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: bullet train, high-speed rail"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "mumbai"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:02+05:30",
+    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
+    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:02+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:02+05:30",
+    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
+    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "KNRCON",
+        "score": 6,
+        "reason": "highways, highway"
+      }
+    ],
+    "sentiment": {
+      "KNRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "delhi"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:02+05:30",
+    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
+    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:02+05:30",
+    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
+    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:02+05:30",
+    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
+    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 9,
+        "reason": "rail, rail project, high-speed rail"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "bullet train",
+          "high-speed rail"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: bullet train, high-speed rail"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "mumbai"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:11+05:30",
+    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
+    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:11+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:11+05:30",
+    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
+    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "KNRCON",
+        "score": 6,
+        "reason": "highways, highway"
+      }
+    ],
+    "sentiment": {
+      "KNRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "delhi"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:11+05:30",
+    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
+    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:11+05:30",
+    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
+    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:22:11+05:30",
+    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
+    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 9,
+        "reason": "rail, rail project, high-speed rail"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "bullet train",
+          "high-speed rail"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: bullet train, high-speed rail"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "mumbai"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:51+05:30",
+    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
+    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:51+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:51+05:30",
+    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
+    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "KNRCON",
+        "score": 6,
+        "reason": "highways, highway"
+      }
+    ],
+    "sentiment": {
+      "KNRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "delhi"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:51+05:30",
+    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
+    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:51+05:30",
+    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
+    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:51+05:30",
+    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
+    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 9,
+        "reason": "rail project, high-speed rail, rail"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "bullet train",
+          "high-speed rail"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: bullet train, high-speed rail"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "mumbai"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:54+05:30",
+    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
+    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:54+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:54+05:30",
+    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
+    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "KNRCON",
+        "score": 6,
+        "reason": "highways, highway"
+      }
+    ],
+    "sentiment": {
+      "KNRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "delhi"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:54+05:30",
+    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
+    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:54+05:30",
+    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
+    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:27:54+05:30",
+    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
+    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 9,
+        "reason": "rail project, high-speed rail, rail"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "bullet train",
+          "high-speed rail"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: bullet train, high-speed rail"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "mumbai"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:28:04+05:30",
+    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
+    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:28:04+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:28:04+05:30",
+    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
+    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "KNRCON",
+        "score": 6,
+        "reason": "highways, highway"
+      }
+    ],
+    "sentiment": {
+      "KNRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "delhi"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:28:04+05:30",
+    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
+    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:28:04+05:30",
+    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
+    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T16:28:04+05:30",
+    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
+    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 9,
+        "reason": "rail project, high-speed rail, rail"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "bullet train",
+          "high-speed rail"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: bullet train, high-speed rail"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "mumbai"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
     "is_generic_only": false,
     "telegram_sent": false
   }
