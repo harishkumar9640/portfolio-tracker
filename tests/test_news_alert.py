@@ -1,5 +1,5 @@
 """
-Tests for news_alert.py — global news digest + Telegram delivery.
+Tests for pipeline.news_alert.py — global news digest + Telegram delivery.
 
 Covers:
   - _parse_rss: handles RSS 2.0 + Atom 1.0
@@ -31,8 +31,8 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import news_alert as na  # noqa: E402
-from news_alert import (  # noqa: E402
+import pipeline.news_alert as na  # noqa: E402
+from pipeline.news_alert import (  # noqa: E402
     Article,
     CATEGORY_KEYWORDS,
     CATEGORY_DISPLAY,
@@ -487,14 +487,14 @@ class TestShouldSkipMissedRun:
 
 
 class TestSchedulerLoopIntegration:
-    """Light integration test: drive the scheduler loop with a fake
+    """Light integration test: drive the pipeline.scheduler loop with a fake
     clock + fast Event.wait, verifying both the happy path and the
     missed-window skip path."""
 
     def _patched_loop(self, monkeypatch, fake_now_utc):
         """Replace datetime.now + Event.wait with controllable fakes.
         Returns the run-call recorder and a stop() helper."""
-        from news_alert import _scheduler_loop
+        from pipeline.news_alert import _scheduler_loop
         runs = []
         monkeypatch.setattr(na, "run_once",
                             lambda *a, **kw: runs.append(1))
@@ -560,7 +560,7 @@ class TestSchedulerLoopIntegration:
         Regression test: the previous version logged a UTC-naive
         timestamp but labelled it 'IST', which was misleading by 5h30.
         """
-        from news_alert import _scheduler_loop
+        from pipeline.news_alert import _scheduler_loop
         captured = []
         class FakeLog:
             def info(self, fmt, *args):

@@ -17,9 +17,9 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-from angel_client import Holding               # noqa: E402
-from mf_sgb import aggregate, _norm            # noqa: E402
-from logging_setup import get_logger, LOGS_DIR # noqa: E402
+from pipeline.angel_client import Holding               # noqa: E402
+from pipeline.mf_sgb import aggregate, _norm            # noqa: E402
+from pipeline.logging_setup import get_logger, LOGS_DIR # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -69,12 +69,12 @@ class TestHolding:
 # ---------------------------------------------------------------------------
 class TestAggregate:
     def test_empty(self):
-        from mf_sgb import AssetRow
+        from pipeline.mf_sgb import AssetRow
         agg = aggregate([])
         assert agg == {"value": 0.0, "prev_value": 0.0, "pct": 0.0, "count": 0}
 
     def test_skips_zero_rows(self):
-        from mf_sgb import AssetRow
+        from pipeline.mf_sgb import AssetRow
         rows = [
             AssetRow(name="A", kind="mf", units=10, value=1000, prev_value=950, pct=0, extra={}),
             AssetRow(name="B", kind="mf", units=0, value=0, prev_value=0, pct=0, extra={"error": "x"}),
@@ -86,7 +86,7 @@ class TestAggregate:
         assert agg["pct"] == pytest.approx((1000/950 - 1) * 100)
 
     def test_pct_guarded_on_zero_prev(self):
-        from mf_sgb import AssetRow
+        from pipeline.mf_sgb import AssetRow
         rows = [
             AssetRow(name="A", kind="mf", units=10, value=1000, prev_value=0, pct=0, extra={}),
         ]
@@ -127,7 +127,7 @@ class TestLogging:
 
     def test_idempotent_configuration(self):
         import logging
-        from logging_setup import configure_logging
+        from pipeline.logging_setup import configure_logging
         root = logging.getLogger("portfolio")
         handlers_before = list(root.handlers)
         configure_logging()
@@ -137,7 +137,7 @@ class TestLogging:
 
 
 # ---------------------------------------------------------------------------
-# equity_compare bug regression
+# pipeline.equity_compare bug regression
 # ---------------------------------------------------------------------------
 class TestEquityPrevFix:
     """
@@ -149,7 +149,7 @@ class TestEquityPrevFix:
     def test_total_prev_includes_equity_when_row_present(self):
         # Simulate main()'s logic in isolation.
         from dataclasses import dataclass
-        from mf_sgb import AssetRow
+        from pipeline.mf_sgb import AssetRow
 
         @dataclass
         class H:
@@ -177,7 +177,7 @@ class TestEquityPrevFix:
         assert total_prev > mf_prev
 
 
-# equity_compare equity_row.pnl_today should equal value − prev_value
+# pipeline.equity_compare equity_row.pnl_today should equal value − prev_value
 # ---------------------------------------------------------------------------
 class TestEquityRowPnlToday:
     """Regression test for the 'show today's ₹ gain/loss on the bar' feature.
@@ -185,11 +185,11 @@ class TestEquityRowPnlToday:
     """
 
     def test_pnl_today_is_value_minus_prev(self):
-        from equity_compare import build_snapshot
+        from pipeline.equity_compare import build_snapshot
         # Construct a minimal _mock with one equity holding
         mock = {
             "holdings": [
-                # SimpleNamespace-like object with the fields equity_compare reads
+                # SimpleNamespace-like object with the fields pipeline.equity_compare reads
                 # We'll use SimpleNamespace for type-safety
             ],
         }
@@ -211,7 +211,7 @@ class TestEquityRowPnlToday:
         assert abs(row["pct"] - 10.0) < 1e-9  # (1100/1000 - 1) * 100
 
     def test_pnl_today_negative_when_price_drops(self):
-        from equity_compare import build_snapshot
+        from pipeline.equity_compare import build_snapshot
         from types import SimpleNamespace
         mock = {
             "holdings": [

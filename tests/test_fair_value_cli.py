@@ -1,5 +1,5 @@
 """
-Tests for the fair_value.valuation CLI (main() entry point).
+Tests for the pipeline.fair_value.valuation CLI (main() entry point).
 
 We exercise the CLI as a real subprocess to catch argparse errors,
 exit codes, CSV formatting, and stdout/stderr output.
@@ -29,7 +29,7 @@ def run_cli(*args: str, env_overrides: dict | None = None) -> subprocess.Complet
 
     We invoke ``python3 -m tests._mockpkg fairvalue.py ...`` so the
     mock is installed BEFORE fairvalue.py imports happen. PT_FV_MOCK=1
-    forces the fair_value package to use a deterministic fixture
+    forces the pipeline.fair_value package to use a deterministic fixture
     instead of hitting screener.in.
     """
     env = {
@@ -42,7 +42,7 @@ def run_cli(*args: str, env_overrides: dict | None = None) -> subprocess.Complet
         env.update(env_overrides)
     return subprocess.run(
         [sys.executable, "-m", "tests._mockpkg",
-         str(PROJECT / "fairvalue.py"), *args],
+         "-m", "pipeline.fair_value.valuation", *args],
         capture_output=True, text=True, timeout=60, env=env,
     )
 
@@ -143,7 +143,7 @@ class TestCLICSVOutput:
 
     def test_csv_contains_all_valuation_columns(self, tmp_path: Path):
         """The CSV header must include every ValuationRow field."""
-        from fair_value.valuation import ValuationRow
+        from pipeline.fair_value.valuation import ValuationRow
         out_csv = tmp_path / "out.csv"
         run_cli("RELIANCE", "--output-file", str(out_csv))
         with out_csv.open() as f:

@@ -1,9 +1,9 @@
 """
-End-to-end browser test for the intraday chart on the history page.
+End-to-end browser test for the pipeline.intraday chart on the history page.
 
 Spins up a real webapp server, opens a real Chromium browser, and:
   1. Loads /history
-  2. Verifies the intraday buttons (15m / 5m / 1m) are visible
+  2. Verifies the pipeline.intraday buttons (15m / 5m / 1m) are visible
   3. Verifies the 5m chart renders by default
   4. Clicks each interval button and verifies the API is called
   5. Asserts no console errors at any step
@@ -125,12 +125,12 @@ class TestIntradayHistoryUX:
         assert pressed == "true", "5m button should be the default active"
 
     def test_chart_loads_with_mocked_api(self, page, server_url):
-        """Mock /api/intraday to avoid hitting real yfinance. Verify the
+        """Mock /api/pipeline.intraday to avoid hitting real yfinance. Verify the
         chart library receives data and renders the status line."""
         import json as _json
 
         def mock_intraday(route, request):
-            # URL like .../api/intraday?interval=5m
+            # URL like .../api/pipeline.intraday?interval=5m
             url = request.url
             if "interval=1m" in url:
                 interval = "1m"
@@ -156,14 +156,14 @@ class TestIntradayHistoryUX:
                           body=_json.dumps(payload))
 
         pg, errs = page
-        pg.route("**/api/intraday**", mock_intraday)
+        pg.route("**/api/pipeline.intraday**", mock_intraday)
         pg.goto(f"{server_url}/history", wait_until="networkidle", timeout=15000)
         # Wait for the status line to update
         pg.wait_for_function(
-            "document.getElementById('intraday-status').textContent.startsWith('Showing')",
+            "document.getElementById('pipeline.intraday-status').textContent.startsWith('Showing')",
             timeout=15000,
         )
-        status = pg.locator("#intraday-status").inner_text()
+        status = pg.locator("#pipeline.intraday-status").inner_text()
         assert "5m interval" in status
         assert "2 series" in status or "Showing 2" in status
 
@@ -178,10 +178,10 @@ class TestIntradayHistoryUX:
                               "series": {"Nifty 50 (IN)": [{"t": "2026-06-25T09:15:00+00:00", "v": 100.0}]},
                           }))
         pg, _ = page
-        pg.route("**/api/intraday**", mock_intraday)
+        pg.route("**/api/pipeline.intraday**", mock_intraday)
         pg.goto(f"{server_url}/history", wait_until="networkidle", timeout=15000)
         pg.wait_for_function(
-            "document.getElementById('intraday-status').textContent.startsWith('Showing')",
+            "document.getElementById('pipeline.intraday-status').textContent.startsWith('Showing')",
             timeout=15000,
         )
         pg.click('button[data-interval="1m"]')
@@ -190,7 +190,7 @@ class TestIntradayHistoryUX:
             timeout=5000,
         )
         pg.wait_for_function(
-            'document.getElementById(`intraday-status`).textContent.includes(`1m interval`)',
+            'document.getElementById(`pipeline.intraday-status`).textContent.includes(`1m interval`)',
             timeout=10000,
         )
 
@@ -205,10 +205,10 @@ class TestIntradayHistoryUX:
                               "series": {"Nifty 50 (IN)": [{"t": "2026-06-25T09:15:00+00:00", "v": 100.0}]},
                           }))
         pg, _ = page
-        pg.route("**/api/intraday**", mock_intraday)
+        pg.route("**/api/pipeline.intraday**", mock_intraday)
         pg.goto(f"{server_url}/history", wait_until="networkidle", timeout=15000)
         pg.wait_for_function(
-            "document.getElementById('intraday-status').textContent.startsWith('Showing')",
+            "document.getElementById('pipeline.intraday-status').textContent.startsWith('Showing')",
             timeout=15000,
         )
         pg.click('button[data-interval="15m"]')
@@ -217,7 +217,7 @@ class TestIntradayHistoryUX:
             timeout=5000,
         )
         pg.wait_for_function(
-            'document.getElementById(`intraday-status`).textContent.includes(`15m interval`)',
+            'document.getElementById(`pipeline.intraday-status`).textContent.includes(`15m interval`)',
             timeout=10000,
         )
 
@@ -227,13 +227,13 @@ class TestIntradayHistoryUX:
             route.fulfill(status=200, content_type="application/json",
                           body=_json.dumps({"error": "unsupported interval 'foo'", "interval": "foo"}))
         pg, _ = page
-        pg.route("**/api/intraday**", mock_error)
+        pg.route("**/api/pipeline.intraday**", mock_error)
         pg.goto(f"{server_url}/history", wait_until="networkidle", timeout=15000)
         # Trigger a load with the default button click sequence
         pg.wait_for_function(
-            "document.getElementById('intraday-status').textContent.includes('Error') || "
-            "document.getElementById('intraday-status').textContent.startsWith('Showing') || "
-            "document.getElementById('intraday-status').textContent.includes('Failed')",
+            "document.getElementById('pipeline.intraday-status').textContent.includes('Error') || "
+            "document.getElementById('pipeline.intraday-status').textContent.startsWith('Showing') || "
+            "document.getElementById('pipeline.intraday-status').textContent.includes('Failed')",
             timeout=15000,
         )
         # No JS crash

@@ -1,0 +1,177 @@
+[
+  {
+    "ran_at": "2026-06-28T08:22:15+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T08:22:37+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 1,
+    "tickers_changed": [
+      "ITC"
+    ],
+    "email": {
+      "sent": true,
+      "mode": "smtp",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[SHP Alert] 1 stock changed shareholding: ITC"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T08:26:20+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T11:05:01+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T16:35:00+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T11:05:05+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T16:35:02+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:47:47+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:52:34+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:52:35+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": true,
+      "mode": "smtp",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[SHP Alert] No changes this quarter"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:56:07+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:56:08+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": true,
+      "mode": "smtp",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[SHP Alert] No changes this quarter"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:58:43+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:58:44+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": true,
+      "mode": "smtp",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[SHP Alert] No changes this quarter"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T11:05:00+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  }
+]

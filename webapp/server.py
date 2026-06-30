@@ -37,7 +37,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from logging_setup import get_logger
+from pipeline.logging_setup import get_logger
 from webapp import TEMPLATES_DIR, STATIC_DIR
 from pathlib import Path
 PROJECT_CHARTS_DIR = Path(__file__).resolve().parent.parent / "charts"
@@ -89,7 +89,7 @@ def _ctx(**extra) -> dict:
 # alert pipeline. If the file is missing or empty, we return an empty dict
 # and the UI shows a "No data" placeholder.
 def _get_shareholding_for_portfolio() -> dict:
-    from shareholding_alert import PREV_FILE
+    from pipeline.shareholding_alert import PREV_FILE
     if not PREV_FILE.exists():
         return {"asof": None, "tickers": {}, "row_count": 0}
     try:
@@ -258,7 +258,7 @@ def api_concalls_run() -> dict:
     """Trigger an on-demand con-call scan (runs in background thread)."""
     def _worker():
         try:
-            import concalls
+            import pipeline.concalls as concalls
             concalls.run_once(days_back=7, force_send=False)
         except Exception as e:
             log.error("concalls on-demand run failed: %s", e)
@@ -279,7 +279,7 @@ def api_intraday(interval: str = "5m") -> dict:
     if interval not in ("1m", "5m", "15m"):
         return {"error": f"unsupported interval {interval!r}; use 1m, 5m, or 15m"}
     try:
-        from intraday import build_intraday_snapshot
+        from pipeline.intraday import build_intraday_snapshot
         return build_intraday_snapshot(interval)  # type: ignore[arg-type]
     except Exception as e:
         log.exception("intraday snapshot failed for %s", interval)
@@ -349,7 +349,7 @@ def api_mf_alert_run(payload: Optional[dict] = None) -> dict:
             "email":               {sent, mode, ...}
         }
     """
-    from mf_holdings_alert import run_once
+    from pipeline.mf_holdings_alert import run_once
     force_email = bool((payload or {}).get("force_email", False))
     return run_once(force_email=force_email)
 
@@ -361,7 +361,7 @@ def api_mf_alert_log() -> dict:
     Useful for the user to verify the scheduler is working.
     """
     from pathlib import Path
-    from mf_holdings_alert import ALERT_LOG_FILE
+    from pipeline.mf_holdings_alert import ALERT_LOG_FILE
     if not ALERT_LOG_FILE.exists():
         return {"runs": []}
     try:
@@ -383,7 +383,7 @@ def api_news_run(payload: Optional[dict] = None) -> dict:
             "force_send": true    # send even if no significant news
         }
     """
-    from news_alert import run_once as news_run_once
+    from pipeline.news_alert import run_once as news_run_once
     force_send = bool((payload or {}).get("force_send", False))
     return news_run_once(force_send=force_send)
 
@@ -391,7 +391,7 @@ def api_news_run(payload: Optional[dict] = None) -> dict:
 @app.get("/api/news/log")
 def api_news_log() -> dict:
     """Return the last 30 news-digest runs (most recent first)."""
-    from news_alert import LOG_FILE
+    from pipeline.news_alert import LOG_FILE
     if not LOG_FILE.exists():
         return {"runs": []}
     try:
@@ -411,7 +411,7 @@ def api_shareholding_run(payload: Optional[dict] = None) -> dict:
             "force_email": true    # send email even if no changes
         }
     """
-    from shareholding_alert import run_once as shp_run_once
+    from pipeline.shareholding_alert import run_once as shp_run_once
     force_email = bool((payload or {}).get("force_email", False))
     return shp_run_once(force_email=force_email)
 
@@ -419,7 +419,7 @@ def api_shareholding_run(payload: Optional[dict] = None) -> dict:
 @app.get("/api/shareholding/log")
 def api_shareholding_log() -> dict:
     """Return the last 30 shareholding-alert runs (most recent first)."""
-    from shareholding_alert import LOG_FILE
+    from pipeline.shareholding_alert import LOG_FILE
     if not LOG_FILE.exists():
         return {"runs": []}
     try:
@@ -435,7 +435,7 @@ def api_shareholding_snapshot() -> dict:
     Fetch the latest shareholding data for all 8 tickers without
     persisting or comparing. Useful for the UI / on-demand display.
     """
-    from shareholding_alert import fetch_all
+    from pipeline.shareholding_alert import fetch_all
     try:
         snap = fetch_all(parallel=True)
     except Exception as e:
@@ -465,7 +465,7 @@ def api_portfolio_impact_scan(payload: Optional[dict] = None) -> dict:
             "dry_run": true    # log the alerts instead of sending
         }
     """
-    from portfolio_impact import scan_once
+    from pipeline.portfolio_impact import scan_once
     dry_run = bool((payload or {}).get("dry_run", False))
     return scan_once(send=not dry_run)
 
@@ -473,7 +473,7 @@ def api_portfolio_impact_scan(payload: Optional[dict] = None) -> dict:
 @app.get("/api/portfolio_impact/log")
 def api_portfolio_impact_log() -> dict:
     """Return the last 50 portfolio-impact alerts (most recent first)."""
-    from portfolio_impact import IMPACT_LOG_FILE
+    from pipeline.portfolio_impact import IMPACT_LOG_FILE
     if not IMPACT_LOG_FILE.exists():
         return {"alerts": []}
     try:
@@ -489,7 +489,7 @@ def api_portfolio_impact_exposure() -> dict:
     Return the portfolio exposure map (ticker → sectors + risk drivers).
     Useful for the UI / debugging.
     """
-    from portfolio_impact import PORTFOLIO_EXPOSURE
+    from pipeline.portfolio_impact import PORTFOLIO_EXPOSURE
     return {"exposure": PORTFOLIO_EXPOSURE}
 
 
@@ -500,7 +500,7 @@ def api_news_preview() -> dict:
     Useful for the user to verify the categories are working before
     relying on the daily cron.
     """
-    from news_alert import (
+    from pipeline.news_alert import (
         fetch_articles, _filter_fresh, _categorise_and_dedup,
         _load_seen, _save_seen, render_telegram,
     )
@@ -534,7 +534,7 @@ def api_fairvalue_search(q: str = "", limit: int = 10) -> dict:
     Empty ``q`` returns the most-popular schemes (useful for the default
     dropdown state).
     """
-    from fair_value.search import search_schemes
+    from pipeline.fair_value.search import search_schemes
     return {"query": q, "results": search_schemes(q, limit=limit)}
 
 
@@ -554,10 +554,10 @@ def api_fairvalue_lookup(payload: dict) -> dict:
 
     Returns the full breakdown including the underlying fundamentals.
     """
-    from fair_value.valuation import (
+    from pipeline.fair_value.valuation import (
         check,
     )
-    from fair_value.search import resolve_ticker
+    from pipeline.fair_value.search import resolve_ticker
 
     raw_ticker = (payload.get("ticker") or "").strip()
     if not raw_ticker:
@@ -727,7 +727,7 @@ def main() -> None:
     # it runs in dry-run mode (logs emails instead of sending).
     if not os.environ.get("MF_ALERT_DISABLED"):
         try:
-            from mf_holdings_alert import start_daily_scheduler
+            from pipeline.mf_holdings_alert import start_daily_scheduler
             start_daily_scheduler()
         except Exception as e:
             log.warning("could not start mf_holdings_alert scheduler: %s", e)
@@ -737,7 +737,7 @@ def main() -> None:
     # runs in dry-run mode (logs the message body instead of sending).
     if not os.environ.get("NEWS_DISABLED"):
         try:
-            from news_alert import start_daily_scheduler as start_news_scheduler
+            from pipeline.news_alert import start_daily_scheduler as start_news_scheduler
             start_news_scheduler()
         except Exception as e:
             log.warning("could not start news_alert scheduler: %s", e)
@@ -746,7 +746,7 @@ def main() -> None:
     # Reuses the same SMTP creds as mf_holdings_alert.
     if not os.environ.get("SHP_ALERT_DISABLED"):
         try:
-            from shareholding_alert import start_daily_scheduler as start_shp_scheduler
+            from pipeline.shareholding_alert import start_daily_scheduler as start_shp_scheduler
             start_shp_scheduler()
         except Exception as e:
             log.warning("could not start shareholding_alert scheduler: %s", e)
@@ -756,7 +756,7 @@ def main() -> None:
     # alerts when a story affects one of your stocks.
     if not os.environ.get("PORTFOLIO_IMPACT_DISABLED"):
         try:
-            from portfolio_impact import start_daily_scheduler as start_impact_scheduler
+            from pipeline.portfolio_impact import start_daily_scheduler as start_impact_scheduler
             start_impact_scheduler(interval_minutes=30)
         except Exception as e:
             log.warning("could not start portfolio_impact scheduler: %s", e)

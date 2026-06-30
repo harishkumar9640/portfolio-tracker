@@ -25,8 +25,10 @@ from fastapi import Request
 from webapp import TEMPLATES_DIR
 from webapp.data import _portfolio_tickers
 
-# Where the Tax PNL xlsx files live (in Downloads)
-TAX_PNL_DIR = Path("/Users/hkc21/Downloads")
+# Where the Tax PNL xlsx files live. Drop new files into this folder
+# after downloading from Angel One; the Tax & P&L page picks them up
+# on next refresh.
+TAX_PNL_DIR = Path(__file__).resolve().parent.parent / "data" / "tax_pnl"
 TAX_PNL_PATTERNS = [
     "Tax PNL 2022-23 (1).xlsx",
     "Tax PNL 2023-24 (1).xlsx",

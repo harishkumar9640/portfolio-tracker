@@ -1,5 +1,5 @@
 """
-Tests for the unified scheduler orchestrator.
+Tests for the unified pipeline.scheduler orchestrator.
 
 Covers:
   - schedule discovery (registers news, earnings, mf modules)
@@ -23,8 +23,8 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import scheduler as sched  # noqa: E402
-from scheduler import _build_schedule, _seconds_until_next_run, _run_one, IST  # noqa: E402
+import pipeline.scheduler as sched  # noqa: E402
+from pipeline.scheduler import _build_schedule, _seconds_until_next_run, _run_one, IST  # noqa: E402
 
 
 # ===========================================================================
@@ -208,7 +208,7 @@ class TestCLI:
         """--show-schedule prints the schedule."""
         import subprocess
         proc = subprocess.run(
-            [sys.executable, "scheduler.py", "--show-schedule"],
+            [sys.executable, "-m", "pipeline.scheduler", "--show-schedule"],
             capture_output=True, text=True, cwd=PROJECT,
         )
         assert proc.returncode == 0
@@ -220,7 +220,7 @@ class TestCLI:
 
     def test_dry_run_sets_env_vars(self, monkeypatch):
         """--dry-run propagates to all child modules' env vars."""
-        monkeypatch.setattr("sys.argv", ["scheduler.py", "--dry-run"])
+        monkeypatch.setattr("sys.argv", ["-m", "pipeline.scheduler", "--dry-run"])
         # Manually invoke the env-setting branch of _cli without starting daemon
         monkeypatch.delenv("NEWS_ALERT_DRY_RUN", raising=False)
         monkeypatch.delenv("EARNINGS_ALERT_DRY_RUN", raising=False)

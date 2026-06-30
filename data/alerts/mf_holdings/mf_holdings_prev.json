@@ -1,0 +1,298 @@
+{
+  "BALRAMCHIN": {
+    "ticker": "BALRAMCHIN",
+    "name": "Balrampur Chini Mills",
+    "url": "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/157/BALRAMCHIN/latest/balrampur-chini-mills-ltd/",
+    "fetched_at": "2026-06-30T15:20:22",
+    "mfs_bought": 29,
+    "mfs_sold": 13,
+    "net_change_shares": 677044,
+    "top_buyer": {
+      "name": "SBI Multi Asset Allocation Fund Regular Growth",
+      "shares": 418723,
+      "pct_of_company": 0.2
+    },
+    "top_seller": {
+      "name": "Taurus Largecap Equity Fund - Growth",
+      "shares": 10875,
+      "pct_of_company": 0.01
+    },
+    "top_buyers": [
+      {
+        "name": "SBI Multi Asset Allocation Fund Regular Growth",
+        "shares": 418723,
+        "pct_of_company": 0.2
+      }
+    ],
+    "top_sellers": [
+      {
+        "name": "Taurus Largecap Equity Fund - Growth",
+        "shares": 10875,
+        "pct_of_company": 0.01
+      }
+    ],
+    "total_mfs_holding": 78,
+    "total_shares_held": 51718251,
+    "asof": "May 2026",
+    "net_change_label": "+677,044"
+  },
+  "ITC": {
+    "ticker": "ITC",
+    "name": "ITC",
+    "url": "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/647/ITC/latest/itc-ltd/",
+    "fetched_at": "2026-06-30T15:20:22",
+    "mfs_bought": 168,
+    "mfs_sold": 120,
+    "net_change_shares": -13068945,
+    "top_buyer": {
+      "name": "Parag Parikh Flexi Cap Regular Growth",
+      "shares": 44663580,
+      "pct_of_company": 0.36
+    },
+    "top_seller": {
+      "name": "Kotak Arbitrage Fund Growth",
+      "shares": 15743775,
+      "pct_of_company": 0.13
+    },
+    "top_buyers": [
+      {
+        "name": "Parag Parikh Flexi Cap Regular Growth",
+        "shares": 44663580,
+        "pct_of_company": 0.36
+      }
+    ],
+    "top_sellers": [
+      {
+        "name": "Kotak Arbitrage Fund Growth",
+        "shares": 15743775,
+        "pct_of_company": 0.13
+      }
+    ],
+    "total_mfs_holding": 461,
+    "total_shares_held": 2086147586,
+    "asof": "May 2026",
+    "net_change_label": "-13,068,945"
+  },
+  "JIOFIN": {
+    "ticker": "JIOFIN",
+    "name": "Jio Financial Services",
+    "url": "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/1564869/JIOFIN/latest/jio-financial-services-ltd/",
+    "fetched_at": "2026-06-30T15:20:22",
+    "mfs_bought": 102,
+    "mfs_sold": 41,
+    "net_change_shares": -21392722,
+    "top_buyer": {
+      "name": "Aditya Birla Sun Life Arbitrage Fund Growth",
+      "shares": 806050,
+      "pct_of_company": 0.01
+    },
+    "top_seller": {
+      "name": "Kotak Arbitrage Fund Growth",
+      "shares": 6220450,
+      "pct_of_company": 0.09
+    },
+    "top_buyers": [
+      {
+        "name": "Aditya Birla Sun Life Arbitrage Fund Growth",
+        "shares": 806050,
+        "pct_of_company": 0.01
+      }
+    ],
+    "top_sellers": [
+      {
+        "name": "Kotak Arbitrage Fund Growth",
+        "shares": 6220450,
+        "pct_of_company": 0.09
+      }
+    ],
+    "total_mfs_holding": 202,
+    "total_shares_held": 327584604,
+    "asof": "May 2026",
+    "net_change_label": "-21,392,722"
+  },
+  "NTPCGREEN": {
+    "ticker": "NTPCGREEN",
+    "name": "NTPC Green Energy",
+    "url": "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/2789016/NTPCGREEN/latest/ntpc-green-energy-ltd/",
+    "fetched_at": "2026-06-30T15:20:22",
+    "mfs_bought": 50,
+    "mfs_sold": 19,
+    "net_change_shares": 5034875,
+    "top_buyer": {
+      "name": "Nippon India Power & Infra Fund - Growth",
+      "shares": 2403505,
+      "pct_of_company": 0.03
+    },
+    "top_seller": {
+      "name": "HSBC Large and Mid Cap Fund - IDCW",
+      "shares": 3729293,
+      "pct_of_company": 0.04
+    },
+    "top_buyers": [
+      {
+        "name": "Nippon India Power & Infra Fund - Growth",
+        "shares": 2403505,
+        "pct_of_company": 0.03
+      }
+    ],
+    "top_sellers": [
+      {
+        "name": "HSBC Large and Mid Cap Fund - IDCW",
+        "shares": 3729293,
+        "pct_of_company": 0.04
+      }
+    ],
+    "total_mfs_holding": 96,
+    "total_shares_held": 330086912,
+    "asof": "May 2026",
+    "net_change_label": "+5,034,875"
+  },
+  "KNRCON": {
+    "ticker": "KNRCON",
+    "name": "KNR Constructions",
+    "url": "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/752/KNRCON/latest/knr-constructions-ltd/",
+    "fetched_at": "2026-06-30T15:20:22",
+    "mfs_bought": 8,
+    "mfs_sold": 4,
+    "net_change_shares": 1413402,
+    "top_buyer": {
+      "name": "Invesco India Contra Fund Growth",
+      "shares": 4783263,
+      "pct_of_company": 1.7
+    },
+    "top_seller": {
+      "name": "Canara Robeco Large and Mid Cap Fund Regular Growth",
+      "shares": 2751594,
+      "pct_of_company": 0.98
+    },
+    "top_buyers": [
+      {
+        "name": "Invesco India Contra Fund Growth",
+        "shares": 4783263,
+        "pct_of_company": 1.7
+      }
+    ],
+    "top_sellers": [
+      {
+        "name": "Canara Robeco Large and Mid Cap Fund Regular Growth",
+        "shares": 2751594,
+        "pct_of_company": 0.98
+      }
+    ],
+    "total_mfs_holding": 24,
+    "total_shares_held": 46949511,
+    "asof": "May 2026",
+    "net_change_label": "+1,413,402"
+  },
+  "IRCON": {
+    "ticker": "IRCON",
+    "name": "IRCON International",
+    "url": "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/109297/IRCON/latest/ircon-international-ltd/",
+    "fetched_at": "2026-06-30T15:20:22",
+    "mfs_bought": 27,
+    "mfs_sold": 17,
+    "net_change_shares": 10496,
+    "top_buyer": {
+      "name": "Groww Nifty India Railways PSU ETF",
+      "shares": 31165,
+      "pct_of_company": 0.0
+    },
+    "top_seller": {
+      "name": "HDFC Nifty Smallcap 250 ETF",
+      "shares": 17994,
+      "pct_of_company": 0.0
+    },
+    "top_buyers": [
+      {
+        "name": "Groww Nifty India Railways PSU ETF",
+        "shares": 31165,
+        "pct_of_company": 0.0
+      }
+    ],
+    "top_sellers": [
+      {
+        "name": "HDFC Nifty Smallcap 250 ETF",
+        "shares": 17994,
+        "pct_of_company": 0.0
+      }
+    ],
+    "total_mfs_holding": 47,
+    "total_shares_held": 2782721,
+    "asof": "May 2026",
+    "net_change_label": "+10,496"
+  },
+  "BANKBARODA": {
+    "ticker": "BANKBARODA",
+    "name": "Bank of Baroda",
+    "url": "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/162/BANKBARODA/latest/bank-of-baroda/",
+    "fetched_at": "2026-06-30T15:20:22",
+    "mfs_bought": 122,
+    "mfs_sold": 69,
+    "net_change_shares": -22279650,
+    "top_buyer": {
+      "name": "SBI ELSS Tax Saver Fund Regular Growth",
+      "shares": 6000000,
+      "pct_of_company": 0.12
+    },
+    "top_seller": {
+      "name": "HDFC Flexi Cap Fund Growth",
+      "shares": 25693790,
+      "pct_of_company": 0.5
+    },
+    "top_buyers": [
+      {
+        "name": "SBI ELSS Tax Saver Fund Regular Growth",
+        "shares": 6000000,
+        "pct_of_company": 0.12
+      }
+    ],
+    "top_sellers": [
+      {
+        "name": "HDFC Flexi Cap Fund Growth",
+        "shares": 25693790,
+        "pct_of_company": 0.5
+      }
+    ],
+    "total_mfs_holding": 280,
+    "total_shares_held": 503832887,
+    "asof": "May 2026",
+    "net_change_label": "-22,279,650"
+  },
+  "RELIANCE": {
+    "ticker": "RELIANCE",
+    "name": "Reliance Industries",
+    "url": "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/1127/RELIANCE/latest/reliance-industries-ltd/",
+    "fetched_at": "2026-06-30T15:20:22",
+    "mfs_bought": 238,
+    "mfs_sold": 94,
+    "net_change_shares": 50857710,
+    "top_buyer": {
+      "name": "Kotak Arbitrage Fund Growth",
+      "shares": 11245500,
+      "pct_of_company": 0.08
+    },
+    "top_seller": {
+      "name": "Aditya Birla Sun Life Multi-Cap Fund Regular Growth",
+      "shares": 780000,
+      "pct_of_company": 0.01
+    },
+    "top_buyers": [
+      {
+        "name": "Kotak Arbitrage Fund Growth",
+        "shares": 11245500,
+        "pct_of_company": 0.08
+      }
+    ],
+    "top_sellers": [
+      {
+        "name": "Aditya Birla Sun Life Multi-Cap Fund Regular Growth",
+        "shares": 780000,
+        "pct_of_company": 0.01
+      }
+    ],
+    "total_mfs_holding": 658,
+    "total_shares_held": 1354236306,
+    "asof": "May 2026",
+    "net_change_label": "+50,857,710"
+  }
+}

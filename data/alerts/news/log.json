@@ -1,0 +1,597 @@
+[
+  {
+    "ran_at": "2026-06-27T15:11:09+05:30",
+    "fetch_ok": true,
+    "articles_total": 335,
+    "articles_fresh": 275,
+    "articles_kept": 19,
+    "categories": {
+      "war": 2,
+      "fed_rates": 1,
+      "pandemic": 2,
+      "crisis": 0,
+      "economic": 2,
+      "political": 2,
+      "disasters": 3
+    },
+    "message_length": 3590,
+    "telegram": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "dry-run (NEWS_DRY_RUN=1 or missing creds)",
+      "chat_id": null,
+      "message_length": 3590
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-27T15:23:49+05:30",
+    "fetch_ok": true,
+    "articles_total": 337,
+    "articles_fresh": 277,
+    "articles_kept": 4,
+    "categories": {
+      "war": 0,
+      "fed_rates": 0,
+      "pandemic": 0,
+      "crisis": 0,
+      "economic": 4,
+      "political": 0,
+      "disasters": 0
+    },
+    "message_length": 1446,
+    "telegram": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "dry-run (NEWS_DRY_RUN=1 or missing creds)",
+      "chat_id": null,
+      "message_length": 1446
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-27T15:24:51+05:30",
+    "fetch_ok": true,
+    "articles_total": 337,
+    "articles_fresh": 277,
+    "articles_kept": 0,
+    "categories": {
+      "war": 0,
+      "fed_rates": 0,
+      "pandemic": 0,
+      "crisis": 0,
+      "economic": 0,
+      "political": 0,
+      "disasters": 0
+    },
+    "telegram": {
+      "sent": false,
+      "reason": "no significant news"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T03:25:00+05:30",
+    "fetch_ok": true,
+    "articles_total": 337,
+    "articles_fresh": 263,
+    "articles_kept": 21,
+    "categories": {
+      "war": 2,
+      "fed_rates": 1,
+      "pandemic": 2,
+      "crisis": 0,
+      "economic": 2,
+      "political": 2,
+      "disasters": 3
+    },
+    "message_length": 3727,
+    "telegram": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "dry-run (NEWS_DRY_RUN=1 or missing creds)",
+      "chat_id": null,
+      "message_length": 3727
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T09:12:09+05:30",
+    "fetch_ok": true,
+    "articles_total": 333,
+    "articles_fresh": 245,
+    "articles_kept": 15,
+    "categories": {
+      "war": 3,
+      "fed_rates": 0,
+      "pandemic": 0,
+      "crisis": 0,
+      "economic": 3,
+      "political": 4,
+      "disasters": 3
+    },
+    "message_length": 3667,
+    "telegram": {
+      "sent": false,
+      "mode": "telegram",
+      "error": "400 Client Error: Bad Request for url: https://api.telegram.org/bot8804587097:AAFZ4D-dtsGLyKZ-d7ddOJQQsiB6Q_CQaMA/sendMessage",
+      "chat_id": "6988179126",
+      "message_length": 3667
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T09:12:29+05:30",
+    "fetch_ok": true,
+    "articles_total": 333,
+    "articles_fresh": 245,
+    "articles_kept": 0,
+    "categories": {
+      "war": 0,
+      "fed_rates": 0,
+      "pandemic": 0,
+      "crisis": 0,
+      "economic": 0,
+      "political": 0,
+      "disasters": 0
+    },
+    "message_length": 140,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 140
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T09:13:22+05:30",
+    "fetch_ok": true,
+    "articles_total": 333,
+    "articles_fresh": 245,
+    "articles_kept": 0,
+    "categories": {
+      "war": 0,
+      "fed_rates": 0,
+      "pandemic": 0,
+      "crisis": 0,
+      "economic": 0,
+      "political": 0,
+      "disasters": 0
+    },
+    "message_length": 140,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 140
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T09:14:11+05:30",
+    "fetch_ok": true,
+    "articles_total": 333,
+    "articles_fresh": 245,
+    "articles_kept": 21,
+    "categories": {
+      "war": 1,
+      "fed_rates": 2,
+      "pandemic": 2,
+      "crisis": 0,
+      "economic": 2,
+      "political": 2,
+      "disasters": 2
+    },
+    "message_length": 3665,
+    "telegram": {
+      "sent": false,
+      "mode": "telegram",
+      "error": "400 Client Error: Bad Request for url: https://api.telegram.org/bot8804587097:AAFZ4D-dtsGLyKZ-d7ddOJQQsiB6Q_CQaMA/sendMessage",
+      "chat_id": "6988179126",
+      "message_length": 3665
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T09:23:18+05:30",
+    "fetch_ok": true,
+    "articles_total": 333,
+    "articles_fresh": 245,
+    "articles_kept": 21,
+    "categories": {
+      "war": 1,
+      "fed_rates": 2,
+      "pandemic": 2,
+      "crisis": 0,
+      "economic": 2,
+      "political": 2,
+      "disasters": 2
+    },
+    "message_length": 3663,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 3663
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T11:29:15+05:30",
+    "fetch_ok": true,
+    "articles_total": 333,
+    "articles_fresh": 233,
+    "articles_kept": 16,
+    "categories": {
+      "pandemic": 2,
+      "interest_rate": 1,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 2,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 3,
+      "economic": 3
+    },
+    "message_length": 3474,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 3474
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-28T16:49:59+05:30",
+    "fetch_ok": true,
+    "articles_total": 848,
+    "articles_fresh": 446,
+    "articles_kept": 17,
+    "categories": {
+      "pandemic": 1,
+      "interest_rate": 1,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 2,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 1,
+      "geopolitical": 2,
+      "economic": 2
+    },
+    "message_length": 3469,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 3469
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T03:25:04+05:30",
+    "fetch_ok": true,
+    "articles_total": 843,
+    "articles_fresh": 440,
+    "articles_kept": 13,
+    "categories": {
+      "pandemic": 2,
+      "interest_rate": 0,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 2,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 3,
+      "economic": 3
+    },
+    "message_length": 3473,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 3473
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T08:55:00+05:30",
+    "fetch_ok": true,
+    "articles_total": 837,
+    "articles_fresh": 425,
+    "articles_kept": 10,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 0,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 2,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 3,
+      "economic": 4
+    },
+    "message_length": 3697,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 3697
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:47:42+05:30",
+    "fetch_ok": true,
+    "articles_total": 858,
+    "articles_fresh": 506,
+    "articles_kept": 25,
+    "categories": {
+      "pandemic": 1,
+      "interest_rate": 1,
+      "exchange_rate": 0,
+      "purchasing_power": 1,
+      "market_risk": 2,
+      "financial_risk": 1,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 1,
+      "management_risk": 1,
+      "geopolitical": 2,
+      "economic": 2
+    },
+    "message_length": 3733,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 3733
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:52:33+05:30",
+    "fetch_ok": true,
+    "articles_total": 858,
+    "articles_fresh": 507,
+    "articles_kept": 2,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 0,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 0,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 1,
+      "economic": 1
+    },
+    "message_length": 704,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 704
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:52:35+05:30",
+    "fetch_ok": true,
+    "articles_total": 858,
+    "articles_fresh": 507,
+    "articles_kept": 1,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 0,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 0,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 1,
+      "economic": 0
+    },
+    "message_length": 482,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 482
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:56:07+05:30",
+    "fetch_ok": true,
+    "articles_total": 854,
+    "articles_fresh": 508,
+    "articles_kept": 4,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 0,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 0,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 0,
+      "economic": 4
+    },
+    "message_length": 1056,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 1056
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:56:08+05:30",
+    "fetch_ok": true,
+    "articles_total": 858,
+    "articles_fresh": 508,
+    "articles_kept": 0,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 0,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 0,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 0,
+      "economic": 0
+    },
+    "message_length": 138,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 138
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:58:42+05:30",
+    "fetch_ok": true,
+    "articles_total": 858,
+    "articles_fresh": 508,
+    "articles_kept": 4,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 0,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 0,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 4,
+      "economic": 0
+    },
+    "message_length": 1568,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 1568
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-29T22:58:44+05:30",
+    "fetch_ok": true,
+    "articles_total": 858,
+    "articles_fresh": 508,
+    "articles_kept": 2,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 1,
+      "exchange_rate": 0,
+      "purchasing_power": 0,
+      "market_risk": 0,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 0,
+      "management_risk": 0,
+      "geopolitical": 1,
+      "economic": 0
+    },
+    "message_length": 933,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 933
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T03:25:04+05:30",
+    "fetch_ok": true,
+    "articles_total": 863,
+    "articles_fresh": 514,
+    "articles_kept": 14,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 1,
+      "exchange_rate": 0,
+      "purchasing_power": 1,
+      "market_risk": 2,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 2,
+      "management_risk": 0,
+      "geopolitical": 2,
+      "economic": 3
+    },
+    "message_length": 3723,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 3723
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T09:09:02+05:30",
+    "fetch_ok": true,
+    "articles_total": 862,
+    "articles_fresh": 513,
+    "articles_kept": 17,
+    "categories": {
+      "pandemic": 0,
+      "interest_rate": 1,
+      "exchange_rate": 0,
+      "purchasing_power": 1,
+      "market_risk": 1,
+      "financial_risk": 0,
+      "default_risk": 0,
+      "liquidity_risk": 0,
+      "business_risk": 1,
+      "management_risk": 1,
+      "geopolitical": 2,
+      "economic": 2
+    },
+    "message_length": 3619,
+    "telegram": {
+      "sent": true,
+      "mode": "telegram",
+      "chat_id": "6988179126",
+      "message_length": 3619
+    },
+    "errors": []
+  }
+]

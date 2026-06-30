@@ -23,8 +23,8 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Optional
 
-from history_db import HistoryDB
-from logging_setup import get_logger
+from pipeline.history_db import HistoryDB
+from pipeline.logging_setup import get_logger
 
 log = get_logger("webapp")
 
@@ -43,8 +43,8 @@ _CACHE_TTL = 300  # 5 minutes
 # ---------- Today's portfolio snapshot ----------
 def _build_portfolio_snapshot() -> dict:
     """Build a JSON-serialisable snapshot of today's portfolio."""
-    from equity_compare import build_snapshot
-    from fair_value import valuation as _fv  # noqa: F401  (touch to warm up)
+    from pipeline.equity_compare import build_snapshot
+    from pipeline.fair_value import valuation as _fv  # noqa: F401  (touch to warm up)
 
     snap = build_snapshot()
 
@@ -162,9 +162,9 @@ def get_portfolio_snapshot(force: bool = False) -> dict:
 # ---------- Fair-value snapshot ----------
 def _build_fairvalue_snapshot(tickers: Optional[list[str]] = None) -> dict:
     """Run the fair-value checker against the given tickers."""
-    from fair_value import check
+    from pipeline.fair_value import check
     if tickers is None:
-        from fair_value.valuation import load_tickers
+        from pipeline.fair_value.valuation import load_tickers
         tickers = load_tickers()
     rows = check(tickers)
     # Augment with "margin of safety" for the UI. Always set the keys
@@ -207,12 +207,12 @@ def _build_mf_holdings_snapshot() -> dict:
     Falls back to cache on network failure (Trendlyne can be flaky).
     """
     try:
-        from mf_holdings import get_mf_holdings_summary
+        from pipeline.mf_holdings import get_mf_holdings_summary
         rows = get_mf_holdings_summary()
     except Exception as e:
         log.warning("MF holdings snapshot failed (using cache): %s", e)
         # Try cache directly
-        from mf_holdings import _load_cache
+        from pipeline.mf_holdings import _load_cache
         rows = []
         cache = _load_cache()
         for tkr, d in cache.items():
@@ -293,11 +293,11 @@ def start_background_refresh(kind: str = "portfolio") -> None:
             elif kind == "flows":
                 # flows_alert fetches + archives + sends; run dry-run here
                 # (Telegram sending is left to the scheduled 18:45 IST run).
-                import flows_alert
+                import pipeline.flows_alert as flows_alert
                 flows_alert.run_once(force_send=False)
             elif kind == "concalls":
                 # concalls fetches + summarises (Ollama) + sends alert.
-                import concalls
+                import pipeline.concalls as concalls
                 concalls.run_once(days_back=7, force_send=False)
         except Exception as e:
             log.error("background refresh failed: %s", e)
@@ -309,8 +309,8 @@ def start_background_refresh(kind: str = "portfolio") -> None:
 # ---------- Holdings JSON for the settings page ----------
 def get_holdings_summary() -> dict:
     """Read mfs.json / sgbs.json / my_tickers.txt for the settings page."""
-    from mf_sgb import load_mfs, load_sgbs
-    from fair_value.valuation import load_tickers
+    from pipeline.mf_sgb import load_mfs, load_sgbs
+    from pipeline.fair_value.valuation import load_tickers
     return {
         "mfs": load_mfs(),
         "sgbs": load_sgbs(),
@@ -325,8 +325,8 @@ def get_flows_snapshot() -> dict:
     Reads from the history files written by flows_alert.run_once().
     """
     PROJECT = Path(__file__).resolve().parent.parent
-    fii_dii_file = PROJECT / "fii_dii_history.json"
-    deals_file = PROJECT / "bulk_block_history.json"
+    fii_dii_file = PROJECT / "data" / "alerts" / "flows" / "fii_dii_history.json"
+    deals_file = PROJECT / "data" / "alerts" / "flows" / "bulk_block_history.json"
 
     fii_dii = []
     if fii_dii_file.exists():
@@ -427,7 +427,7 @@ def _format_human_time(iso: str) -> str:
 def _portfolio_tickers() -> list[str]:
     """Return the list of portfolio stock tickers (for filtering deals)."""
     try:
-        from portfolio_impact import PORTFOLIO_EXPOSURE
+        from pipeline.portfolio_impact import PORTFOLIO_EXPOSURE
         return list(PORTFOLIO_EXPOSURE.keys())
     except Exception:
         return []
@@ -440,7 +440,7 @@ def get_concalls_snapshot(filter_ticker: Optional[str] = None) -> dict:
     Returns a dict suitable for rendering webapp/templates/concalls.html.
     """
     PROJECT = Path(__file__).resolve().parent.parent
-    cache_dir = PROJECT / "concalls_cache"
+    cache_dir = PROJECT / "data" / "alerts" / "concalls" / "cache"
 
     summaries: list[dict] = []
     tone_counts: dict[str, int] = {}

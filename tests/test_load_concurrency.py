@@ -2,7 +2,7 @@
 
 We don't run a full load test (would need locust/wrk), but we verify
 that our concurrency primitives don't introduce deadlocks, races, or
-memory leaks under modest parallel load.
+memory leaks under modest pipeline.parallel load.
 """
 from __future__ import annotations
 
@@ -29,10 +29,10 @@ def _has_psutil() -> bool:
 # ---------- map_parallel / fetch_all ----------
 
 class TestParallelCorrectness:
-    """The parallel helpers must preserve input order and not drop results."""
+    """The pipeline.parallel helpers must preserve input order and not drop results."""
 
     def test_map_parallel_preserves_order(self):
-        from parallel import map_parallel
+        from pipeline.parallel import map_parallel
 
         def fn(x):
             time.sleep((10 - x) * 0.001)
@@ -42,12 +42,12 @@ class TestParallelCorrectness:
         assert result == [x * 2 for x in range(10)]
 
     def test_map_parallel_workers_exceed_items(self):
-        from parallel import map_parallel
+        from pipeline.parallel import map_parallel
         result = map_parallel(lambda x: x + 1, [1, 2, 3], workers=100)
         assert result == [2, 3, 4]
 
     def test_fetch_all_runs_in_parallel(self):
-        from parallel import fetch_all
+        from pipeline.parallel import fetch_all
         DELAY = 0.05
         def slow():
             time.sleep(DELAY)
@@ -64,7 +64,7 @@ class TestParallelThreadSafety:
     """The HistoryDB module must be safe under concurrent reads/writes."""
 
     def test_concurrent_writes_dont_lose_rows(self, tmp_path):
-        from history_db import HistoryDB
+        from pipeline.history_db import HistoryDB
         db = HistoryDB(tmp_path / "load_test.db")
         errors: list[Exception] = []
 
@@ -89,7 +89,7 @@ class TestParallelThreadSafety:
         assert count == 1000, f"expected 1000 rows, got {count}"
 
     def test_concurrent_reads_and_writes(self, tmp_path):
-        from history_db import HistoryDB
+        from pipeline.history_db import HistoryDB
         db = HistoryDB(tmp_path / "rw_test.db")
         db.record_sgb_prices([("IN000", "2026-06-25", 100.0, "test")])
 
@@ -130,7 +130,7 @@ class TestParallelThreadSafety:
         assert not errors, f"concurrent ops failed: {errors[:3]}"
 
     def test_lock_serialises_writes(self, tmp_path):
-        from history_db import HistoryDB
+        from pipeline.history_db import HistoryDB
         db = HistoryDB(tmp_path / "lock_test.db")
         db.record_sgb_prices([("IN_A", "2026-06-25", 100.0, "v1")])
         db.record_sgb_prices([("IN_A", "2026-06-25", 200.0, "v2")])
@@ -152,7 +152,7 @@ class TestWebServerConcurrency:
         )
         f.write(csv)
         f.close()
-        import fair_value.search as s
+        import pipeline.fair_value.search as s
         s.CACHE_FILE = Path(f.name)
         s._index = []
         s._index_loaded_at = 0.0
@@ -203,7 +203,7 @@ class TestWebServerConcurrency:
 
 class TestWorkloadSmoke:
     def test_repeated_map_parallel_does_not_crash(self):
-        from parallel import map_parallel
+        from pipeline.parallel import map_parallel
         for _ in range(50):
             map_parallel(lambda x: x * 2, list(range(100)), workers=4)
 
@@ -211,7 +211,7 @@ class TestWorkloadSmoke:
     def test_repeated_map_parallel_memory_bounded(self):
         import os
         import psutil
-        from parallel import map_parallel
+        from pipeline.parallel import map_parallel
         process = psutil.Process(os.getpid())
         baseline = process.memory_info().rss
         for _ in range(50):

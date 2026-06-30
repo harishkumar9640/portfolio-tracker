@@ -33,11 +33,11 @@ NSE_CSV = (
 
 @pytest.fixture
 def tmp_nse_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    """Write a fixture CSV and re-point fair_value.search at it."""
+    """Write a fixture CSV and re-point pipeline.fair_value.search at it."""
     csv_path = tmp_path / "nse_equity_list.csv"
     csv_path.write_text(NSE_CSV, encoding="utf-8")
 
-    import fair_value.search as search_mod
+    import pipeline.fair_value.search as search_mod
     # Override the cache path and reset module-level state
     monkeypatch.setattr(search_mod, "CACHE_FILE", csv_path)
     search_mod._index = []
@@ -176,7 +176,7 @@ class TestNormalise:
         ("  spaces   ",               "spaces"),
     ])
     def test_strips_common_suffixes(self, raw, expected):
-        from fair_value.search import _normalise
+        from pipeline.fair_value.search import _normalise
         assert _normalise(raw) == expected
 
 
@@ -190,7 +190,7 @@ class TestScore:
     """
 
     def setup_method(self):
-        from fair_value.search import _score
+        from pipeline.fair_value.search import _score
         self.score = _score
         self.reliance = {
             "symbol": "RELIANCE", "_sym": "reliance",
@@ -226,7 +226,7 @@ class TestScore:
     def test_shorter_name_wins_on_full_tie(self):
         # Same primary + LCP -> shorter name wins (specificity).
         # Note: _score expects q_lower (lowercased) and q_norm (normalised).
-        from fair_value.search import _score
+        from pipeline.fair_value.search import _score
         a = {"symbol": "AAA", "_sym": "aaa",
              "name": "Reliance Industries", "_name": "reliance industries"}
         b = {"symbol": "ZZZ", "_sym": "zzz",
@@ -248,7 +248,7 @@ class TestNetwork:
     ):
         """If the CSV download fails but the cached file is present (even
         stale), we should still serve from cache."""
-        import fair_value.search as search_mod
+        import pipeline.fair_value.search as search_mod
         # Write a stale cache with valid content
         cache = tmp_path / "stale.csv"
         cache.write_text(NSE_CSV, encoding="utf-8")
@@ -273,7 +273,7 @@ class TestNetwork:
     def test_downloads_when_no_cache(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
     ):
-        import fair_value.search as search_mod
+        import pipeline.fair_value.search as search_mod
         cache = tmp_path / "fresh.csv"  # doesn't exist yet
         monkeypatch.setattr(search_mod, "CACHE_FILE", cache)
         search_mod._index = []
@@ -302,16 +302,16 @@ class TestSearchEndpoint:
             f.write(NSE_CSV)
             csv_path = Path(f.name)
         try:
-            import fair_value.search as search_mod
+            import pipeline.fair_value.search as search_mod
             search_mod.CACHE_FILE = csv_path
             search_mod._index = []
             search_mod._index_loaded_at = 0.0
 
             # Mock the screener.in fetcher. Both module-level references
             # must be patched: valuation imports ``fetch`` from
-            # fair_value.fetcher at module load time.
-            import fair_value.fetcher
-            import fair_value.valuation as fv_val
+            # pipeline.fair_value.fetcher at module load time.
+            import pipeline.fair_value.fetcher as fetcher
+            import pipeline.fair_value.valuation as fv_val
             fake_data = {
                 "RELIANCE": {"ticker": "RELIANCE", "current_price": 1327.0,
                              "eps": 14.26, "book_value": 668.0,
@@ -332,7 +332,7 @@ class TestSearchEndpoint:
             fake_fetch = lambda t: fake_data.get(
                 t, {"ticker": t, "error": "not in mock"}
             )
-            fair_value.fetcher.fetch = fake_fetch
+            fetcher.fetch = fake_fetch
             fv_val.fetch = fake_fetch
 
             from fastapi.testclient import TestClient
@@ -431,7 +431,7 @@ class TestFairvaluePageMarkup:
             f.write(NSE_CSV)
             csv_path = Path(f.name)
         try:
-            import fair_value.search as search_mod
+            import pipeline.fair_value.search as search_mod
             search_mod.CACHE_FILE = csv_path
             search_mod._index = []
             search_mod._index_loaded_at = 0.0

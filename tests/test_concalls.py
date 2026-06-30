@@ -1,5 +1,5 @@
 """
-Tests for concalls.py.
+Tests for pipeline.concalls.py.
 
 Coverage:
   - Filing classification (transcript / investor_presentation / audio_recording)
@@ -29,8 +29,8 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import concalls as cc  # noqa: E402
-from concalls import (  # noqa: E402
+import pipeline.concalls as cc  # noqa: E402
+from pipeline.concalls import (  # noqa: E402
     ConcallFiling, ConcallSummary,
     _classify_filing, _parse_summary, _chunk_text,
     _filing_cache_key, render_telegram,
@@ -289,7 +289,7 @@ class TestSummaryCacheRoundTrip:
         # Redirect cache dir to tmp
         monkeypatch.setattr(cc, "SUMMARY_DIR", tmp_path)
         # Clear the lru_cache if any
-        from concalls import _summary_cache_path
+        from pipeline.concalls import _summary_cache_path
         monkeypatch.setattr(cc, "_summary_cache_path",
                             lambda f: tmp_path / f"{f.ticker}_{f.pdf_url[-30:].replace('/','_')}.json")
 
@@ -475,7 +475,7 @@ class TestCLI:
         """--test-render prints a valid Telegram-format message."""
         import subprocess
         proc = subprocess.run(
-            [sys.executable, "concalls.py", "--test-render"],
+            [sys.executable, "-m", "pipeline.concalls", "--test-render"],
             capture_output=True, text=True, cwd=PROJECT,
         )
         assert proc.returncode == 0

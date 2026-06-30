@@ -1,5 +1,5 @@
 """
-Tests for flows_alert.py.
+Tests for pipeline.flows_alert.py.
 
 Coverage:
   - FII/DII threshold logic (alert if |net| > ₹5,000 cr)
@@ -27,8 +27,8 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import flows_alert as fa  # noqa: E402
-from flows_alert import (  # noqa: E402
+import pipeline.flows_alert as fa  # noqa: E402
+from pipeline.flows_alert import (  # noqa: E402
     FiiDiiRow, DealRow, _fii_dii_key, _deal_key,
     render_fii_dii_alert, render_deal_alert, _parse_deals_csv,
     filter_for_portfolio, FII_DII_LARGE_FLOW_CR,
@@ -494,7 +494,7 @@ class TestCLI:
     def test_test_render_prints_all_three_alerts(self, capsys):
         import subprocess
         proc = subprocess.run(
-            [sys.executable, "flows_alert.py", "--test-render"],
+            [sys.executable, "-m", "pipeline.flows_alert", "--test-render"],
             capture_output=True, text=True, cwd=PROJECT,
         )
         assert proc.returncode == 0
@@ -506,7 +506,7 @@ class TestCLI:
         """--run-once --dry-run should run and exit cleanly."""
         import subprocess
         proc = subprocess.run(
-            [sys.executable, "flows_alert.py", "--run-once", "--dry-run"],
+            [sys.executable, "-m", "pipeline.flows_alert", "--run-once", "--dry-run"],
             capture_output=True, text=True, cwd=PROJECT, timeout=30,
         )
         assert proc.returncode == 0, (

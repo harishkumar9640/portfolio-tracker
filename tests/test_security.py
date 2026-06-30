@@ -30,7 +30,7 @@ def secure_client():
         f.write(csv)
         csv_path = Path(f.name)
     try:
-        import fair_value.search as s
+        import pipeline.fair_value.search as s
         s.CACHE_FILE = csv_path
         s._index = []
         s._index_loaded_at = 0.0
@@ -123,16 +123,16 @@ class TestXSSTemplateEscaping:
             f"Jinja2 autoescape is disabled (got {env.autoescape!r})"
 
 
-# ---------- SQL injection in history_db queries ----------
+# ---------- SQL injection in pipeline.history_db queries ----------
 
 class TestSQLInjectionHistoryDB:
     """
-    history_db.py builds SQL queries with f-strings. The values should
+    pipeline.history_db.py builds SQL queries with f-strings. The values should
     all be parameterised via `?` placeholders, never string-concatenated.
     """
 
     def test_isin_uses_parameterised_query(self, tmp_path):
-        from history_db import HistoryDB
+        from pipeline.history_db import HistoryDB
         db = HistoryDB(tmp_path / "test.db")
         malicious = "IN0020230184'; DROP TABLE sgb_price; --"
         result = db.sgb_history(malicious)
@@ -142,14 +142,14 @@ class TestSQLInjectionHistoryDB:
             assert cur.fetchone() is not None
 
     def test_portfolio_kind_uses_parameterised_query(self, tmp_path):
-        from history_db import HistoryDB
+        from pipeline.history_db import HistoryDB
         db = HistoryDB(tmp_path / "test.db")
         malicious = "total' OR '1'='1"
         result = db.portfolio_history(kind=malicious)
         assert result == []
 
     def test_record_sgb_prices_uses_parameterised(self, tmp_path):
-        from history_db import HistoryDB
+        from pipeline.history_db import HistoryDB
         db = HistoryDB(tmp_path / "test.db")
         items = [("INJECTED_ISIN", "2026-06-25", 100.0,
                   "'; DROP TABLE sgb_price; --")]
@@ -162,7 +162,7 @@ class TestSQLInjectionHistoryDB:
             assert cur.fetchone() is not None
 
     def test_record_run_uses_parameterised(self, tmp_path):
-        from history_db import HistoryDB
+        from pipeline.history_db import HistoryDB
         db = HistoryDB(tmp_path / "test.db")
         db.record_run("test.py", "ok", note="'); DROP TABLE run_log; --")
         last = db.last_run("test.py")
@@ -288,7 +288,7 @@ class TestDependencies:
             "weakref", "xml", "zipfile",
         }
         # Just informational — no assertion
-        for f in (PROJECT / "fair_value").rglob("*.py"):
+        for f in (PROJECT / "pipeline.fair_value").rglob("*.py"):
             for line in f.read_text().splitlines()[:30]:
                 m = re.match(r"^(?:from|import)\s+(\w+)", line.strip())
                 if m and m.group(1) not in stdlib:

@@ -17,7 +17,7 @@ PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
 
-SCRIPT = PROJECT / "scripts" / "pre-publish-check.sh"
+SCRIPT = PROJECT / "data" / "scripts" / "pre-publish-check.sh"
 
 
 def test_script_exists():

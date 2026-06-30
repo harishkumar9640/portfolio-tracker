@@ -33,7 +33,7 @@ def client():
     )
     f.write(csv); f.close()
     try:
-        import fair_value.search as s
+        import pipeline.fair_value.search as s
         s.CACHE_FILE = Path(f.name); s._index = []; s._index_loaded_at = 0.0
         import webapp.data as wd, webapp.server as ws
         _stub = lambda force=False: {
@@ -264,8 +264,8 @@ class TestModalRoutes:
     def test_lookup_returns_valid_modal_payload(self, client):
         """The lookup response has all fields renderModal needs."""
         # Stub the fetcher so we don't hit screener.in
-        import fair_value.fetcher
-        import fair_value.valuation as fv_val
+        import pipeline.fair_value.fetcher as fetcher
+        import pipeline.fair_value.valuation as fv_val
         fake = {
             "RELIANCE": {"ticker": "RELIANCE", "current_price": 1327.0,
                          "eps": 14.26, "book_value": 668.0,
@@ -273,9 +273,9 @@ class TestModalRoutes:
                          "operating_cash_flow_per_share": 141.97,
                          "source_url": "", "fetched_at": ""},
         }
-        fair_value.fetcher.fetch = lambda t: fake.get(t, {"ticker": t,
+        fetcher.fetch = lambda t: fake.get(t, {"ticker": t,
                                                           "error": "no mock"})
-        fv_val.fetch = fair_value.fetcher.fetch
+        fv_val.fetch = fetcher.fetch
         try:
             r = client.post("/api/fairvalue/lookup",
                             json={"ticker": "RELIANCE", "industry_pe": 25})
@@ -292,6 +292,6 @@ class TestModalRoutes:
                 assert data[field] is None or isinstance(data[field], (int, float)), \
                     f"{field} should be numeric, got {data[field]!r}"
         finally:
-            fair_value.fetcher.fetch = lambda t: {"ticker": t,
+            fetcher.fetch = lambda t: {"ticker": t,
                                                    "error": "unmocked"}
-            fv_val.fetch = fair_value.fetcher.fetch
+            fv_val.fetch = fetcher.fetch

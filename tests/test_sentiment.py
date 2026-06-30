@@ -1,5 +1,5 @@
 """
-Tests for sentiment.py — the bullish/bearish/neutral classifier.
+Tests for pipeline.sentiment.py — the bullish/bearish/neutral classifier.
 
 Covers:
   - Per-ticker classification accuracy on a hand-curated set of test cases
@@ -20,8 +20,8 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import sentiment as s  # noqa: E402
-from sentiment import (  # noqa: E402
+import pipeline.sentiment as s  # noqa: E402
+from pipeline.sentiment import (  # noqa: E402
     POLARITY,
     DIRECTION_EMOJI,
     DIRECTION_LABEL,
@@ -40,7 +40,7 @@ REFERENCE_CASES: list[tuple[str, str, str, str]] = [
     ("ITC", "Cigarette prices up 10% on excise hike",
      "Sin tax burden rises for tobacco companies", "bearish"),
     ("ITC", "Government announces tax holiday for FMCG",
-     "Tax cut boosts consumer sentiment", "bullish"),
+     "Tax cut boosts consumer pipeline.sentiment", "bullish"),
     ("ITC", "Monsoon arrives on time, sowing 20% above normal",
      "Rural demand expected to surge", "bullish"),
     # RELIANCE
@@ -328,7 +328,7 @@ class TestPolarityTable:
 
 # ---------- Indian themes ----------
 
-from sentiment import (  # noqa: E402
+from pipeline.sentiment import (  # noqa: E402
     INDIAN_THEMES,
     detect_indian_themes,
     format_indian_theme_block,
@@ -612,7 +612,7 @@ class TestExplanationQuality:
             description: str = "IMD reports above-normal rainfall"
             category: str = "economic"
         article = FakeArticle()
-        from sentiment import (
+        from pipeline.sentiment import (
             detect_indian_themes, format_indian_theme_block,
         )
         hits = detect_indian_themes(article.title, article.description)
@@ -636,7 +636,7 @@ class TestExplanationQuality:
 
 # ---------- Time-horizon impact ----------
 
-from sentiment import (  # noqa: E402
+from pipeline.sentiment import (  # noqa: E402
     INDIAN_THEME_IMPACT,
     HORIZON_LABELS,
     HORIZON_EMOJI,

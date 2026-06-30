@@ -41,10 +41,10 @@ def server_url(tmp_path_factory):
         os.pathsep + env.get("PYTHONPATH", "") if env.get("PYTHONPATH") else ""
     )
     env["MF_ALERT_DRY_RUN"] = "1"  # don't actually try to send email
-    env["MF_ALERT_DISABLED"] = "1"  # don't run scheduler in background
+    env["MF_ALERT_DISABLED"] = "1"  # don't run pipeline.scheduler in background
     # Point the alert log + prev snapshot into tmp_path so each run
     # starts with a clean slate.
-    import mf_holdings_alert as mha
+    import pipeline.mf_holdings_alert as mha
     mha.PREV_SNAPSHOT_FILE = data_dir / "mf_holdings_prev.json"
     mha.ALERT_LOG_FILE = data_dir / "mf_holdings_alert_log.json"
 

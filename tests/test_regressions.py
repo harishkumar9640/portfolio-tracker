@@ -21,7 +21,7 @@ sys.path.insert(0, str(PROJECT))
 
 # ---------- Equity / portfolio regressions ----------
 class TestEquityPrevFix:
-    """Regression: equity_compare.build_snapshot() used to skip
+    """Regression: pipeline.equity_compare.build_snapshot() used to skip
     computing equity_prev, so the Total Portfolio % under-weighted
     equity when MF/SGB data was present.
     """
@@ -30,7 +30,7 @@ class TestEquityPrevFix:
         """build_snapshot() must always include equity.prev_value so the
         Total Portfolio day-% correctly weights equity.
         """
-        from equity_compare import build_snapshot
+        from pipeline.equity_compare import build_snapshot
         # Pass a synthetic mock to avoid broker/NSE network calls.
         mock_holdings = [type("H", (), {
             "symbol": "X", "quantity": 10,
@@ -59,7 +59,7 @@ class TestSGBPriceFix:
 
     def test_nse_used_before_mintbyte(self):
         """Verify that when both NSE and mintbyte return data, NSE wins."""
-        import mf_sgb
+        import pipeline.mf_sgb
         from unittest.mock import patch
 
         # Block ALL upstream network calls (NSE, mintbyte, IBJA) so the
@@ -74,15 +74,15 @@ class TestSGBPriceFix:
         fake_mintbyte = {
             "IN0020230184": {"price": 15302.74, "date": "2026-06-22"},
         }
-        with patch.object(mf_sgb, "_fetch_nse_sgb_universe",
+        with patch.object(pipeline.mf_sgb, "_fetch_nse_sgb_universe",
                           return_value=nse_universe), \
-             patch.object(mf_sgb, "_build_isin_to_nse_symbol_map",
+             patch.object(pipeline.mf_sgb, "_build_isin_to_nse_symbol_map",
                           return_value=isin_map), \
-             patch.object(mf_sgb, "fetch_mintbyte_with_history",
+             patch.object(pipeline.mf_sgb, "fetch_mintbyte_with_history",
                           return_value=fake_mintbyte), \
-             patch.object(mf_sgb, "_fetch_ibja_gold_price",
+             patch.object(pipeline.mf_sgb, "_fetch_ibja_gold_price",
                           return_value=(None, None)):
-            rows = mf_sgb.fetch_sgb_rows([{
+            rows = pipeline.mf_sgb.fetch_sgb_rows([{
                 "isin": "IN0020230184", "units": 1, "name": "SGB IV",
             }])
         assert len(rows) == 1
@@ -96,7 +96,7 @@ class TestISINMappingFix:
     Initial parser looked up 'ISIN NUMBER' exactly and got nothing."""
 
     def test_csv_with_leading_spaces_parses(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        import fair_value.search as s
+        import pipeline.fair_value.search as s
         csv_text = (
             "SYMBOL,NAME OF COMPANY, SERIES, DATE OF LISTING, "
             "PAID UP VALUE, MARKET LOT, ISIN NUMBER, FACE VALUE\n"
@@ -130,7 +130,7 @@ class TestScoringFix:
     RELIANCE (the user's actual intent)."""
 
     def test_reliance_industries_prefers_reliance_over_rcom(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        import fair_value.search as s
+        import pipeline.fair_value.search as s
         csv_text = (
             "SYMBOL,NAME OF COMPANY, SERIES, DATE OF LISTING, "
             "PAID UP VALUE, MARKET LOT, ISIN NUMBER, FACE VALUE\n"
@@ -157,18 +157,18 @@ class TestTokenCacheFix:
     session on first login."""
 
     def test_angel_session_cache_load_save(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        import angel_client
+        import pipeline.angel_client
         # Point the cache at a temp file
         cache = tmp_path / "angel_session.json"
-        monkeypatch.setattr(angel_client, "ANGEL_SESSION_FILE", cache)
+        monkeypatch.setattr(pipeline.angel_client, "ANGEL_SESSION_FILE", cache)
         # Save a session
-        angel_client._save_session({
+        pipeline.angel_client._save_session({
             "jwtToken": "x", "refreshToken": "y", "feedToken": "",
             "client_code": "F00000", "logged_in_at": 9999999999,
         })
         # Reload module so the module-level constant is the temp path
         # (monkeypatch already did this in-place)
-        loaded = angel_client._load_session()
+        loaded = pipeline.angel_client._load_session()
         assert loaded is not None
         assert loaded["jwtToken"] == "x"
         # Atomic write — the .tmp file should not linger
@@ -182,17 +182,17 @@ class TestLoggingSetup:
     every import. We expect config to be deferred until first use."""
 
     def test_get_logger_lazy_configures(self):
-        from logging_setup import get_logger, _configured
+        from pipeline.logging_setup import get_logger, _configured
         # Reset the configured flag so we can test the lazy behaviour
-        import logging_setup
-        original = logging_setup._configured
-        logging_setup._configured = False
+        import pipeline.logging_setup
+        original = pipeline.logging_setup._configured
+        pipeline.logging_setup._configured = False
         try:
             log = get_logger("regression-test")
             # After calling get_logger, _configured should be True
-            assert logging_setup._configured is True
+            assert pipeline.logging_setup._configured is True
         finally:
-            logging_setup._configured = original
+            pipeline.logging_setup._configured = original
 
 
 # ---------- Concurrent fetch regressions ----------
@@ -201,7 +201,7 @@ class TestParallelSafety:
     threads and crash the calling code."""
 
     def test_parallel_isolates_per_item_failures(self):
-        from parallel import map_parallel
+        from pipeline.parallel import map_parallel
 
         def fail_on_three(x: int) -> int:
             if x == 3:
@@ -213,7 +213,7 @@ class TestParallelSafety:
         assert out == [10, 20, None, 40, 50]
 
     def test_parallel_empty_input(self):
-        from parallel import map_parallel
+        from pipeline.parallel import map_parallel
         assert map_parallel(lambda x: x, []) == []
 
 
@@ -226,7 +226,7 @@ class TestSnapshotMathFix:
         """The total snapshot must sum equity + mf + sgb even when
         equity_value is 0 (so the chart can still show MF day change).
         """
-        from equity_compare import build_snapshot
+        from pipeline.equity_compare import build_snapshot
         # Mock MF/SGB with positive values and zero equity.
         mf = [type("M", (), {
             "name": "Fund", "units": 100, "value": 1000.0,
@@ -253,15 +253,10 @@ class TestImportSurface:
     """Regression: import names that downstream code relies on."""
 
     def test_top_level_fairvalue_cli(self):
-        # `python3 fairvalue.py --help` must work
-        import subprocess
-        result = subprocess.run(
-            [sys.executable, str(PROJECT / "fairvalue.py"), "--help"],
-            capture_output=True, text=True, timeout=15,
-        )
-        assert result.returncode == 0, result.stderr
-        assert "tickers" in result.stdout
-        assert "--industry-pe" in result.stdout
+        # The old `python3 fairvalue.py` CLI was removed in the
+        # restructure; the fair-value checker now lives in
+        # pipeline.fair_value and is invoked via the web UI.
+        pytest.skip("fairvalue.py CLI was removed in restructure")
 
     def test_webapp_server_help(self):
         import subprocess
@@ -275,11 +270,11 @@ class TestImportSurface:
     def test_all_modules_importable(self):
         # Every module we ship must import without error
         for module in (
-            "logging_setup", "history_db", "parallel", "fair_value",
-            "fair_value.fetcher", "fair_value.valuation",
-            "fair_value.search", "angel_client", "mf_sgb",
-            "indices_chart", "indices_html", "equity_compare",
-            "cas_parser", "cas_dump", "webapp", "webapp.data",
+            "pipeline.logging_setup", "pipeline.history_db", "pipeline.parallel", "pipeline.fair_value",
+            "pipeline.fair_value.fetcher", "pipeline.fair_value.valuation",
+            "pipeline.fair_value.search", "pipeline.angel_client", "pipeline.mf_sgb",
+            "pipeline.indices_chart", "pipeline.equity_compare",
+            "webapp", "webapp.data",
             "webapp.server",
         ):
             importlib.import_module(module)

@@ -58,16 +58,16 @@ def mock_smartconnect(monkeypatch: pytest.MonkeyPatch):
 @pytest.fixture
 def tmp_session_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Point the session cache to a temp dir."""
-    # Patch PROJECT inside angel_client
-    import angel_client
-    monkeypatch.setattr(angel_client, "PROJECT", tmp_path)
-    monkeypatch.setattr(angel_client, "ANGEL_SESSION_FILE", tmp_path / "angel_session.json")
+    # Patch PROJECT inside pipeline.angel_client
+    import pipeline.angel_client
+    monkeypatch.setattr(pipeline.angel_client, "PROJECT", tmp_path)
+    monkeypatch.setattr(pipeline.angel_client, "ANGEL_SESSION_FILE", tmp_path / "angel_session.json")
     return tmp_path
 
 
 class TestSessionCache:
     def test_first_login_writes_session(self, fake_env, mock_smartconnect, tmp_session_dir):
-        from angel_client import login
+        from pipeline.angel_client import login
         obj = login()
         # Verify the SDK was called with generateSession (fresh login)
         assert mock_smartconnect.generateSession.called
@@ -96,7 +96,7 @@ class TestSessionCache:
         mock_smartconnect.generateSession.reset_mock()
         mock_smartconnect.generateToken.reset_mock()
 
-        from angel_client import login
+        from pipeline.angel_client import login
         obj = login()
         # generateSession should NOT be called on a cache hit
         assert not mock_smartconnect.generateSession.called
@@ -115,7 +115,7 @@ class TestSessionCache:
             "logged_in_at": int(time.time()) - 25 * 3600,   # 25h ago
         }))
 
-        from angel_client import login
+        from pipeline.angel_client import login
         obj = login()
         assert mock_smartconnect.generateSession.called
 
@@ -125,7 +125,7 @@ class TestSessionCache:
         session_file = tmp_session_dir / "angel_session.json"
         session_file.write_text("not valid json {{{")
 
-        from angel_client import login
+        from pipeline.angel_client import login
         obj = login()
         assert mock_smartconnect.generateSession.called
 
@@ -140,7 +140,7 @@ class TestSessionCache:
             "logged_in_at": int(time.time()),
         }))
         mock_smartconnect.generateToken.side_effect = RuntimeError("Invalid Token")
-        from angel_client import login
+        from pipeline.angel_client import login
         obj = login()
         # Should have fallen back to a fresh login
         assert mock_smartconnect.generateSession.called
@@ -148,7 +148,7 @@ class TestSessionCache:
     def test_session_load_rejects_missing_jwt(
         self, fake_env, mock_smartconnect, tmp_session_dir
     ):
-        from angel_client import _load_session, _save_session
+        from pipeline.angel_client import _load_session, _save_session
         # Save a session without jwtToken
         _save_session({"refreshToken": "rt", "logged_in_at": int(time.time())})
         assert _load_session() is None
@@ -156,7 +156,7 @@ class TestSessionCache:
     def test_session_load_rejects_expired(
         self, fake_env, mock_smartconnect, tmp_session_dir
     ):
-        from angel_client import _save_session, _load_session
+        from pipeline.angel_client import _save_session, _load_session
         _save_session({
             "jwtToken": "x", "refreshToken": "y",
             "logged_in_at": int(time.time()) - 25 * 3600,
@@ -166,7 +166,7 @@ class TestSessionCache:
     def test_session_save_is_atomic(
         self, fake_env, mock_smartconnect, tmp_session_dir
     ):
-        from angel_client import _save_session
+        from pipeline.angel_client import _save_session
         _save_session({
             "jwtToken": "x", "refreshToken": "y",
             "logged_in_at": 1234567890,

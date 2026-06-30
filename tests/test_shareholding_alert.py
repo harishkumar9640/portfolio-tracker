@@ -1,5 +1,5 @@
 """
-Tests for shareholding_alert.py — quarterly shareholding-pattern
+Tests for pipeline.shareholding_alert.py — quarterly shareholding-pattern
 change detector + email notifier.
 
 Covers:
@@ -33,8 +33,8 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import shareholding_alert as sha  # noqa: E402
-from shareholding_alert import (  # noqa: E402
+import pipeline.shareholding_alert as sha  # noqa: E402
+from pipeline.shareholding_alert import (  # noqa: E402
     QuarterSnapshot,
     TickerShareholding,
     ShpChange,
@@ -193,11 +193,11 @@ class TestFetchOne:
 
     def test_placeholder_id_skipped(self):
         """Tickers with placeholder IDs (>= threshold) are skipped."""
-        import mf_holdings
+        import pipeline.mf_holdings
         # Save original
-        orig = mf_holdings.TICKER_MAP.copy()
+        orig = pipeline.mf_holdings.TICKER_MAP.copy()
         try:
-            mf_holdings.TICKER_MAP["TEST_FAKE"] = {
+            pipeline.mf_holdings.TICKER_MAP["TEST_FAKE"] = {
                 "name": "Fake", "id": 99_999_999,
                 "url_slug": "fake",
             }
@@ -207,7 +207,7 @@ class TestFetchOne:
                 assert result is None
                 mock_req.get.assert_not_called()
         finally:
-            mf_holdings.TICKER_MAP = orig
+            pipeline.mf_holdings.TICKER_MAP = orig
 
 
 # ---------- diff_snapshots ----------

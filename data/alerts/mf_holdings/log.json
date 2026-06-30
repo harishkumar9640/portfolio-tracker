@@ -1,0 +1,368 @@
+[
+  {
+    "ran_at": "2026-06-30T14:50:10+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:50:12+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:50:12+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:50:15+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:50:18+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:55:56+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:55:57+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:55:57+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:56:00+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T14:56:02+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:04:05+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:04:05+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:04:05+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:04:08+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:04:11+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:09:33+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:09:33+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:09:33+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:09:36+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:09:38+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:15:25+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:15:25+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:15:25+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:15:28+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:15:31+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:20:16+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:20:16+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:20:16+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:20:19+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-06-30T15:20:21+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  }
+]

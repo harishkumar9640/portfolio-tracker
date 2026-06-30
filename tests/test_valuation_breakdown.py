@@ -1,5 +1,5 @@
 """
-Tests for the pure valuation functions in fair_value/valuation.py
+Tests for the pure valuation functions in pipeline.fair_value/valuation.py
 and the structured breakdowns the modal renders.
 
 These functions are pure (no I/O, no network), so they can be tested
@@ -16,7 +16,7 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-from fair_value.valuation import (
+from pipeline.fair_value.valuation import (
     graham_number, pe_relative_value, dcf_value,
     dcf_breakdown, graham_breakdown, pe_relative_breakdown,
     check, ValuationRow,
@@ -197,7 +197,7 @@ class TestCheckReturnsBreakdowns:
         }
 
     def test_dcf_breakdown_populated(self, monkeypatch):
-        from fair_value import valuation
+        from pipeline.fair_value import valuation
         monkeypatch.setattr(valuation, "fetch", self._fake_fetch)
         rows = check(["ITC"])
         assert len(rows) == 1
@@ -208,7 +208,7 @@ class TestCheckReturnsBreakdowns:
         assert "totals" in bd
 
     def test_other_methods_populated(self, monkeypatch):
-        from fair_value import valuation
+        from pipeline.fair_value import valuation
         monkeypatch.setattr(valuation, "fetch", self._fake_fetch)
         rows = check(["ITC"])
         other = rows[0].other_methods
@@ -218,7 +218,7 @@ class TestCheckReturnsBreakdowns:
         assert "pe_relative" not in other
 
     def test_other_methods_includes_pe_relative_when_industry_pe_given(self, monkeypatch):
-        from fair_value import valuation
+        from pipeline.fair_value import valuation
         monkeypatch.setattr(valuation, "fetch", self._fake_fetch)
         rows = check(["ITC"], industry_pe=25)
         other = rows[0].other_methods
@@ -229,7 +229,7 @@ class TestCheckReturnsBreakdowns:
     def test_to_dict_includes_breakdowns(self, monkeypatch):
         """The webapp reads ValuationRow.to_dict() — both breakdowns
         must appear in the JSON so the modal can render them."""
-        from fair_value import valuation
+        from pipeline.fair_value import valuation
         monkeypatch.setattr(valuation, "fetch", self._fake_fetch)
         rows = check(["ITC"])
         d = rows[0].to_dict()
@@ -241,7 +241,7 @@ class TestCheckReturnsBreakdowns:
     def test_no_breakdown_when_no_fcf(self, monkeypatch):
         """If the company has no FCF data, dcf_breakdown should be None
         (so the modal can show 'DCF breakdown unavailable')."""
-        from fair_value import valuation
+        from pipeline.fair_value import valuation
         def fake_fetch_no_fcf(ticker):
             return {
                 "ticker": ticker, "current_price": 290.0, "eps": 4.16,

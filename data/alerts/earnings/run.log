@@ -1,0 +1,152 @@
+2026-06-28 18:13:39,266 INFO    earnings_alert: NSE results: 0 events in window 25-06-2026..30-06-2026
+2026-06-28 18:14:31,742 INFO    earnings_alert: NSE results: 0 events in window 25-06-2026..30-06-2026
+2026-06-28 18:30:56,123 INFO    earnings_alert: urllib NSE fetch: 2316 announcements
+2026-06-28 18:30:56,144 INFO    earnings_alert: NSE results: 0 events in window 25-06-2026..12-08-2026
+2026-06-28 18:33:35,825 INFO    earnings_alert: urllib NSE fetch: 19 announcements
+2026-06-28 18:33:35,827 INFO    earnings_alert: NSE results: 0 events in window 28-06-2026..12-07-2026
+2026-06-28 18:34:50,758 INFO    earnings_alert: urllib NSE fetch: 3953 announcements
+2026-06-28 18:34:50,786 INFO    earnings_alert: NSE results: 11 events in window 10-10-2024..20-10-2024
+2026-06-28 18:35:35,089 INFO    earnings_alert: urllib NSE fetch: 3953 announcements
+2026-06-28 18:35:35,117 INFO    earnings_alert: NSE results: 6 events in window 10-10-2024..20-10-2024
+2026-06-28 18:36:55,041 INFO    earnings_alert: urllib NSE fetch: 3953 announcements
+2026-06-28 18:36:55,070 INFO    earnings_alert: NSE results: 4 events in window 10-10-2024..20-10-2024
+2026-06-28 18:37:01,322 INFO    earnings_alert: urllib NSE fetch: 12983 announcements
+2026-06-28 18:37:01,380 INFO    earnings_alert: NSE results: 16 events in window 15-05-2025..30-05-2025
+2026-06-28 18:39:36,333 INFO    earnings_alert: urllib NSE fetch: 12983 announcements
+2026-06-28 18:39:36,605 INFO    earnings_alert: NSE results: 5 events in window 15-05-2025..30-05-2025
+2026-06-28 18:39:40,023 INFO    earnings_alert: urllib NSE fetch: 3953 announcements
+2026-06-28 18:39:40,118 INFO    earnings_alert: NSE results: 2 events in window 10-10-2024..20-10-2024
+2026-06-28 18:40:21,334 INFO    earnings_alert: urllib NSE fetch: 2560 announcements
+2026-06-28 18:40:21,403 INFO    earnings_alert: NSE results: 2 events in window 18-05-2025..21-05-2025
+2026-06-28 18:40:21,403 INFO    earnings_alert: found 0 candidate alerts for window around 2025-05-20
+2026-06-28 18:41:25,954 INFO    earnings_alert: urllib NSE fetch: 3836 announcements
+2026-06-28 18:41:26,045 INFO    earnings_alert: NSE results: 3 events in window 17-05-2025..22-05-2025
+2026-06-28 18:41:26,046 INFO    earnings_alert: found 1 candidate alerts for window around 2025-05-20
+2026-06-28 18:41:27,444 INFO    earnings_alert: [DRY-RUN] would send 1368 chars to Telegram:
+📅 *2 DAYS TO RESULTS*
+
+*ITC* (ITC)
+📅 Thu 22 May 2025 • post-market
+📊 Q4 FY25
+
+🎯 *Consensus estimates*
+   • EPS: N/A
+   • Revenue: N/A
+   • Last quarter EPS: ₹4.16
+
+📈 *Recent quarterly EPS:*
+   ₹4.16  •  ₹4.10  •  ₹3.93  •  ₹4.28
+
+📊 *Pattern on results day:*
+   ITC has historically moved 1.5-3% on results day in either direction. The stock is a 'slow grind' name — big moves are rare except on surprise cigarette price hikes or tax shocks. Average absolute move over the last 8 quarters: ~2.1%.
+
+🔍 *What actually moves this stock on results day:*
+   • Cigarette net realisations per stick — the single biggest swing factor. A 5% increase typically lifts cigarette EBIT by 12-15% because costs (tobacco, packaging) are largely fixed.
+   • Cigarette volume growth — even a 1-2% volume surprise moves the stock 3-5% on results day because the category is 50%+ of profits and optically traders extrapolate volumes to future quarters.
+   • FMCG non-tobacco revenue growth — currently 25%+ of revenue but <10% of profits. The market pays a premium if this segment delivers >15% YoY growth because it justifies the de-tobacco thesis.
+
+👂 *Top thing to listen for tomorrow:*
+   • Did management take a cigarette price hike in the quarter? (Even Rs 0.50-1 per stick matters.) If yes, expect margin expansion in the next 2 quarters.
+
+🇮🇳 _FMCG / Tobacco / Hotels_
+\#ITC #Earnings
+2026-06-28 18:50:36,214 INFO    earnings_alert: urllib NSE fetch: 3836 announcements
+2026-06-28 18:50:36,417 INFO    earnings_alert: NSE results: 3 events in window 17-05-2025..22-05-2025
+2026-06-28 18:50:36,417 INFO    earnings_alert: found 1 candidate alerts for window around 2025-05-20
+2026-06-28 18:50:37,529 INFO    earnings_alert: [DRY-RUN] would send 1368 chars to Telegram:
+📅 *2 DAYS TO RESULTS*
+
+*ITC* (ITC)
+📅 Thu 22 May 2025 • post-market
+📊 Q4 FY25
+
+🎯 *Consensus estimates*
+   • EPS: N/A
+   • Revenue: N/A
+   • Last quarter EPS: ₹4.16
+
+📈 *Recent quarterly EPS:*
+   ₹4.16  •  ₹4.10  •  ₹3.93  •  ₹4.28
+
+📊 *Pattern on results day:*
+   ITC has historically moved 1.5-3% on results day in either direction. The stock is a 'slow grind' name — big moves are rare except on surprise cigarette price hikes or tax shocks. Average absolute move over the last 8 quarters: ~2.1%.
+
+🔍 *What actually moves this stock on results day:*
+   • Cigarette net realisations per stick — the single biggest swing factor. A 5% increase typically lifts cigarette EBIT by 12-15% because costs (tobacco, packaging) are largely fixed.
+   • Cigarette volume growth — even a 1-2% volume surprise moves the stock 3-5% on results day because the category is 50%+ of profits and optically traders extrapolate volumes to future quarters.
+   • FMCG non-tobacco revenue growth — currently 25%+ of revenue but <10% of profits. The market pays a premium if this segment delivers >15% YoY growth because it justifies the de-tobacco thesis.
+
+👂 *Top thing to listen for tomorrow:*
+   • Did management take a cigarette price hike in the quarter? (Even Rs 0.50-1 per stick matters.) If yes, expect margin expansion in the next 2 quarters.
+
+🇮🇳 _FMCG / Tobacco / Hotels_
+\#ITC #Earnings
+2026-06-28 18:50:39,999 INFO    earnings_alert: urllib NSE fetch: 4821 announcements
+2026-06-28 18:50:40,249 INFO    earnings_alert: NSE results: 3 events in window 19-05-2025..24-05-2025
+2026-06-28 18:50:40,249 INFO    earnings_alert: found 1 candidate alerts for window around 2025-05-22
+2026-06-28 18:50:41,357 INFO    earnings_alert: [DRY-RUN] would send 2008 chars to Telegram:
+🚨 *RESULTS DAY — TODAY*
+
+*ITC* (ITC)
+📅 Thu 22 May 2025 • post-market
+📊 Q4 FY25
+
+🎯 *Consensus estimates*
+   • EPS: N/A
+   • Revenue: N/A
+   • Last quarter EPS: ₹4.16
+
+📈 *Recent quarterly EPS:*
+   ₹4.16  •  ₹4.10  •  ₹3.93  •  ₹4.28
+
+📊 *Pattern on results day:*
+   ITC has historically moved 1.5-3% on results day in either direction. The stock is a 'slow grind' name — big moves are rare except on surprise cigarette price hikes or tax shocks. Average absolute move over the last 8 quarters: ~2.1%.
+
+🔍 *What actually moves this stock on results day:*
+   • Cigarette net realisations per stick — the single biggest swing factor. A 5% increase typically lifts cigarette EBIT by 12-15% because costs (tobacco, packaging) are largely fixed.
+   • Cigarette volume growth — even a 1-2% volume surprise moves the stock 3-5% on results day because the category is 50%+ of profits and optically traders extrapolate volumes to future quarters.
+
+👂 *Listen for these in the con-call:*
+   • Did management take a cigarette price hike in the quarter? (Even Rs 0.50-1 per stick matters.) If yes, expect margin expansion in the next 2 quarters.
+   • Are cigarette volumes flat-to-positive YoY? Volumes have been stagnant for years; any growth is treated as a structural positive by the market.
+   • FMCG margins — are they still in the 'investment phase' (loss-making) or starting to contribute? ITC's dairy, oats, and snacks segments have been loss-making for years.
+   • Any state tax/VAT hike on cigarettes announced during the quarter? Maharashtra, Karnataka, and Tamil Nadu are the ones to watch.
+
+🗣️ *Management phrases to listen for:*
+   • Phrases like 'cigarette pricing environment remains stable' / 'tax stability' = bullish (no near-term margin pressure).
+   • 'FMCG losses moderated' / 'path to profitability' = bullish.
+   • 'Cigarette volumes under pressure' / 'illicit trade' = bearish (illicit trade is ITC's code word for volume loss to smuggled cheaper brands).
+
+🇮🇳 _FMCG / Tobacco / Hotels_
+\#ITC #Earnings
+2026-06-28 18:51:05,341 INFO    earnings_alert: urllib NSE fetch: 3836 announcements
+2026-06-28 18:51:05,537 INFO    earnings_alert: NSE results: 3 events in window 17-05-2025..22-05-2025
+2026-06-28 18:51:05,537 INFO    earnings_alert: found 1 candidate alerts for window around 2025-05-20
+2026-06-28 18:51:06,881 INFO    earnings_alert: [DRY-RUN] would send 1368 chars to Telegram:
+📅 *2 DAYS TO RESULTS*
+
+*ITC* (ITC)
+📅 Thu 22 May 2025 • post-market
+📊 Q4 FY25
+
+🎯 *Consensus estimates*
+   • EPS: N/A
+   • Revenue: N/A
+   • Last quarter EPS: ₹4.16
+
+📈 *Recent quarterly EPS:*
+   ₹4.16  •  ₹4.10  •  ₹3.93  •  ₹4.28
+
+📊 *Pattern on results day:*
+   ITC has historically moved 1.5-3% on results day in either direction. The stock is a 'slow grind' name — big moves are rare except on surprise cigarette price hikes or tax shocks. Average absolute move over the last 8 quarters: ~2.1%.
+
+🔍 *What actually moves this stock on results day:*
+   • Cigarette net realisations per stick — the single biggest swing factor. A 5% increase typically lifts cigarette EBIT by 12-15% because costs (tobacco, packaging) are largely fixed.
+   • Cigarette volume growth — even a 1-2% volume surprise moves the stock 3-5% on results day because the category is 50%+ of profits and optically traders extrapolate volumes to future quarters.
+   • FMCG non-tobacco revenue growth — currently 25%+ of revenue but <10% of profits. The market pays a premium if this segment delivers >15% YoY growth because it justifies the de-tobacco thesis.
+
+👂 *Top thing to listen for tomorrow:*
+   • Did management take a cigarette price hike in the quarter? (Even Rs 0.50-1 per stick matters.) If yes, expect margin expansion in the next 2 quarters.
+
+🇮🇳 _FMCG / Tobacco / Hotels_
+\#ITC #Earnings

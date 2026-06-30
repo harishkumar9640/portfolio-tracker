@@ -480,7 +480,7 @@ class TestConcallsFilterChips:
 
 class TestConcurrentRequests:
     """The webapp should handle concurrent requests without crashing.
-    We hammer it with 20 parallel requests across all pages."""
+    We hammer it with 20 pipeline.parallel requests across all pages."""
 
     def test_20_parallel_requests(self, server):
         from playwright.sync_api import sync_playwright
@@ -497,7 +497,7 @@ class TestConcurrentRequests:
                 # Open one page then make 20 concurrent fetches via JS
                 page.goto(server.url + "/portfolio", wait_until="load")
 
-                # Use page.evaluate to fire 20 parallel fetches
+                # Use page.evaluate to fire 20 pipeline.parallel fetches
                 results = page.evaluate("""async (baseUrl) => {
                     const paths = [
                         '/', '/portfolio', '/flows', '/concalls',

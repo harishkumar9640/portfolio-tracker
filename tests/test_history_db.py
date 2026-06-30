@@ -13,7 +13,7 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-from history_db import HistoryDB, migrate_legacy_json  # noqa: E402
+from pipeline.history_db import HistoryDB, migrate_legacy_json  # noqa: E402
 
 
 @pytest.fixture
@@ -91,8 +91,8 @@ class TestHistoryDB:
         assert hist[1]["value"] == 1_020_000
 
     def test_run_log(self, tmp_db: HistoryDB):
-        tmp_db.record_run("equity_compare.py", "ok", "all good")
-        last = tmp_db.last_run("equity_compare.py")
+        tmp_db.record_run("pipeline.equity_compare.py", "ok", "all good")
+        last = tmp_db.last_run("pipeline.equity_compare.py")
         assert last is not None
         assert last["status"] == "ok"
         assert "all good" in last["note"]
@@ -134,11 +134,11 @@ class TestLegacyMigration:
             ' "IN0020230069": {"2026-06-22": 15198.0}}'
         )
         # monkey-patch the module-level path
-        import history_db
-        original_path = history_db.PROJECT
-        history_db.PROJECT = tmp_path
+        import pipeline.history_db
+        original_path = pipeline.history_db.PROJECT
+        pipeline.history_db.PROJECT = tmp_path
         try:
-            n = history_db.migrate_legacy_json(legacy)
+            n = pipeline.history_db.migrate_legacy_json(legacy)
         finally:
-            history_db.PROJECT = original_path
+            pipeline.history_db.PROJECT = original_path
         assert n == 3

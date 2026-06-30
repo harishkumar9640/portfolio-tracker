@@ -1,5 +1,5 @@
 """
-Tests for intraday.py — the today's-vs-world-indices intraday
+Tests for pipeline.intraday.py — the today's-vs-world-indices pipeline.intraday
 comparison chart (1m / 5m / 15m).
 
 These tests run entirely offline by mocking yfinance and the holdings
@@ -38,12 +38,12 @@ sys.path.insert(0, str(PROJECT))
 # ---------- Cache TTL ----------
 class TestCacheTTL:
     def test_cache_age_for_missing_file_is_large(self, tmp_path):
-        from intraday import _cache_age
+        from pipeline.intraday import _cache_age
         age = _cache_age(tmp_path / "nope.csv")
         assert age > timedelta(days=30)
 
     def test_cache_fresh_within_5_minutes(self, tmp_path):
-        from intraday import _cache_age, _is_cache_fresh, CACHE_TTL
+        from pipeline.intraday import _cache_age, _is_cache_fresh, CACHE_TTL
         p = tmp_path / "fresh.csv"
         p.write_text("a,b\n1,2\n")
         # Just touched, must be fresh
@@ -51,7 +51,7 @@ class TestCacheTTL:
         assert _is_cache_fresh(p) is True
 
     def test_cache_stale_after_5_minutes(self, tmp_path):
-        from intraday import _is_cache_fresh
+        from pipeline.intraday import _is_cache_fresh
         import os
         p = tmp_path / "stale.csv"
         p.write_text("a,b\n1,2\n")
@@ -64,14 +64,14 @@ class TestCacheTTL:
 # ---------- Interval rules ----------
 class TestIntervalRules:
     def test_all_three_intervals_have_valid_rules(self):
-        from intraday import INTERVAL_RULES
+        from pipeline.intraday import INTERVAL_RULES
         assert set(INTERVAL_RULES.keys()) == {"1m", "5m", "15m"}
         for interval, rule in INTERVAL_RULES.items():
             assert "period" in rule and rule["period"]
             assert "interval" in rule and rule["interval"]
 
     def test_1m_period_respects_yahoo_7d_limit(self):
-        from intraday import INTERVAL_RULES
+        from pipeline.intraday import INTERVAL_RULES
         # Yahoo Finance 1m data is only available for <= 7 days
         period = INTERVAL_RULES["1m"]["period"]
         # Convert "5d" / "7d" -> int days
@@ -82,26 +82,26 @@ class TestIntervalRules:
 # ---------- Equity holdings parsing ----------
 class TestLoadEquityHoldings:
     def test_missing_cache_returns_empty(self, tmp_path, monkeypatch):
-        from intraday import _load_equity_holdings
-        monkeypatch.setattr("intraday.PROJECT", tmp_path)
+        from pipeline.intraday import _load_equity_holdings
+        monkeypatch.setattr("pipeline.intraday.PROJECT", tmp_path)
         assert _load_equity_holdings() == []
 
     def test_corrupt_cache_returns_empty(self, tmp_path, monkeypatch):
-        from intraday import _load_equity_holdings
+        from pipeline.intraday import _load_equity_holdings
         (tmp_path / "data").mkdir()
         (tmp_path / "data" / "holdings_cache.json").write_text("not-json{")
-        monkeypatch.setattr("intraday.PROJECT", tmp_path)
+        monkeypatch.setattr("pipeline.intraday.PROJECT", tmp_path)
         assert _load_equity_holdings() == []
 
     def test_empty_holdings_list_returns_empty(self, tmp_path, monkeypatch):
-        from intraday import _load_equity_holdings
+        from pipeline.intraday import _load_equity_holdings
         (tmp_path / "data").mkdir()
         (tmp_path / "data" / "holdings_cache.json").write_text('{"holdings": []}')
-        monkeypatch.setattr("intraday.PROJECT", tmp_path)
+        monkeypatch.setattr("pipeline.intraday.PROJECT", tmp_path)
         assert _load_equity_holdings() == []
 
     def test_normalises_symbols_and_computes_weights(self, tmp_path, monkeypatch):
-        from intraday import _load_equity_holdings
+        from pipeline.intraday import _load_equity_holdings
         (tmp_path / "data").mkdir()
         (tmp_path / "data" / "holdings_cache.json").write_text(json.dumps({
             "holdings": [
@@ -109,7 +109,7 @@ class TestLoadEquityHoldings:
                 {"symbol": "TCS-EQ",       "current_value": 40000},
             ]
         }))
-        monkeypatch.setattr("intraday.PROJECT", tmp_path)
+        monkeypatch.setattr("pipeline.intraday.PROJECT", tmp_path)
         rows = _load_equity_holdings()
         assert len(rows) == 2
         # -EQ stripped, .NS suffix added
@@ -122,12 +122,12 @@ class TestLoadEquityHoldings:
         assert abs(rows[1]["weight"] - 0.4) < 1e-9
 
     def test_zero_total_value_falls_back_to_zero_weights(self, tmp_path, monkeypatch):
-        from intraday import _load_equity_holdings
+        from pipeline.intraday import _load_equity_holdings
         (tmp_path / "data").mkdir()
         (tmp_path / "data" / "holdings_cache.json").write_text(json.dumps({
             "holdings": [{"symbol": "X-EQ", "current_value": 0}]
         }))
-        monkeypatch.setattr("intraday.PROJECT", tmp_path)
+        monkeypatch.setattr("pipeline.intraday.PROJECT", tmp_path)
         rows = _load_equity_holdings()
         assert rows[0]["weight"] == 0.0
 
@@ -150,7 +150,7 @@ class TestNormalizeToOpenToday:
         )
 
     def test_drops_rows_older_than_24h(self):
-        from intraday import normalize_to_open_today
+        from pipeline.intraday import normalize_to_open_today
         df = self._make_df()
         out = normalize_to_open_today(df)
         # The kept window should be the recent block; first row should
@@ -160,7 +160,7 @@ class TestNormalizeToOpenToday:
             assert gap < 24 * 3600 + 60
 
     def test_first_valid_value_becomes_100(self):
-        from intraday import normalize_to_open_today
+        from pipeline.intraday import normalize_to_open_today
         df = self._make_df()
         out = normalize_to_open_today(df)
         # Each column's first non-NaN value should be exactly 100
@@ -169,7 +169,7 @@ class TestNormalizeToOpenToday:
             assert abs(first_valid - 100.0) < 1e-9
 
     def test_drops_all_nan_rows(self):
-        from intraday import normalize_to_open_today
+        from pipeline.intraday import normalize_to_open_today
         df = self._make_df()
         # Add an all-NaN row in the middle of the recent window
         mid_idx = df.index[-25]
@@ -179,7 +179,7 @@ class TestNormalizeToOpenToday:
         assert mid_idx not in out.index
 
     def test_empty_input_returns_empty(self):
-        from intraday import normalize_to_open_today
+        from pipeline.intraday import normalize_to_open_today
         df = pd.DataFrame()
         out = normalize_to_open_today(df)
         assert out.empty
@@ -189,7 +189,7 @@ class TestNormalizeToOpenToday:
         made US indices show yesterday's close on the same axis as
         Nifty's today. The fix is to keep only the contiguous block
         ending at the latest timestamp with at most 30-minute gaps."""
-        from intraday import normalize_to_open_today
+        from pipeline.intraday import normalize_to_open_today
         # Use IST-anchored "now" then build UTC ranges from the same instant
         now_ist = pd.Timestamp.now(tz="Asia/Kolkata")
         recent_start_ist = now_ist.normalize() + pd.Timedelta(hours=9)  # 09:00 IST today
@@ -216,7 +216,7 @@ class TestNormalizeToOpenToday:
     def test_handles_sparse_indices_with_30min_gaps(self):
         """If gaps are at most 30 minutes (e.g. a sparse index), the
         algorithm should treat them as part of the same contiguous block."""
-        from intraday import normalize_to_open_today
+        from pipeline.intraday import normalize_to_open_today
         base = pd.Timestamp.now(tz="Asia/Kolkata").normalize() + pd.Timedelta(hours=10)
         # 10 points spaced 15 minutes apart (small gaps)
         idx = pd.date_range(base, periods=10, freq="15min")
@@ -227,7 +227,7 @@ class TestNormalizeToOpenToday:
     def test_splits_at_large_gap_even_when_latest_has_no_data(self):
         """A 5-hour gap (e.g. between US close and Asian reopen) must
         split the chart into two blocks; we keep only the latest block."""
-        from intraday import normalize_to_open_today
+        from pipeline.intraday import normalize_to_open_today
         recent = pd.date_range("2026-06-25 09:00", periods=5, freq="5min", tz="Asia/Kolkata")
         sparse_late = pd.date_range("2026-06-25 15:00", periods=2, freq="5min", tz="Asia/Kolkata")
         idx = recent.append(sparse_late)
@@ -240,7 +240,7 @@ class TestNormalizeToOpenToday:
 
 # ---------- build_intraday_snapshot (mocked yfinance) ----------
 class TestBuildIntradaySnapshot:
-    """Build a synthetic intraday world with two index tickers and
+    """Build a synthetic pipeline.intraday world with two index tickers and
     one equity ticker; verify the JSON snapshot has the right shape
     and that the normalisation is correct."""
 
@@ -250,19 +250,19 @@ class TestBuildIntradaySnapshot:
         return pd.Series([base + slope * i for i in range(n)], index=idx)
 
     def test_returns_expected_json_shape(self, tmp_path, monkeypatch):
-        from intraday import build_intraday_snapshot
+        from pipeline.intraday import build_intraday_snapshot
 
         # Mock the index fetch: two indices with very different slopes
         nifty = self._mock_series(n=30, base=18000, slope=10.0)
         sp500 = self._mock_series(n=30, base=4500, slope=-2.0)
 
-        with patch("intraday.fetch_intraday_indices", return_value=pd.DataFrame({
+        with patch("pipeline.intraday.fetch_intraday_indices", return_value=pd.DataFrame({
             "Nifty 50 (IN)": nifty, "S&P 500 (US)": sp500,
         })), \
-             patch("intraday.build_combined_portfolio", return_value=pd.DataFrame({
+             patch("pipeline.intraday.build_combined_portfolio", return_value=pd.DataFrame({
                  "My Portfolio": self._mock_series(n=30, base=500000, slope=50.0),
              })), \
-             patch("intraday._cache_path", return_value=tmp_path / "cache.csv"):
+             patch("pipeline.intraday._cache_path", return_value=tmp_path / "cache.csv"):
             snap = build_intraday_snapshot("5m")
 
         assert snap["interval"] == "5m"
@@ -272,18 +272,18 @@ class TestBuildIntradaySnapshot:
         assert set(snap["series"].keys()) == {"Nifty 50 (IN)", "S&P 500 (US)", "My Portfolio"}
 
     def test_each_series_starts_at_100(self, tmp_path):
-        from intraday import build_intraday_snapshot
+        from pipeline.intraday import build_intraday_snapshot
         nifty = self._mock_series(n=20, base=18000, slope=5.0)
         sp500 = self._mock_series(n=20, base=4500, slope=-1.0)
         portfolio = self._mock_series(n=20, base=500000, slope=20.0)
 
-        with patch("intraday.fetch_intraday_indices", return_value=pd.DataFrame({
+        with patch("pipeline.intraday.fetch_intraday_indices", return_value=pd.DataFrame({
             "Nifty 50 (IN)": nifty, "S&P 500 (US)": sp500,
         })), \
-             patch("intraday.build_combined_portfolio", return_value=pd.DataFrame({
+             patch("pipeline.intraday.build_combined_portfolio", return_value=pd.DataFrame({
                  "My Portfolio": portfolio,
              })), \
-             patch("intraday._cache_path", return_value=tmp_path / "cache.csv"):
+             patch("pipeline.intraday._cache_path", return_value=tmp_path / "cache.csv"):
             snap = build_intraday_snapshot("5m")
 
         for name, pts in snap["series"].items():
@@ -293,15 +293,15 @@ class TestBuildIntradaySnapshot:
                 f"{name} first point is {pts[0]['v']}, expected 100"
 
     def test_each_point_has_iso_timestamp(self, tmp_path):
-        from intraday import build_intraday_snapshot
+        from pipeline.intraday import build_intraday_snapshot
         nifty = self._mock_series(n=10)
-        with patch("intraday.fetch_intraday_indices", return_value=pd.DataFrame({
+        with patch("pipeline.intraday.fetch_intraday_indices", return_value=pd.DataFrame({
             "Nifty 50 (IN)": nifty,
         })), \
-             patch("intraday.build_combined_portfolio", return_value=pd.DataFrame({
+             patch("pipeline.intraday.build_combined_portfolio", return_value=pd.DataFrame({
                  "My Portfolio": nifty,
              })), \
-             patch("intraday._cache_path", return_value=tmp_path / "cache.csv"):
+             patch("pipeline.intraday._cache_path", return_value=tmp_path / "cache.csv"):
             snap = build_intraday_snapshot("5m")
         for col, pts in snap["series"].items():
             for p in pts:
@@ -315,7 +315,7 @@ class TestBuildIntradaySnapshot:
         index's native timezone (US in America/New_York, Asia in
         Asia/Tokyo etc.), so the chart's x-axis showed wrong hours for
         Indian users. Now every timestamp must carry +05:30 offset."""
-        from intraday import build_intraday_snapshot
+        from pipeline.intraday import build_intraday_snapshot
         # Use tz-aware indices in DIFFERENT timezones to simulate the
         # mixed-tz yfinance output (US Eastern for S&P 500, IST for Nifty).
         us_tz = pd.date_range("2026-06-25 09:30", periods=4, freq="1h",
@@ -324,13 +324,13 @@ class TestBuildIntradaySnapshot:
                               tz="Asia/Kolkata")
         nifty = pd.Series([100, 101, 102, 103], index=in_tz)
         sp500 = pd.Series([4000, 4005, 4010, 4015], index=us_tz)
-        with patch("intraday.fetch_intraday_indices", return_value=pd.DataFrame({
+        with patch("pipeline.intraday.fetch_intraday_indices", return_value=pd.DataFrame({
             "Nifty 50 (IN)": nifty, "S&P 500 (US)": sp500,
         })), \
-             patch("intraday.build_combined_portfolio", return_value=pd.DataFrame({
+             patch("pipeline.intraday.build_combined_portfolio", return_value=pd.DataFrame({
                  "My Portfolio": nifty,
              })), \
-             patch("intraday._cache_path", return_value=tmp_path / "cache.csv"):
+             patch("pipeline.intraday._cache_path", return_value=tmp_path / "cache.csv"):
             snap = build_intraday_snapshot("5m")
         # Every serialised timestamp must end with +05:30 (IST) regardless
         # of which index it came from
@@ -350,13 +350,13 @@ class TestBuildCombinedPortfolio:
         return pd.Series([base + slope * i for i in range(n)], index=idx, name="x")
 
     def test_weighted_sum_with_zero_mf_sgb(self, tmp_path, monkeypatch):
-        from intraday import build_combined_portfolio
+        from pipeline.intraday import build_combined_portfolio
         eq = self._series(n=30, base=100.0, slope=1.0)
-        monkeypatch.setattr("intraday.fetch_intraday_equity",
+        monkeypatch.setattr("pipeline.intraday.fetch_intraday_equity",
                             lambda interval, *, use_cache=True: (eq, [{"weight": 1.0}]))
-        monkeypatch.setattr("intraday._load_portfolio_weights", lambda: (1.0, 0.0, 0.0))
-        monkeypatch.setattr("intraday._load_mfs_today_change", lambda: 0.0)
-        monkeypatch.setattr("intraday._load_sgbs_today_change", lambda: 0.0)
+        monkeypatch.setattr("pipeline.intraday._load_portfolio_weights", lambda: (1.0, 0.0, 0.0))
+        monkeypatch.setattr("pipeline.intraday._load_mfs_today_change", lambda: 0.0)
+        monkeypatch.setattr("pipeline.intraday._load_sgbs_today_change", lambda: 0.0)
 
         out = build_combined_portfolio("5m")
         # With equity weight = 1, the portfolio should be the equity series
@@ -364,14 +364,14 @@ class TestBuildCombinedPortfolio:
         assert (out["My Portfolio"].dropna().iloc[:5].values == eq.iloc[:5].values).all()
 
     def test_mf_contribution_applied_gradually(self, tmp_path, monkeypatch):
-        from intraday import build_combined_portfolio
+        from pipeline.intraday import build_combined_portfolio
         # Flat equity (no movement) so any drift comes from the MF contribution
         eq = self._series(n=30, base=100.0, slope=0.0)
-        monkeypatch.setattr("intraday.fetch_intraday_equity",
+        monkeypatch.setattr("pipeline.intraday.fetch_intraday_equity",
                             lambda interval, *, use_cache=True: (eq, []))
-        monkeypatch.setattr("intraday._load_portfolio_weights", lambda: (0.5, 0.5, 0.0))
-        monkeypatch.setattr("intraday._load_mfs_today_change", lambda: 2.0)  # +2% MF
-        monkeypatch.setattr("intraday._load_sgbs_today_change", lambda: 0.0)
+        monkeypatch.setattr("pipeline.intraday._load_portfolio_weights", lambda: (0.5, 0.5, 0.0))
+        monkeypatch.setattr("pipeline.intraday._load_mfs_today_change", lambda: 2.0)  # +2% MF
+        monkeypatch.setattr("pipeline.intraday._load_sgbs_today_change", lambda: 0.0)
 
         out = build_combined_portfolio("5m")
         last = out["My Portfolio"].dropna().iloc[-1]
@@ -381,15 +381,15 @@ class TestBuildCombinedPortfolio:
         assert abs(last - 101.0) < 0.5
 
     def test_missing_equity_falls_back_to_nifty(self, tmp_path, monkeypatch):
-        from intraday import build_combined_portfolio
+        from pipeline.intraday import build_combined_portfolio
         nifty = self._series(n=30, base=18000, slope=10.0)
-        monkeypatch.setattr("intraday.fetch_intraday_equity",
+        monkeypatch.setattr("pipeline.intraday.fetch_intraday_equity",
                             lambda interval, *, use_cache=True: (pd.Series(dtype=float), []))
-        monkeypatch.setattr("intraday.fetch_intraday_indices",
+        monkeypatch.setattr("pipeline.intraday.fetch_intraday_indices",
                             lambda interval, **kwargs: pd.DataFrame({"Nifty 50 (IN)": nifty}))
-        monkeypatch.setattr("intraday._load_portfolio_weights", lambda: (1.0, 0.0, 0.0))
-        monkeypatch.setattr("intraday._load_mfs_today_change", lambda: 0.0)
-        monkeypatch.setattr("intraday._load_sgbs_today_change", lambda: 0.0)
+        monkeypatch.setattr("pipeline.intraday._load_portfolio_weights", lambda: (1.0, 0.0, 0.0))
+        monkeypatch.setattr("pipeline.intraday._load_mfs_today_change", lambda: 0.0)
+        monkeypatch.setattr("pipeline.intraday._load_sgbs_today_change", lambda: 0.0)
 
         out = build_combined_portfolio("5m")
         assert "My Portfolio" in out.columns
@@ -399,7 +399,7 @@ class TestBuildCombinedPortfolio:
 # ---------- Draw chart (Plotly smoke test) ----------
 class TestDrawChart:
     def test_draw_produces_html_file(self, tmp_path, monkeypatch):
-        from intraday import draw_intraday_chart, CHARTS_DIR
+        from pipeline.intraday import draw_intraday_chart, CHARTS_DIR
         idx = pd.date_range(datetime.now(tz=pd.Timestamp.now(tz="UTC").tz) - timedelta(hours=2),
                             periods=30, freq="5min", tz="UTC")
         df = pd.DataFrame({

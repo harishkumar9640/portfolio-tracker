@@ -1,0 +1,1624 @@
+[
+  {
+    "ran_at": "2026-06-30T15:13:00+05:30",
+    "url": "https://www.npr.org/2026/06/30/nx-s1-5869701/iran-war-supercharges-pivot-to-renewable-energy",
+    "title": "Iran war supercharges pivot to renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 9,
+        "reason": "renewables, renewable, renewable energy"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:00+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-06-30/india-plans-to-cut-reliance-on-middle-east-oil-after-war-shock",
+    "title": "India Plans to Cut Reliance on Middle East Oil After War Shock",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "reliance"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:00+05:30",
+    "url": "https://www.marketwatch.com/story/kylie-jenner-takes-48-million-concrete-fortress-in-l-a-off-the-market-9ae6df50?mod=mw_rss_topstories",
+    "title": "Kylie Jenner takes $48 million \u2018concrete fortress\u2019 in L.A. off the market",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:00+05:30",
+    "url": "https://www.investing.com/news/analyst-ratings/briley-raises-angel-studios-stock-price-target-to-8-on-guild-growth-93CH-4767163",
+    "title": "B.Riley raises Angel Studios stock price target to $8 on guild growth",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      },
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      },
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:00+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:00+05:30",
+    "url": "https://www.thehindubusinessline.com/economy/indias-fmcg-sector-growth-remains-resilient-despite-inflationary-headwinds-report/article71164974.ece",
+    "title": "India's FMCG sector growth remains resilient despite inflationary headwinds: Report",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 6,
+        "reason": "fmcg, fmcg sector"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "fmcg demand",
+          "fmcg growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: fmcg demand, fmcg growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:00+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/gold/gold-futures-rise-to-142-lakh10g-after-early-losses/article71165066.ece",
+    "title": "Gold futures rise to \u20b91.42 lakh/10g after early losses",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "crude oil price, oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:09+05:30",
+    "url": "https://www.npr.org/2026/06/30/nx-s1-5869701/iran-war-supercharges-pivot-to-renewable-energy",
+    "title": "Iran war supercharges pivot to renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 9,
+        "reason": "renewables, renewable, renewable energy"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:09+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-06-30/india-plans-to-cut-reliance-on-middle-east-oil-after-war-shock",
+    "title": "India Plans to Cut Reliance on Middle East Oil After War Shock",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "reliance"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:09+05:30",
+    "url": "https://www.marketwatch.com/story/kylie-jenner-takes-48-million-concrete-fortress-in-l-a-off-the-market-9ae6df50?mod=mw_rss_topstories",
+    "title": "Kylie Jenner takes $48 million \u2018concrete fortress\u2019 in L.A. off the market",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:09+05:30",
+    "url": "https://www.investing.com/news/analyst-ratings/briley-raises-angel-studios-stock-price-target-to-8-on-guild-growth-93CH-4767163",
+    "title": "B.Riley raises Angel Studios stock price target to $8 on guild growth",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      },
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      },
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:09+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:09+05:30",
+    "url": "https://www.thehindubusinessline.com/economy/indias-fmcg-sector-growth-remains-resilient-despite-inflationary-headwinds-report/article71164974.ece",
+    "title": "India's FMCG sector growth remains resilient despite inflationary headwinds: Report",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 6,
+        "reason": "fmcg, fmcg sector"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "fmcg demand",
+          "fmcg growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: fmcg demand, fmcg growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:13:09+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/gold/gold-futures-rise-to-142-lakh10g-after-early-losses/article71165066.ece",
+    "title": "Gold futures rise to \u20b91.42 lakh/10g after early losses",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "crude oil price, oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:19+05:30",
+    "url": "https://www.npr.org/2026/06/30/nx-s1-5869701/iran-war-supercharges-pivot-to-renewable-energy",
+    "title": "Iran war supercharges pivot to renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 9,
+        "reason": "renewables, renewable, renewable energy"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:19+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-06-30/india-plans-to-cut-reliance-on-middle-east-oil-after-war-shock",
+    "title": "India Plans to Cut Reliance on Middle East Oil After War Shock",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "reliance"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:19+05:30",
+    "url": "https://www.marketwatch.com/story/kylie-jenner-takes-48-million-concrete-fortress-in-l-a-off-the-market-9ae6df50?mod=mw_rss_topstories",
+    "title": "Kylie Jenner takes $48 million \u2018concrete fortress\u2019 in L.A. off the market",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:19+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:19+05:30",
+    "url": "https://www.thehindubusinessline.com/economy/indias-fmcg-sector-growth-remains-resilient-despite-inflationary-headwinds-report/article71164974.ece",
+    "title": "India's FMCG sector growth remains resilient despite inflationary headwinds: Report",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 6,
+        "reason": "fmcg, fmcg sector"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "fmcg demand",
+          "fmcg growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: fmcg demand, fmcg growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:19+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/gold/gold-futures-rise-to-142-lakh10g-after-early-losses/article71165066.ece",
+    "title": "Gold futures rise to \u20b91.42 lakh/10g after early losses",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "oil price, crude oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:22+05:30",
+    "url": "https://www.npr.org/2026/06/30/nx-s1-5869701/iran-war-supercharges-pivot-to-renewable-energy",
+    "title": "Iran war supercharges pivot to renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 9,
+        "reason": "renewables, renewable, renewable energy"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:22+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-06-30/india-plans-to-cut-reliance-on-middle-east-oil-after-war-shock",
+    "title": "India Plans to Cut Reliance on Middle East Oil After War Shock",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "reliance"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:22+05:30",
+    "url": "https://www.marketwatch.com/story/kylie-jenner-takes-48-million-concrete-fortress-in-l-a-off-the-market-9ae6df50?mod=mw_rss_topstories",
+    "title": "Kylie Jenner takes $48 million \u2018concrete fortress\u2019 in L.A. off the market",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:22+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:22+05:30",
+    "url": "https://www.thehindubusinessline.com/economy/indias-fmcg-sector-growth-remains-resilient-despite-inflationary-headwinds-report/article71164974.ece",
+    "title": "India's FMCG sector growth remains resilient despite inflationary headwinds: Report",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 6,
+        "reason": "fmcg, fmcg sector"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "fmcg demand",
+          "fmcg growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: fmcg demand, fmcg growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:22+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/gold/gold-futures-rise-to-142-lakh10g-after-early-losses/article71165066.ece",
+    "title": "Gold futures rise to \u20b91.42 lakh/10g after early losses",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "oil price, crude oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:31+05:30",
+    "url": "https://www.npr.org/2026/06/30/nx-s1-5869701/iran-war-supercharges-pivot-to-renewable-energy",
+    "title": "Iran war supercharges pivot to renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 9,
+        "reason": "renewables, renewable, renewable energy"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:31+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-06-30/india-plans-to-cut-reliance-on-middle-east-oil-after-war-shock",
+    "title": "India Plans to Cut Reliance on Middle East Oil After War Shock",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "reliance"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:31+05:30",
+    "url": "https://www.marketwatch.com/story/kylie-jenner-takes-48-million-concrete-fortress-in-l-a-off-the-market-9ae6df50?mod=mw_rss_topstories",
+    "title": "Kylie Jenner takes $48 million \u2018concrete fortress\u2019 in L.A. off the market",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:31+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:31+05:30",
+    "url": "https://www.thehindubusinessline.com/economy/indias-fmcg-sector-growth-remains-resilient-despite-inflationary-headwinds-report/article71164974.ece",
+    "title": "India's FMCG sector growth remains resilient despite inflationary headwinds: Report",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 6,
+        "reason": "fmcg, fmcg sector"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "fmcg demand",
+          "fmcg growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: fmcg demand, fmcg growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:18:31+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/gold/gold-futures-rise-to-142-lakh10g-after-early-losses/article71165066.ece",
+    "title": "Gold futures rise to \u20b91.42 lakh/10g after early losses",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "oil price, crude oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:09+05:30",
+    "url": "https://www.npr.org/2026/06/30/nx-s1-5869701/iran-war-supercharges-pivot-to-renewable-energy",
+    "title": "Iran war supercharges pivot to renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 9,
+        "reason": "renewable, renewable energy, renewables"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:09+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-06-30/india-plans-to-cut-reliance-on-middle-east-oil-after-war-shock",
+    "title": "India Plans to Cut Reliance on Middle East Oil After War Shock",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "reliance"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:09+05:30",
+    "url": "https://www.marketwatch.com/story/kylie-jenner-takes-48-million-concrete-fortress-in-l-a-off-the-market-9ae6df50?mod=mw_rss_topstories",
+    "title": "Kylie Jenner takes $48 million \u2018concrete fortress\u2019 in L.A. off the market",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:09+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:09+05:30",
+    "url": "https://www.thehindubusinessline.com/economy/indias-fmcg-sector-growth-remains-resilient-despite-inflationary-headwinds-report/article71164974.ece",
+    "title": "India's FMCG sector growth remains resilient despite inflationary headwinds: Report",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 6,
+        "reason": "fmcg sector, fmcg"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "fmcg demand",
+          "fmcg growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: fmcg demand, fmcg growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:09+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/gold/gold-futures-rise-to-142-lakh10g-after-early-losses/article71165066.ece",
+    "title": "Gold futures rise to \u20b91.42 lakh/10g after early losses",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "oil price, crude oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:13+05:30",
+    "url": "https://www.npr.org/2026/06/30/nx-s1-5869701/iran-war-supercharges-pivot-to-renewable-energy",
+    "title": "Iran war supercharges pivot to renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 9,
+        "reason": "renewable, renewable energy, renewables"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:13+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-06-30/india-plans-to-cut-reliance-on-middle-east-oil-after-war-shock",
+    "title": "India Plans to Cut Reliance on Middle East Oil After War Shock",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "reliance"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:13+05:30",
+    "url": "https://www.marketwatch.com/story/kylie-jenner-takes-48-million-concrete-fortress-in-l-a-off-the-market-9ae6df50?mod=mw_rss_topstories",
+    "title": "Kylie Jenner takes $48 million \u2018concrete fortress\u2019 in L.A. off the market",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:13+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:13+05:30",
+    "url": "https://www.thehindubusinessline.com/economy/indias-fmcg-sector-growth-remains-resilient-despite-inflationary-headwinds-report/article71164974.ece",
+    "title": "India's FMCG sector growth remains resilient despite inflationary headwinds: Report",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 6,
+        "reason": "fmcg sector, fmcg"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "fmcg demand",
+          "fmcg growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: fmcg demand, fmcg growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:13+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/gold/gold-futures-rise-to-142-lakh10g-after-early-losses/article71165066.ece",
+    "title": "Gold futures rise to \u20b91.42 lakh/10g after early losses",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "oil price, crude oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:22+05:30",
+    "url": "https://www.npr.org/2026/06/30/nx-s1-5869701/iran-war-supercharges-pivot-to-renewable-energy",
+    "title": "Iran war supercharges pivot to renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 9,
+        "reason": "renewable, renewable energy, renewables"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:22+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-06-30/india-plans-to-cut-reliance-on-middle-east-oil-after-war-shock",
+    "title": "India Plans to Cut Reliance on Middle East Oil After War Shock",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "reliance"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:22+05:30",
+    "url": "https://www.marketwatch.com/story/kylie-jenner-takes-48-million-concrete-fortress-in-l-a-off-the-market-9ae6df50?mod=mw_rss_topstories",
+    "title": "Kylie Jenner takes $48 million \u2018concrete fortress\u2019 in L.A. off the market",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:22+05:30",
+    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
+    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "global_supply_chain",
+        "name": "Global Supply Chain / Trade",
+        "signals": [
+          "semiconductor"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "KNRCON",
+          "ITC",
+          "JIOFIN",
+          "BANKBARODA",
+          "NTPCGREEN",
+          "IRCON",
+          "BALRAMCHIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:22+05:30",
+    "url": "https://www.thehindubusinessline.com/economy/indias-fmcg-sector-growth-remains-resilient-despite-inflationary-headwinds-report/article71164974.ece",
+    "title": "India's FMCG sector growth remains resilient despite inflationary headwinds: Report",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 6,
+        "reason": "fmcg sector, fmcg"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "fmcg demand",
+          "fmcg growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: fmcg demand, fmcg growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": false
+  },
+  {
+    "ran_at": "2026-06-30T15:23:22+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/gold/gold-futures-rise-to-142-lakh10g-after-early-losses/article71165066.ece",
+    "title": "Gold futures rise to \u20b91.42 lakh/10g after early losses",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "oil price, crude oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": false
+  }
+]

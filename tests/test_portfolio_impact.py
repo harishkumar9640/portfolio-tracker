@@ -1,5 +1,5 @@
 """
-Tests for portfolio_impact.py — the portfolio-impact scanner that
+Tests for pipeline.portfolio_impact.py — the portfolio-impact scanner that
 cross-references news against the user's 8 holdings and sends Telegram
 alerts when a story affects one of them.
 
@@ -27,8 +27,8 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import portfolio_impact as pi  # noqa: E402
-from portfolio_impact import (  # noqa: E402
+import pipeline.portfolio_impact as pi  # noqa: E402
+from pipeline.portfolio_impact import (  # noqa: E402
     PORTFOLIO_EXPOSURE,
     _KEYWORD_TO_TICKERS,
     IST,
@@ -332,9 +332,9 @@ class TestScanDedup:
             url="https://seen",
             category="economic",
         )
-        # Patch fetch_articles in the news_alert module (where it's defined)
+        # Patch fetch_articles in the pipeline.news_alert module (where it's defined)
         # and the helper functions inside scan_once's namespace.
-        import news_alert as na
+        import pipeline.news_alert as na
         with patch.object(na, "fetch_articles", return_value=[article]), \
              patch.object(na, "_filter_fresh", return_value=[article]), \
              patch.object(pi, "send_telegram") as mock_send:

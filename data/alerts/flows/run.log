@@ -1,0 +1,264 @@
+2026-06-28 21:24:56,713 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:24:56,714 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:24:56,714 INFO    flows_alert: [DRY-RUN] would send 374 chars:
+🌊 *FII / DII activity — large flows*
+
+🟢 *DII* BOUGHT +₹5,748 cr net (buy ₹24,844 cr / sell ₹19,096 cr)
+
+📊 *What this means for your portfolio:*
+   • DII buying is offsetting — typically supportive for mid/small caps (KNRCON, IRCON, BALRAMCHIN, NTPCGREEN) where DII ownership is rising.
+   • Threshold for alerts: ₹5,000 cr in either direction
+📅 25-Jun-2026 \#FII #DII #Flows
+2026-06-28 21:24:57,165 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:24:57,377 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:24:57,378 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:26:48,437 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:26:48,438 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:26:48,439 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:26:48,661 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:26:48,665 INFO    flows_alert: deals history now: 155 entries
+2026-06-28 21:26:48,812 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:26:48,815 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:26:48,816 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:27:14,155 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:27:14,156 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:27:14,157 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:27:14,561 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:27:14,566 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:14,678 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:27:14,681 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:14,681 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:27:38,881 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:27:38,883 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:27:38,883 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:27:39,021 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:27:39,025 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:39,144 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:27:39,150 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:39,150 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:27:42,570 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:27:42,571 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:27:42,571 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:27:42,759 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:27:42,764 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:42,928 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:27:42,933 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:42,933 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:27:46,811 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:27:46,812 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:27:46,812 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:27:47,333 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:27:47,336 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:47,470 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:27:47,472 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:47,473 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:27:58,706 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:27:58,707 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:27:58,707 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:27:58,852 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:27:58,857 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:59,000 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:27:59,004 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:27:59,004 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:28:04,078 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:28:04,080 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:28:04,081 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:28:04,242 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:28:04,245 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:28:04,410 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:28:04,413 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:28:04,413 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:28:09,094 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:28:09,094 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:28:09,094 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:28:09,245 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:28:09,248 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:28:09,374 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:28:09,378 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:28:09,378 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:28:23,884 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:28:23,886 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:28:23,886 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:28:24,272 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:28:24,277 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:28:24,930 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:28:24,934 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:28:24,934 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:28:42,963 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:28:42,964 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:28:42,964 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:28:43,251 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:28:43,255 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:28:43,397 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:28:43,400 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:28:43,400 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-28 21:35:14,183 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-28 21:35:14,185 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-28 21:35:14,185 INFO    flows_alert: FII/DII already alerted for 28-Jun-2026 — skipping
+2026-06-28 21:35:14,782 INFO    flows_alert: bulk deals: 157 rows
+2026-06-28 21:35:14,786 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:35:14,957 INFO    flows_alert: block deals: 27 rows
+2026-06-28 21:35:14,960 INFO    flows_alert: deals history now: 180 entries
+2026-06-28 21:35:14,960 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 06:51:11,908 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 06:51:11,909 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 06:51:11,910 INFO    flows_alert: [DRY-RUN] would send 374 chars:
+🌊 *FII / DII activity — large flows*
+
+🟢 *DII* BOUGHT +₹5,748 cr net (buy ₹24,844 cr / sell ₹19,096 cr)
+
+📊 *What this means for your portfolio:*
+   • DII buying is offsetting — typically supportive for mid/small caps (KNRCON, IRCON, BALRAMCHIN, NTPCGREEN) where DII ownership is rising.
+   • Threshold for alerts: ₹5,000 cr in either direction
+📅 25-Jun-2026 \#FII #DII #Flows
+2026-06-29 06:51:12,317 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 06:51:12,320 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 06:51:12,456 INFO    flows_alert: block deals: 27 rows
+2026-06-29 06:51:12,459 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 06:51:12,460 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 07:19:31,864 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 07:19:31,865 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 07:19:31,866 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 07:19:32,262 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 07:19:32,266 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 07:19:32,430 INFO    flows_alert: block deals: 27 rows
+2026-06-29 07:19:32,433 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 07:19:32,433 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 07:22:07,660 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 07:22:07,661 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 07:22:07,662 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 07:22:07,767 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 07:22:07,771 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 07:22:07,856 INFO    flows_alert: block deals: 27 rows
+2026-06-29 07:22:07,859 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 07:22:07,859 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 07:31:01,977 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 07:31:01,978 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 07:31:01,979 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 07:31:02,480 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 07:31:02,484 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 07:31:02,607 INFO    flows_alert: block deals: 27 rows
+2026-06-29 07:31:02,610 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 07:31:02,610 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 07:33:51,708 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 07:33:51,709 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 07:33:51,710 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 07:33:51,893 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 07:33:51,896 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 07:33:52,051 INFO    flows_alert: block deals: 27 rows
+2026-06-29 07:33:52,054 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 07:33:52,054 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 08:17:14,130 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 08:17:14,131 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 08:17:14,131 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 08:17:14,310 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 08:17:14,312 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 08:17:14,559 INFO    flows_alert: block deals: 27 rows
+2026-06-29 08:17:14,561 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 08:17:14,561 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 08:49:27,208 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 08:49:27,209 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 08:49:27,209 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 08:49:27,385 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 08:49:27,387 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 08:49:27,544 INFO    flows_alert: block deals: 27 rows
+2026-06-29 08:49:27,546 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 08:49:27,546 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 09:05:03,022 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 09:05:03,023 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 09:05:03,023 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 09:05:03,223 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 09:05:03,226 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 09:05:03,429 INFO    flows_alert: block deals: 27 rows
+2026-06-29 09:05:03,431 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 09:05:03,431 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 09:12:57,738 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 09:12:57,741 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 09:12:57,741 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 09:12:58,295 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 09:12:58,298 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 09:12:58,441 INFO    flows_alert: block deals: 27 rows
+2026-06-29 09:12:58,444 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 09:12:58,444 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 10:34:48,500 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 10:34:48,502 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 10:34:48,502 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 10:34:48,696 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 10:34:48,700 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 10:34:48,840 INFO    flows_alert: block deals: 27 rows
+2026-06-29 10:34:48,842 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 10:34:48,842 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 10:43:38,634 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 10:43:38,637 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 10:43:38,637 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 10:43:39,030 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 10:43:39,034 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 10:43:39,157 INFO    flows_alert: block deals: 27 rows
+2026-06-29 10:43:39,159 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 10:43:39,159 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 11:12:23,259 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 11:12:23,261 INFO    flows_alert: FII/DII history now: 2 entries
+2026-06-29 11:12:23,261 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 11:12:23,454 INFO    flows_alert: bulk deals: 157 rows
+2026-06-29 11:12:23,456 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 11:12:23,603 INFO    flows_alert: block deals: 27 rows
+2026-06-29 11:12:23,605 INFO    flows_alert: deals history now: 180 entries
+2026-06-29 11:12:23,605 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 21:54:30,979 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 21:54:30,980 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-29 21:54:30,980 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 21:54:31,481 INFO    flows_alert: bulk deals: 177 rows
+2026-06-29 21:54:31,485 INFO    flows_alert: deals history now: 357 entries
+2026-06-29 21:54:31,624 INFO    flows_alert: block deals: 4 rows
+2026-06-29 21:54:31,627 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 21:54:31,628 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 22:31:55,380 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 22:31:55,382 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-29 22:31:55,382 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 22:31:55,834 INFO    flows_alert: bulk deals: 177 rows
+2026-06-29 22:31:55,840 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 22:31:55,998 INFO    flows_alert: block deals: 4 rows
+2026-06-29 22:31:56,004 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 22:31:56,004 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 22:37:28,856 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 22:37:28,858 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-29 22:37:28,858 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 22:37:29,101 INFO    flows_alert: bulk deals: 177 rows
+2026-06-29 22:37:29,110 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 22:37:29,268 INFO    flows_alert: block deals: 4 rows
+2026-06-29 22:37:29,278 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 22:37:29,278 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 22:42:21,798 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 22:42:21,799 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-29 22:42:21,800 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 22:42:22,250 INFO    flows_alert: bulk deals: 177 rows
+2026-06-29 22:42:22,259 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 22:42:22,402 INFO    flows_alert: block deals: 4 rows
+2026-06-29 22:42:22,414 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 22:42:22,414 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 22:48:38,326 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-29 22:48:38,328 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-29 22:48:38,328 INFO    flows_alert: FII/DII already alerted for 29-Jun-2026 — skipping
+2026-06-29 22:48:38,982 INFO    flows_alert: bulk deals: 177 rows
+2026-06-29 22:48:38,987 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 22:48:39,138 INFO    flows_alert: block deals: 4 rows
+2026-06-29 22:48:39,146 INFO    flows_alert: deals history now: 361 entries
+2026-06-29 22:48:39,146 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-29 22:48:40,527 INFO    concalls: found 0 con-call filings in last 7 days
+2026-06-29 22:48:40,528 INFO    concalls: found 0 con-call filings for tickers=['ITC', 'RELIANCE', 'JIOFIN', 'BANKBARODA', 'NTPCGREEN', 'KNRCON', 'IRCON', 'BALRAMCHIN']
+2026-06-30 09:25:40,039 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-30 09:25:40,040 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-30 09:25:40,041 INFO    flows_alert: FII/DII flows within threshold (FII=-1350, DII=+2801, threshold=5000) — no alert
+2026-06-30 09:25:40,227 INFO    flows_alert: bulk deals: 177 rows
+2026-06-30 09:25:40,235 INFO    flows_alert: deals history now: 361 entries
+2026-06-30 09:25:40,371 INFO    flows_alert: block deals: 4 rows
+2026-06-30 09:25:40,380 INFO    flows_alert: deals history now: 361 entries
+2026-06-30 09:25:40,380 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-30 09:31:38,916 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-30 09:31:38,920 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-30 09:31:38,921 INFO    flows_alert: FII/DII flows within threshold (FII=-1350, DII=+2801, threshold=5000) — no alert
+2026-06-30 09:31:39,155 INFO    flows_alert: bulk deals: 177 rows
+2026-06-30 09:31:39,164 INFO    flows_alert: deals history now: 361 entries
+2026-06-30 09:31:39,308 INFO    flows_alert: block deals: 4 rows
+2026-06-30 09:31:39,315 INFO    flows_alert: deals history now: 361 entries
+2026-06-30 09:31:39,315 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block

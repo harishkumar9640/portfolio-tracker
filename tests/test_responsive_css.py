@@ -111,7 +111,7 @@ class TestPageRenderContract:
         )
         f.write(csv); f.close()
         try:
-            import fair_value.search as s
+            import pipeline.fair_value.search as s
             s.CACHE_FILE = Path(f.name); s._index = []; s._index_loaded_at = 0.0
             import webapp.data as wd, webapp.server as ws
             _stub = lambda force=False: {

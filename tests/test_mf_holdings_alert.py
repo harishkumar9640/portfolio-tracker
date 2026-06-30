@@ -1,5 +1,5 @@
 """
-Tests for mf_holdings_alert.py
+Tests for pipeline.mf_holdings_alert.py
 
 Covers:
   - diff_snapshots: detects field changes for mfs_bought, mfs_sold,
@@ -33,8 +33,8 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import mf_holdings_alert as mha  # noqa: E402
-from mf_holdings_alert import (  # noqa: E402
+import pipeline.mf_holdings_alert as mha  # noqa: E402
+from pipeline.mf_holdings_alert import (  # noqa: E402
     MfHoldingChange,
     diff_snapshots,
     render_email,
@@ -84,7 +84,7 @@ def tmp_data_dir(tmp_path, monkeypatch):
 def clean_env(monkeypatch):
     """Strip MF_ALERT_* env vars so is_dry_run() returns True.
 
-    Also explicitly blank the values in os.environ (since mf_holdings_alert
+    Also explicitly blank the values in os.environ (since pipeline.mf_holdings_alert
     now auto-loads .env at import time, monkeypatch.delenv alone is not
     enough — load_dotenv has already populated os.environ with the
     project's actual SMTP credentials).
@@ -248,7 +248,7 @@ class TestRunOnce:
     def test_run_once_dry_run_no_changes(self, tmp_data_dir, clean_env):
         """First-ever run: no previous snapshot -> diff has all-new tickers,
         but we still run; the result should include 'stocks_with_changes'."""
-        # Patch mf_holdings.get_mf_holdings to return a stable snapshot
+        # Patch pipeline.mf_holdings.get_mf_holdings to return a stable snapshot
         snap = {"ITC": _snap("ITC")}
         with patch.object(mha.mf_holdings, "get_mf_holdings", return_value=snap):
             result = mha.run_once()
@@ -328,7 +328,7 @@ class TestNextRunIst:
     def test_returns_today_if_before_1630(self, monkeypatch):
         # Pretend it's 2026-06-26 09:00 IST
         monkeypatch.setattr(
-            "mf_holdings_alert.datetime",
+            "pipeline.mf_holdings_alert.datetime",
             _FakeDatetime(fixed_ist=datetime(2026, 6, 26, 9, 0, tzinfo=IST)),
         )
         nxt = _next_run_ist()
@@ -338,7 +338,7 @@ class TestNextRunIst:
 
     def test_returns_tomorrow_if_after_1630(self, monkeypatch):
         monkeypatch.setattr(
-            "mf_holdings_alert.datetime",
+            "pipeline.mf_holdings_alert.datetime",
             _FakeDatetime(fixed_ist=datetime(2026, 6, 26, 20, 0, tzinfo=IST)),
         )
         nxt = _next_run_ist()

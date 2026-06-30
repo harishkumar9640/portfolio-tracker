@@ -541,13 +541,13 @@ class TestConcurrentWrites:
 
 
 # ===========================================================================
-# 10. Concurrent scheduler + webapp (no file lock conflicts)
+# 10. Concurrent pipeline.scheduler + webapp (no file lock conflicts)
 # ===========================================================================
 
 class TestSchedulerAndWebappCoexist:
-    """The scheduler and webapp can both touch data files at once.
+    """The pipeline.scheduler and webapp can both touch data files at once.
     The webapp should never serve stale data beyond its cache TTL,
-    and the scheduler should never corrupt data."""
+    and the pipeline.scheduler should never corrupt data."""
 
     def test_read_during_write_doesnt_corrupt(self, tmp_path):
         """Reader gets valid JSON even if writer is mid-write."""

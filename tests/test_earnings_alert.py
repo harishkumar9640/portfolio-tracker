@@ -1,14 +1,14 @@
 """
-Tests for earnings_alert.py and sector_mechanisms.py.
+Tests for pipeline.earnings_alert.py and pipeline.sector_mechanisms.py.
 
 Coverage:
-  - sector_mechanisms: all 8 portfolio stocks are configured, all required
+  - pipeline.sector_mechanisms: all 8 portfolio stocks are configured, all required
     sections present, every entry follows the [WHAT]->[WHO]->[HOW] pattern
-  - earnings_alert.render: produces concrete, mechanism-rich text for both
+  - pipeline.earnings_alert.render: produces concrete, mechanism-rich text for both
     T-2 and T-0 modes; never returns abstract labels
-  - earnings_alert.format: numeric and null formatting
-  - earnings_alert.alert_key: dedup keys stable
-  - earnings_alert.find_relevant_events: classifies T-2 vs T-0 correctly
+  - pipeline.earnings_alert.format: numeric and null formatting
+  - pipeline.earnings_alert.alert_key: dedup keys stable
+  - pipeline.earnings_alert.find_relevant_events: classifies T-2 vs T-0 correctly
   - dry-run safety: send_telegram never opens a network socket in dry-run
 """
 from __future__ import annotations
@@ -26,9 +26,9 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import sector_mechanisms as sm  # noqa: E402
-import earnings_alert as ea  # noqa: E402
-from earnings_alert import EarningsEvent  # noqa: E402
+import pipeline.sector_mechanisms as sm  # noqa: E402
+import pipeline.earnings_alert as ea  # noqa: E402
+from pipeline.earnings_alert import EarningsEvent  # noqa: E402
 
 
 IST = ea.IST
@@ -60,7 +60,7 @@ def all_tickers() -> list[str]:
 
 
 # ===========================================================================
-# 1. sector_mechanisms — coverage
+# 1. pipeline.sector_mechanisms — coverage
 # ===========================================================================
 
 REQUIRED_SECTIONS = [
@@ -132,7 +132,7 @@ class TestSectorMechanismsCoverage:
 
 
 # ===========================================================================
-# 2. sector_mechanisms — quality (concrete, not abstract)
+# 2. pipeline.sector_mechanisms — quality (concrete, not abstract)
 # ===========================================================================
 
 # Words that signal concrete mechanism (verbs + financial nouns).
@@ -265,7 +265,7 @@ class TestMechanismQuality:
 
 
 # ===========================================================================
-# 3. earnings_alert.render — formatting helpers
+# 3. pipeline.earnings_alert.render — formatting helpers
 # ===========================================================================
 
 class TestFormattingHelpers:
@@ -296,7 +296,7 @@ class TestFormattingHelpers:
 
 
 # ===========================================================================
-# 4. earnings_alert.render_alert — both modes
+# 4. pipeline.earnings_alert.render_alert — both modes
 # ===========================================================================
 
 class TestRenderAlert:
@@ -814,7 +814,7 @@ class TestCLI:
         """--test-render ITC should print both T-2 and T-0 alert bodies."""
         import subprocess
         proc = subprocess.run(
-            [sys.executable, "earnings_alert.py", "--test-render", "ITC"],
+            [sys.executable, "-m", "pipeline.earnings_alert", "--test-render", "ITC"],
             capture_output=True, text=True, cwd=PROJECT,
         )
         assert proc.returncode == 0
@@ -825,7 +825,7 @@ class TestCLI:
     def test_test_render_unknown_ticker_exits_nonzero(self):
         import subprocess
         proc = subprocess.run(
-            [sys.executable, "earnings_alert.py", "--test-render", "NOPE"],
+            [sys.executable, "-m", "pipeline.earnings_alert", "--test-render", "NOPE"],
             capture_output=True, text=True, cwd=PROJECT,
         )
         assert proc.returncode != 0

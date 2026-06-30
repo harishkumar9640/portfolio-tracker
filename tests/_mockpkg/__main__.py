@@ -4,7 +4,7 @@ Bootstrap script for fair-value CLI subprocess tests.
 Usage:
     python3 -m _mockpkg fairvalue.py RELIANCE --industry-pe 25
 
-It installs the fair_value mock and then exec()s the rest of argv
+It installs the pipeline.fair_value mock and then exec()s the rest of argv
 as if you had run them directly. Only does anything when
 PT_FV_MOCK=1.
 """
@@ -43,11 +43,11 @@ def main():
     if os.environ.get("PT_FV_MOCK") != "1":
         sys.stderr.write("PT_FV_MOCK must be set\n")
         sys.exit(2)
-    # Patch fair_value BEFORE fairvalue.py runs
-    import fair_value.fetcher
-    import fair_value.valuation as fv
-    import fair_value as fv_pkg
-    import fair_value.search
+    # Patch pipeline.fair_value BEFORE fairvalue.py runs
+    import pipeline.fair_value.fetcher as fetcher
+    import pipeline.fair_value.valuation as fv
+    import pipeline.fair_value as fv_pkg
+    import pipeline.fair_value.search as search
 
     def fake_fetch(ticker):
         t = ticker.upper().strip()
@@ -62,28 +62,36 @@ def main():
             return t, _FIXTURES[t].get("name", t)
         return t, user_input
 
-    fair_value.fetcher.fetch = fake_fetch
+    fetcher.fetch = fake_fetch
     fv.fetch = fake_fetch
-    fair_value.search.resolve_ticker = fake_resolve
+    search.resolve_ticker = fake_resolve
     fv_pkg.resolve_ticker = fake_resolve
 
     # Now run the rest of argv. We're invoked as
-    # `python3 -m _mockpkg fairvalue.py RELIANCE ...`
-    # So sys.argv = ['/path/to/_mockpkg/__main__.py',
-    #                 'fairvalue.py', 'RELIANCE', ...]
+    # `python3 -m tests._mockpkg <script> <args...>`
+    # or  `python3 -m tests._mockpkg -m <module> <args...>`
     if len(sys.argv) < 2:
-        sys.stderr.write("usage: python3 -m _mockpkg <script> <args...>\n")
+        sys.stderr.write("usage: python3 -m _mockpkg <script|-m module> <args...>\n")
         sys.exit(2)
     script_and_args = sys.argv[1:]
-    script_path = script_and_args[0]
-    script_args = script_and_args[1:]
-
-    # exec the script with its __name__ == "__main__"
-    sys.argv = [script_path] + script_args
-    with open(script_path, "r", encoding="utf-8") as f:
-        source = f.read()
-    exec(compile(source, script_path, "exec"), {"__name__": "__main__",
-                                                  "__file__": script_path})
+    if script_and_args[0] == "-m":
+        # Run a module: `python -m <module>` with the rest of argv
+        if len(script_and_args) < 2:
+            sys.stderr.write("usage: python3 -m _mockpkg -m <module> <args...>\n")
+            sys.exit(2)
+        import runpy
+        module_name = script_and_args[1]
+        sys.argv = [module_name] + script_and_args[2:]
+        runpy.run_module(module_name, run_name="__main__", alter_sys=True)
+    else:
+        script_path = script_and_args[0]
+        script_args = script_and_args[1:]
+        # exec the script with its __name__ == "__main__"
+        sys.argv = [script_path] + script_args
+        with open(script_path, "r", encoding="utf-8") as f:
+            source = f.read()
+        exec(compile(source, script_path, "exec"),
+             {"__name__": "__main__", "__file__": script_path})
 
 
 if __name__ == "__main__":

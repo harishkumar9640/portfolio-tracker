@@ -138,7 +138,7 @@ def client():
         f.write(csv)
         csv_path = Path(f.name)
     try:
-        import fair_value.search as s
+        import pipeline.fair_value.search as s
         s.CACHE_FILE = csv_path
         s._index = []
         s._index_loaded_at = 0.0

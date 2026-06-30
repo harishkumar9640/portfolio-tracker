@@ -1,0 +1,73 @@
+2026-06-29 06:42:41,333 INFO    concalls: summarizing IRCON (transcript): 5 chunks, 24567 chars total
+2026-06-29 06:43:52,414 INFO    concalls: saved summary for IRCON 27-May-2025 (12 bullets, 71.1s)
+2026-06-29 06:44:10,638 INFO    concalls: summarizing IRCON (transcript): 5 chunks, 24567 chars total
+2026-06-29 06:45:12,130 INFO    concalls: saved summary for IRCON 27-May-2025 (17 bullets, 61.5s)
+2026-06-29 06:45:39,984 INFO    concalls: summarizing IRCON (transcript): 5 chunks, 24567 chars total
+2026-06-29 06:46:27,222 INFO    concalls: saved summary for IRCON 27-May-2025 (11 bullets, 47.2s)
+2026-06-29 06:46:47,853 INFO    concalls: summarizing IRCON (transcript): 5 chunks, 24567 chars total
+2026-06-29 06:47:38,028 INFO    concalls: saved summary for IRCON 27-May-2025 (10 bullets, 50.2s)
+2026-06-29 08:49:45,032 INFO    concalls: found 2 con-call filings in last 30 days
+2026-06-29 08:49:45,037 INFO    concalls: found 2 con-call filings for tickers=['KNRCON']
+2026-06-29 08:49:45,038 INFO    concalls: found 0 con-call filings in last 30 days
+2026-06-29 08:49:45,042 INFO    concalls: found 0 con-call filings for tickers=['JIOFIN']
+2026-06-29 08:49:46,772 INFO    concalls: found 0 con-call filings in last 30 days
+2026-06-29 08:49:46,776 INFO    concalls: found 0 con-call filings for tickers=['IRCON']
+2026-06-29 08:49:46,977 INFO    concalls: found 1 con-call filings in last 30 days
+2026-06-29 08:49:46,981 INFO    concalls: found 1 con-call filings for tickers=['BALRAMCHIN']
+2026-06-29 08:49:47,785 INFO    concalls: found 0 con-call filings in last 30 days
+2026-06-29 08:49:47,789 INFO    concalls: found 0 con-call filings for tickers=['NTPCGREEN']
+2026-06-29 08:49:47,973 INFO    concalls: found 0 con-call filings in last 30 days
+2026-06-29 08:49:47,976 INFO    concalls: found 0 con-call filings for tickers=['RELIANCE']
+2026-06-29 08:49:48,179 INFO    concalls: found 0 con-call filings in last 30 days
+2026-06-29 08:49:48,182 INFO    concalls: found 0 con-call filings for tickers=['BANKBARODA']
+2026-06-29 08:49:48,867 INFO    concalls: extracted 19 pages, 50020 chars from KNRCON
+2026-06-29 08:49:48,867 INFO    concalls: summarizing KNRCON (transcript): 9 chunks, 50020 chars total
+2026-06-29 08:49:51,034 INFO    concalls: skipping BALRAMCHIN: 66 pages > max 50
+2026-06-29 08:49:51,034 INFO    concalls: no usable text from BALRAMCHIN PDF; skipping summary
+2026-06-29 08:50:00,679 INFO    concalls: found 0 con-call filings in last 30 days
+2026-06-29 08:50:00,683 INFO    concalls: found 0 con-call filings for tickers=['ITC']
+2026-06-29 08:52:11,066 INFO    concalls: saved summary for KNRCON 06-Jun-2026 (13 bullets, 142.2s)
+2026-06-29 08:52:11,072 INFO    concalls: [DRY-RUN] would send 1138 chars:
+📞 *Con-call summary — KNRCON*
+
+📊 *KNRCON* — Transcript (06-Jun-2026)
+🎯 *Tone:* confident  ·  *Guidance:* raised
+
+📌 *Key takeaways:*
+   • The company has made significant progress in its HAM projects, with physical progress ranging from 12\.2% to 99\.4%\.
+   • Management expects order activity to improve over the coming quarter due to government emphasis on infrastructure development\.
+   • The company is targeting order inflow of INR8,000 crores to INR10,000 crores during FY27, comprising a mix of NHAI projects and other state government infrastructure work\.
+   • As of March 31, 2026, the company has invested INR734\.24 crores out of INR952\.17 crores revised equity requirement for all HAM projects\.
+   • The company received letters of award for two HAM projects with a combined project value of INR3,897 crores and two EPC projects worth INR133 crores\.
+
+🗣️ *Management phrases to remember:*
+   • "constructive outlook"
+   • "sustainable public capital expenditure"
+   • "rising private sector participation"
+   • "fully operational"
+
+📖 _Summarised from 19-page transcript via local Ollama (142s)_
+\#KNRCON #ConCall #Earnings
+2026-06-29 08:52:14,355 INFO    concalls: extracted 1 pages, 1175 chars from KNRCON
+2026-06-29 08:52:14,355 INFO    concalls: summarizing KNRCON (audio_recording): 1 chunks, 1175 chars total
+2026-06-29 08:52:20,507 INFO    concalls: saved summary for KNRCON 01-Jun-2026 (2 bullets, 6.2s)
+2026-06-29 08:52:20,507 INFO    concalls: [DRY-RUN] would send 849 chars:
+🎙️ *Con-call summary — KNRCON*
+
+📊 *KNRCON* — Audio Recording (01-Jun-2026)
+🎯 *Tone:* unknown  ·  *Guidance:* unknown
+
+📌 *Key takeaways:*
+   • I apologize, but there is no excerpt provided that contains any meaningful information about KNR Constructions Limited's post\-earnings conference call transcript or investor presentation\. The given text appears to be a formal notification from the company to stock exchanges regarding the availability of an earnings call recording on their website\.
+   • As such, I cannot provide a summary in the requested format\. If you could provide the actual excerpt containing information about the company's financial performance, guidance, and management commentary, I would be happy to assist you in summarizing it\.
+
+📖 _Summarised from 1-page audio_recording via local Ollama (6s)_
+\#KNRCON #ConCall #Earnings
+2026-06-29 22:49:20,184 INFO    concalls: found 0 con-call filings in last 7 days
+2026-06-29 22:49:20,186 INFO    concalls: found 0 con-call filings for tickers=['ITC', 'RELIANCE', 'JIOFIN', 'BANKBARODA', 'NTPCGREEN', 'KNRCON', 'IRCON', 'BALRAMCHIN']
+2026-06-29 22:52:39,872 INFO    portfolio_impact: impact scan: 0 alerts sent for 0 tickers
+2026-06-29 22:52:39,945 INFO    portfolio_impact: impact scan: 0 alerts sent for 0 tickers
+2026-06-29 22:56:12,659 INFO    portfolio_impact: impact scan: 0 alerts sent for 0 tickers
+2026-06-29 22:56:13,593 INFO    portfolio_impact: impact scan: 0 alerts sent for 0 tickers
+2026-06-29 22:58:48,982 INFO    portfolio_impact: impact scan: 0 alerts sent for 0 tickers
+2026-06-29 22:58:49,792 INFO    portfolio_impact: impact scan: 0 alerts sent for 0 tickers

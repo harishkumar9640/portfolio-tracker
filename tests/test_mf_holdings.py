@@ -1,5 +1,5 @@
 """
-Tests for mf_holdings.py — mutual fund holdings data for the user's
+Tests for pipeline.mf_holdings.py — mutual fund holdings data for the user's
 portfolio (Trendlyne-scraped).
 
 These tests run entirely offline with cached HTML fixtures. We
@@ -31,7 +31,7 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-import mf_holdings  # noqa: E402
+import pipeline.mf_holdings  # noqa: E402
 
 
 # ---------- Fixtures ----------
@@ -117,14 +117,14 @@ NTPC_FIXTURE = """
 class TestUrlConstruction:
     def test_builds_correct_url_for_known_ticker(self):
         assert (
-            mf_holdings._build_url("ITC")
+            pipeline.mf_holdings._build_url("ITC")
             == "https://trendlyne.com/equity/monthly-mutual-fund-share-holding/"
                "647/ITC/latest/itc-ltd/"
         )
 
     def test_known_tickers_all_have_real_ids(self):
-        for tkr, info in mf_holdings.TICKER_MAP.items():
-            assert info["id"] < mf_holdings.PLACEHOLDER_ID_THRESHOLD, (
+        for tkr, info in pipeline.mf_holdings.TICKER_MAP.items():
+            assert info["id"] < pipeline.mf_holdings.PLACEHOLDER_ID_THRESHOLD, (
                 f"{tkr} still has placeholder id={info['id']}; "
                 "search trendlyne.com for the real id"
             )
@@ -133,7 +133,7 @@ class TestUrlConstruction:
         # BANKBARODA's slug used to end in "/"; we now normalise away
         # trailing slashes, but the built URL must still end with
         # exactly one "/".
-        url = mf_holdings._build_url("BANKBARODA")
+        url = pipeline.mf_holdings._build_url("BANKBARODA")
         assert "bank-of-baroda/" in url
         # No double slashes anywhere in the path
         assert "//" not in url.replace("https://", "")
@@ -142,28 +142,28 @@ class TestUrlConstruction:
 # ---------- Headline parser ----------
 class TestHeadlineRegex:
     def test_extracts_mfs_bought_sold_and_net(self):
-        m = mf_holdings._HEADLINE_RE.search(NTPC_FIXTURE)
+        m = pipeline.mf_holdings._HEADLINE_RE.search(NTPC_FIXTURE)
         assert m is not None
         assert m.group(1) == "46"
         assert m.group(2) == "19"
         assert m.group(3) == "3,329,442"
 
     def test_returns_none_for_unrelated_text(self):
-        m = mf_holdings._HEADLINE_RE.search("nothing relevant here")
+        m = pipeline.mf_holdings._HEADLINE_RE.search("nothing relevant here")
         assert m is None
 
 
 # ---------- Top buyer/seller parser ----------
 class TestTopSection:
     def test_extracts_top_buyer(self):
-        m = mf_holdings._TOP_BUYER_RE.search(NTPC_FIXTURE)
+        m = pipeline.mf_holdings._TOP_BUYER_RE.search(NTPC_FIXTURE)
         assert m is not None
         assert m.group("name") == "Nippon India Power & Infra Fund - Growth"
         assert m.group("shares") == "2,403,505"
         assert m.group("pct") == "0.03"
 
     def test_extracts_top_seller(self):
-        m = mf_holdings._TOP_SELLER_RE.search(NTPC_FIXTURE)
+        m = pipeline.mf_holdings._TOP_SELLER_RE.search(NTPC_FIXTURE)
         assert m is not None
         assert m.group("name") == "HSBC Large and Mid Cap Fund - IDCW"
         assert m.group("shares") == "3,729,293"
@@ -176,7 +176,7 @@ class TestTopSection:
             f'in the month of Jan 2025 constituting 0.{i}% of the paid up equity of the company.</h3>'
             for i in range(10)
         )
-        results = mf_holdings._parse_top_section(html, mf_holdings._TOP_BUYER_RE)
+        results = pipeline.mf_holdings._parse_top_section(html, pipeline.mf_holdings._TOP_BUYER_RE)
         assert len(results) == 5
         assert results[0]["name"] == "Fund 0"
         assert results[4]["name"] == "Fund 4"
@@ -185,7 +185,7 @@ class TestTopSection:
 # ---------- Table row parser ----------
 class TestRowTable:
     def test_parses_all_four_rows(self):
-        rows = mf_holdings._parse_row_table(NTPC_FIXTURE)
+        rows = pipeline.mf_holdings._parse_row_table(NTPC_FIXTURE)
         assert len(rows) == 4
         assert rows[0]["name"] == "Nippon India Power & Infra Gr"
         assert rows[0]["shares"] == 28594584
@@ -194,12 +194,12 @@ class TestRowTable:
         assert rows[3]["month_change"] == -50000  # the exited fund
 
     def test_empty_html_returns_empty_list(self):
-        assert mf_holdings._parse_row_table("<html></html>") == []
+        assert pipeline.mf_holdings._parse_row_table("<html></html>") == []
 
     def test_skips_malformed_rows(self):
         # A <tr> with too few <td> cells should be skipped
         html = "<table><tr><td>Only</td><td>Two</td></tr><tr><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td><td>F</td><td>G</td><td>H</td></tr></table>"
-        rows = mf_holdings._parse_row_table(html)
+        rows = pipeline.mf_holdings._parse_row_table(html)
         # Only the 8-cell row should parse (≥5 cells required)
         assert len(rows) == 1
         assert rows[0]["name"] == "A"
@@ -208,7 +208,7 @@ class TestRowTable:
 # ---------- Full _parse_html ----------
 class TestParseHtml:
     def test_returns_full_dict(self):
-        result = mf_holdings._parse_html("NTPCGREEN", NTPC_FIXTURE, "http://x")
+        result = pipeline.mf_holdings._parse_html("NTPCGREEN", NTPC_FIXTURE, "http://x")
         assert result["ticker"] == "NTPCGREEN"
         assert result["mfs_bought"] == 46
         assert result["mfs_sold"] == 19
@@ -234,7 +234,7 @@ class TestParseHtml:
         modified = NTPC_FIXTURE.replace(
             "for a net change", "for a net change",
         ).replace("3,329,442 stocks", "-1,234,567 stocks")
-        result = mf_holdings._parse_html("NTPCGREEN", modified, "http://x")
+        result = pipeline.mf_holdings._parse_html("NTPCGREEN", modified, "http://x")
         assert result["net_change_shares"] == -1234567
         assert result["net_change_label"] == "-1,234,567"
 
@@ -251,7 +251,7 @@ class TestParseHtml:
           <tr><td>Exited</td><td>0</td><td>0%</td><td>0</td><td>-100</td><td>-100%</td><td>100</td><td>0%</td></tr>
         </table>
         """
-        result = mf_holdings._parse_html("TEST", html_no_headline, "http://x")
+        result = pipeline.mf_holdings._parse_html("TEST", html_no_headline, "http://x")
         assert result["mfs_bought"] is None
         assert result["mfs_sold"] is None
         # Table-only fallback: holder = Fund A (1000) + Fund B (2000) = 2
@@ -274,13 +274,13 @@ class TestCache:
         now = datetime.now().isoformat(timespec="seconds")
         valid_data = {
             tkr: {"ticker": tkr, "mfs_bought": 10, "fetched_at": now}
-            for tkr in mf_holdings.TICKER_MAP
+            for tkr in pipeline.mf_holdings.TICKER_MAP
         }
         cache_path.write_text(json.dumps(valid_data))
 
-        monkeypatch.setattr(mf_holdings, "CACHE_FILE", cache_path)
-        with patch.object(mf_holdings.requests, "get") as mock_get:
-            result = mf_holdings.get_mf_holdings()
+        monkeypatch.setattr(pipeline.mf_holdings, "CACHE_FILE", cache_path)
+        with patch.object(pipeline.mf_holdings.requests, "get") as mock_get:
+            result = pipeline.mf_holdings.get_mf_holdings()
             # All tickers should be present from cache
             assert "ITC" in result and result["ITC"]["mfs_bought"] == 10
             mock_get.assert_not_called()
@@ -290,18 +290,18 @@ class TestCache:
         cache_path = tmp_path / "mf_cache.json"
         cache_path.write_text("{}")  # empty cache
 
-        monkeypatch.setattr(mf_holdings, "CACHE_FILE", cache_path)
-        with patch.object(mf_holdings.requests, "get") as mock_get:
+        monkeypatch.setattr(pipeline.mf_holdings, "CACHE_FILE", cache_path)
+        with patch.object(pipeline.mf_holdings.requests, "get") as mock_get:
             # Make every request fail so we don't try to actually fetch
             mock_get.return_value.status_code = 404
             mock_get.return_value.raise_for_status.side_effect = Exception("404")
-            result = mf_holdings.get_mf_holdings(force=True)
+            result = pipeline.mf_holdings.get_mf_holdings(force=True)
             # No data returned because all requests failed
             assert result == {}
             # But network WAS called (once per ticker with real IDs)
             real_id_tickers = [
-                t for t, info in mf_holdings.TICKER_MAP.items()
-                if info["id"] < mf_holdings.PLACEHOLDER_ID_THRESHOLD
+                t for t, info in pipeline.mf_holdings.TICKER_MAP.items()
+                if info["id"] < pipeline.mf_holdings.PLACEHOLDER_ID_THRESHOLD
             ]
             assert mock_get.call_count == len(real_id_tickers)
 
@@ -312,10 +312,10 @@ class TestCache:
         now = datetime.now().isoformat(timespec="seconds")
         cache_path.write_text(json.dumps({
             tkr: {"ticker": tkr, "value": 1, "fetched_at": now}
-            for tkr in mf_holdings.TICKER_MAP
+            for tkr in pipeline.mf_holdings.TICKER_MAP
         }))
-        monkeypatch.setattr(mf_holdings, "CACHE_FILE", cache_path)
-        with patch.object(mf_holdings.requests, "get") as mock_get:
+        monkeypatch.setattr(pipeline.mf_holdings, "CACHE_FILE", cache_path)
+        with patch.object(pipeline.mf_holdings.requests, "get") as mock_get:
             # Return valid HTML for every request
             mock_get.return_value.status_code = 200
             mock_get.return_value.text = (
@@ -325,11 +325,11 @@ class TestCache:
                 '</body></html>'
             )
             mock_get.return_value.raise_for_status = lambda: None
-            mf_holdings.get_mf_holdings(force=True)
+            pipeline.mf_holdings.get_mf_holdings(force=True)
             # force=True should have called requests.get for every ticker
             real_id_tickers = [
-                t for t, info in mf_holdings.TICKER_MAP.items()
-                if info["id"] < mf_holdings.PLACEHOLDER_ID_THRESHOLD
+                t for t, info in pipeline.mf_holdings.TICKER_MAP.items()
+                if info["id"] < pipeline.mf_holdings.PLACEHOLDER_ID_THRESHOLD
             ]
             assert mock_get.call_count == len(real_id_tickers)
 
@@ -345,8 +345,8 @@ class TestSummary:
             "C": {"ticker": "C", "mfs_bought": 5, "mfs_sold": 10, "net_change_shares": -200, "fetched_at": "now"},
         }
         # Mock the underlying fetcher to return our canned cache
-        monkeypatch.setattr(mf_holdings, "get_mf_holdings", lambda force=False: cache)
-        summary = mf_holdings.get_mf_holdings_summary()
+        monkeypatch.setattr(pipeline.mf_holdings, "get_mf_holdings", lambda force=False: cache)
+        summary = pipeline.mf_holdings.get_mf_holdings_summary()
         # Order: |50000|, |200|, |100| -> B, C, A
         assert [s["ticker"] for s in summary] == ["B", "C", "A"]
 
@@ -359,8 +359,8 @@ class TestSummary:
                 "total_mfs_holding": 50,
             }
         }
-        monkeypatch.setattr(mf_holdings, "get_mf_holdings", lambda force=False: cache)
-        s = mf_holdings.get_mf_holdings_summary()[0]
+        monkeypatch.setattr(pipeline.mf_holdings, "get_mf_holdings", lambda force=False: cache)
+        s = pipeline.mf_holdings.get_mf_holdings_summary()[0]
         assert s["net_change_label"] == "+1,000"
         assert s["name"] == "X Co"
         assert s["total_mfs_holding"] == 50
@@ -375,7 +375,7 @@ class TestGlossary:
         """Sanity check: the module's docstring mentions the key terms
         the user asked about (MFs, ETF, FII, etc.)."""
         import inspect
-        src = inspect.getsource(mf_holdings)
+        src = inspect.getsource(pipeline.mf_holdings)
         # Abbreviations that must be defined/used somewhere in the module
         for term in ["MFs", "MF", "FII", "ETF", "AUM", "NAV", "ISIN"]:
             assert term in src, f"abbreviation {term!r} not mentioned in module"
@@ -384,6 +384,6 @@ class TestGlossary:
         """The 8 tickers the user is holding must all be supported."""
         expected = {"BALRAMCHIN", "ITC", "JIOFIN", "NTPCGREEN",
                     "KNRCON", "IRCON", "BANKBARODA", "RELIANCE"}
-        actual = set(mf_holdings.TICKER_MAP.keys())
+        actual = set(pipeline.mf_holdings.TICKER_MAP.keys())
         missing = expected - actual
         assert not missing, f"missing tickers in TICKER_MAP: {missing}"

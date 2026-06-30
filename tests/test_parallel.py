@@ -1,5 +1,5 @@
 """
-Tests for the parallel helpers.
+Tests for the pipeline.parallel helpers.
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pathlib import Path
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-from parallel import map_parallel, fetch_all  # noqa: E402
+from pipeline.parallel import map_parallel, fetch_all  # noqa: E402
 
 
 def _slow_double(x: int) -> int:
