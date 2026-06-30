@@ -20,6 +20,8 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -425,6 +427,191 @@ class TestNextRunIst:
         monkeypatch.setattr(na, "datetime", FakeDT)
         nxt = _next_run_ist()
         assert nxt.day == 28
+
+
+# ---------- _scheduler_loop: missed-window guard ----------
+
+class TestShouldSkipMissedRun:
+    """Pure unit tests for the missed-window decision. This is the
+    logic that prevented the duplicate 9:09 AM Telegram send."""
+
+    def test_skip_when_missed_by_10_minutes(self):
+        """Mac woke up 10 min after 8:55 target → skip."""
+        target = datetime(2026, 6, 27, 3, 25, 0)   # 03:25 UTC = 8:55 IST
+        now    = datetime(2026, 6, 27, 3, 35, 0)   # 10 min later
+        skip, missed = na._should_skip_missed_run(target, now)
+        assert skip is True
+        assert missed == 600.0
+
+    def test_run_when_missed_by_only_2_minutes(self):
+        """Mac woke up 2 min after target → still run (within grace)."""
+        target = datetime(2026, 6, 27, 3, 25, 0)
+        now    = datetime(2026, 6, 27, 3, 27, 0)
+        skip, missed = na._should_skip_missed_run(target, now)
+        assert skip is False
+        assert missed == 120.0
+
+    def test_run_when_exactly_on_time(self):
+        """Edge case: now == target → no miss, run."""
+        target = datetime(2026, 6, 27, 3, 25, 0)
+        now    = datetime(2026, 6, 27, 3, 25, 0)
+        skip, missed = na._should_skip_missed_run(target, now)
+        assert skip is False
+        assert missed == 0.0
+
+    def test_run_when_at_grace_boundary(self):
+        """Exactly at 5-minute grace → do NOT skip (uses strict >)."""
+        target = datetime(2026, 6, 27, 3, 25, 0)
+        now    = datetime(2026, 6, 27, 3, 30, 0)
+        skip, missed = na._should_skip_missed_run(target, now)
+        assert skip is False   # 300s == grace, not strictly greater
+
+    def test_run_when_target_is_in_future(self):
+        """Scheduler polled early, target hasn't been reached yet."""
+        target = datetime(2026, 6, 27, 3, 25, 0)
+        now    = datetime(2026, 6, 27, 3, 20, 0)   # 5 min before
+        skip, missed = na._should_skip_missed_run(target, now)
+        assert skip is False
+        assert missed == -300.0
+
+    def test_custom_grace_period(self):
+        """Callers can pass a tighter grace (e.g. for tests)."""
+        target = datetime(2026, 6, 27, 3, 25, 0)
+        now    = datetime(2026, 6, 27, 3, 25, 30)   # 30s late
+        # With 60s grace: 30s < 60s → run (don't skip).
+        # With 10s grace: 30s > 10s → skip.
+        skip_60, _ = na._should_skip_missed_run(target, now, grace_secs=60)
+        skip_10, _ = na._should_skip_missed_run(target, now, grace_secs=10)
+        assert skip_60 is False
+        assert skip_10 is True
+
+
+class TestSchedulerLoopIntegration:
+    """Light integration test: drive the scheduler loop with a fake
+    clock + fast Event.wait, verifying both the happy path and the
+    missed-window skip path."""
+
+    def _patched_loop(self, monkeypatch, fake_now_utc):
+        """Replace datetime.now + Event.wait with controllable fakes.
+        Returns the run-call recorder and a stop() helper."""
+        from news_alert import _scheduler_loop
+        runs = []
+        monkeypatch.setattr(na, "run_once",
+                            lambda *a, **kw: runs.append(1))
+        # Make Event.wait return immediately so loops don't block
+        orig_wait = threading.Event.wait
+        monkeypatch.setattr(
+            threading.Event, "wait",
+            lambda self, timeout=None: orig_wait(self, 0.001),
+        )
+        # Force datetime.now() to return our fixed value
+        class FakeDT:
+            @classmethod
+            def now(cls, tz=None):
+                if tz is timezone.utc:
+                    return fake_now_utc.replace(tzinfo=timezone.utc)
+                if tz is IST:
+                    utc = fake_now_utc.replace(tzinfo=timezone.utc)
+                    return utc.astimezone(IST).replace(tzinfo=None)
+                return fake_now_utc
+        monkeypatch.setattr(na, "datetime", FakeDT)
+        return _scheduler_loop, runs
+
+    def test_runs_normally_when_well_within_window(self, monkeypatch,
+                                                   clean_news_env):
+        """now = 8:50 IST (5 min before target) → should run at least once."""
+        fake_now = datetime(2026, 6, 27, 3, 20, 0)   # 8:50 IST
+        loop, runs = self._patched_loop(monkeypatch, fake_now)
+        stop = threading.Event()
+        t = threading.Thread(target=loop, args=(stop,), daemon=True)
+        t.start()
+        time.sleep(0.5)
+        stop.set()
+        t.join(timeout=3)
+        assert len(runs) >= 1, f"expected at least 1 run, got {len(runs)}"
+
+    def test_skips_when_target_missed_by_10_minutes(self, monkeypatch,
+                                                    clean_news_env):
+        """now = 9:05 IST (10 min after target) → should skip run_once."""
+        fake_now = datetime(2026, 6, 27, 3, 35, 0)   # 9:05 IST
+        # Patch _next_run_ist to return today's 8:55 IST (= 03:25 UTC),
+        # because the fake clock is past it and the real helper would
+        # otherwise push to tomorrow.
+        monkeypatch.setattr(
+            na, "_next_run_ist",
+            lambda *a, **kw: datetime(2026, 6, 27, 3, 25, 0),
+        )
+        loop, runs = self._patched_loop(monkeypatch, fake_now)
+        stop = threading.Event()
+        t = threading.Thread(target=loop, args=(stop,), daemon=True)
+        t.start()
+        # Give the loop time to: compute wait_secs (negative), exit inner
+        # loop, check missed_by=600s, log warning, enter "sleep until
+        # tomorrow" loop.
+        time.sleep(0.5)
+        stop.set()
+        t.join(timeout=3)
+        assert len(runs) == 0, \
+            f"expected 0 runs (missed-window), got {len(runs)}"
+
+    def test_log_uses_ist_label_correctly(self, monkeypatch, clean_news_env):
+        """The 'next run at ... IST' log line must show IST, not UTC.
+
+        Regression test: the previous version logged a UTC-naive
+        timestamp but labelled it 'IST', which was misleading by 5h30.
+        """
+        from news_alert import _scheduler_loop
+        captured = []
+        class FakeLog:
+            def info(self, fmt, *args):
+                captured.append(fmt % args)
+            def warning(self, *a, **kw): pass
+            def exception(self, *a, **kw): pass
+        monkeypatch.setattr(na, "log", FakeLog())
+        # Fast Event.wait
+        orig_wait = threading.Event.wait
+        monkeypatch.setattr(
+            threading.Event, "wait",
+            lambda self, timeout=None: orig_wait(self, 0.001),
+        )
+        # 6:00 AM IST = 00:30 UTC. Target is today 8:55 IST = 03:25 UTC.
+        # fake_now at 06:00 IST → wait_secs ≈ 9900s (we don't care).
+        # Fake 'now' = 9:30 IST → past target → missed-window path.
+        # We want to capture the FIRST log line (the 'next run at' one).
+        fake_now = datetime(2026, 6, 27, 3, 30, 0)   # 9:00 IST
+        # Patch _next_run_ist to return today's target so the inner
+        # loop computes a small wait_secs and the log line fires.
+        monkeypatch.setattr(
+            na, "_next_run_ist",
+            lambda *a, **kw: datetime(2026, 6, 27, 3, 25, 0),
+        )
+        # Fake datetime.now
+        class FakeDT:
+            @classmethod
+            def now(cls, tz=None):
+                if tz is timezone.utc:
+                    return fake_now.replace(tzinfo=timezone.utc)
+                if tz is IST:
+                    return fake_now.replace(tzinfo=timezone.utc) \
+                                     .astimezone(IST).replace(tzinfo=None)
+                return fake_now
+        monkeypatch.setattr(na, "datetime", FakeDT)
+        # Make run_once set stop so the loop exits after first run
+        stop = threading.Event()
+        def fake_run_once():
+            stop.set()
+        monkeypatch.setattr(na, "run_once", fake_run_once)
+        t = threading.Thread(
+            target=_scheduler_loop, args=(stop,), daemon=True
+        )
+        t.start()
+        t.join(timeout=3)
+        # Expect log line with "08:55:00 IST"
+        assert any("08:55:00" in line and "IST" in line for line in captured), \
+            f"expected '08:55:00 IST' in log lines, got: {captured[:3]}"
+        # And NOT the misleading UTC value labelled IST
+        assert not any("03:25:00 IST" in line for line in captured), \
+            f"unexpected '03:25:00 IST' (UTC mis-labelled): {captured[:3]}"
 
 
 # ---------- run_once ----------

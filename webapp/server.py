@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import threading
 from pathlib import Path
 from typing import Optional
 
@@ -50,6 +51,7 @@ from webapp.data import (
     get_concalls_snapshot,
     start_background_refresh,
 )
+from webapp.tax_dashboard import router as tax_router
 
 log = get_logger("webapp")
 
@@ -58,6 +60,7 @@ app = FastAPI(
     description="Personal finance dashboard: equity + MF + SGB vs world indices, plus fair-value analysis.",
     version="0.2.0",
 )
+app.include_router(tax_router)
 
 # Templates and static
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))

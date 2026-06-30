@@ -32,3 +32,6 @@ logs/
 mfs.json
 sgbs.json
 runs/
+
+# AI session memory (regenerate each session — contains project context)
+MEMORY.md

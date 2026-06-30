@@ -244,6 +244,10 @@ table { border-collapse: collapse; width: 100%; }
   padding: var(--s-5);
   box-shadow: var(--shadow-sm);
   margin-bottom: var(--s-4);
+  /* Allow cards inside .grid to shrink below their intrinsic
+     content width (e.g. wide tables). Without this, the column
+     track grows and the page overflows horizontally. */
+  min-width: 0;
 }
 .card h2 { margin-top: 0; }
 .card-subtle { color: var(--c-fg-muted); font-size: var(--fs-sm); margin-top: calc(-1 * var(--s-2)); }
@@ -252,6 +256,14 @@ table { border-collapse: collapse; width: 100%; }
 .grid-2 { grid-template-columns: 1fr; }
 .grid-3 { grid-template-columns: 1fr; }
 .grid-4 { grid-template-columns: 1fr; }
+
+/* Grid items default to min-width: auto, which lets wide children
+   (tables, preformatted text, long words) push the column wider than
+   1fr and cause horizontal page overflow. Forcing min-width: 0 lets
+   the column honour its track size and keeps the page within the
+   viewport — tables then scroll inside their .table-wrap instead of
+   the page itself. */
+.grid > * { min-width: 0; }
 
 @media (min-width: 600px)  { .grid-2 { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 720px)  { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
@@ -481,6 +493,11 @@ table { border-collapse: collapse; width: 100%; }
   cursor: progress;
   pointer-events: none;
 }
+.btn.is-active {
+  background: var(--c-primary, #2563eb);
+  color: #fff;
+  border-color: var(--c-primary, #2563eb);
+}
 .btn-small { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
 
 /* ---------- Market status badge ---------- */
@@ -656,7 +673,7 @@ body.modal-open { overflow: hidden; }
 .text-mono    { font-family: var(--font-mono); }
 .tabular      { font-variant-numeric: tabular-nums; }
 .flex         { display: flex; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); flex-wrap: wrap; min-width: 0; }
 .flex-gap-2   { display: flex; gap: var(--s-2); flex-wrap: wrap; }
 .mt-0 { margin-top: 0; }
 .mb-0 { margin-bottom: 0; }
@@ -1307,6 +1324,13 @@ body.modal-open { overflow: hidden; }
   font-size: var(--fs-sm);
   width: 100%;
   border-collapse: collapse;
+  /* Force the table to respect its container width even when cells
+     contain long unbroken strings (timestamps, emails). Without
+     this the column grows past the card and the whole page
+     overflows horizontally on phones. */
+  table-layout: fixed;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .alert-log-table thead tr { text-align: left; color: var(--c-fg-muted); }
 .alert-log-table th,

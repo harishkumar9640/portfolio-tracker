@@ -1,0 +1,32 @@
+{
+  "filing": {
+    "ticker": "IRCON",
+    "company_name": "IRCON International Limited",
+    "filing_kind": "transcript",
+    "filing_date": "27-May-2025",
+    "filing_datetime": "27-May-2025 18:07:52",
+    "pdf_url": "file:///tmp/ircon_transcript.pdf",
+    "nse_attch_text": "",
+    "nse_desc": ""
+  },
+  "summary_text": "TONE: confident\nGUIDANCE: maintained\nBULLETS:\n- The company reported total revenue of \u20b911,131 crore in FY'25 and PAT of \u20b9728 crore.\n- Management expects to improve performance going forward despite increased competition in the sector.\n- The order book stood at \u20b920,347 crore as of March 31, 2025, with 90% from domestic business.\n- The company has reported a provisioning for major maintenance in one of its subsidiary companies, which is a one-off item.\n- The company expects its turnover to remain in a similar range for FY'26 and FY'27, with margins declining by 0.5% to 1%.\n- Management aims to monetize strategic assets, such as railways and road assets, once projects are completed.\n- To achieve growth, the company needs to scale up order inflows significantly, potentially exceeding \u20b920,000 crores.\n- The company expects its order book to continue growing, with a current value of \u20b920,000 crore and recent additions of \u20b91,100 crores in April-May FY'26.\n- Management commentary on demand/order book/margins: Kavach orders will contribute to the order book but EPC projects will still dominate, leading to margin pressure.\n- Forward-looking commentary/expansion plans: The company is working on securing orders from overseas markets, including Algeria, Myanmar, Sri Lanka, Bangladesh, and Nepal.\nKEY_PHRASES: operationally this year has been a little bit challenging, we are hopeful to be back on the track and improve the performance going forward, proud moment, boom, big ticket size projects, monetize as quickly as possible, tough competition, opening up new verticals, huge business opportunity, win-win situation, government of India prime project, continued support, faith on us, thank you all",
+  "management_tone": "confident",
+  "key_topics": [
+    "The company reported total revenue of \u20b911,131 crore in FY'25 and PAT of \u20b9728 crore.",
+    "Management expects to improve performance going forward despite increased competition in the sector.",
+    "The order book stood at \u20b920,347 crore as of March 31, 2025, with 90% from domestic business.",
+    "The company has reported a provisioning for major maintenance in one of its subsidiary companies, which is a one-off item.",
+    "The company expects its turnover to remain in a similar range for FY'26 and FY'27, with margins declining by 0.5% to 1%.",
+    "Management aims to monetize strategic assets, such as railways and road assets, once projects are completed.",
+    "To achieve growth, the company needs to scale up order inflows significantly, potentially exceeding \u20b920,000 crores.",
+    "The company expects its order book to continue growing, with a current value of \u20b920,000 crore and recent additions of \u20b91,100 crores in April-May FY'26.",
+    "Management commentary on demand/order book/margins: Kavach orders will contribute to the order book but EPC projects will still dominate, leading to margin pressure.",
+    "Forward-looking commentary/expansion plans: The company is working on securing orders from overseas markets, including Algeria, Myanmar, Sri Lanka, Bangladesh, and Nepal."
+  ],
+  "raw_pdf_path": null,
+  "pdf_pages": 10,
+  "pdf_chars": 24558,
+  "llm_model": "llama3-pro:latest",
+  "llm_duration_sec": 50.166909627383575,
+  "summarized_at": "2026-06-29T06:47:38+05:30"
+}

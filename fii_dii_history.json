@@ -1,0 +1,30 @@
+[
+  {
+    "buy_value_cr": 24844.03,
+    "category": "DII",
+    "date": "25-Jun-2026",
+    "net_value_cr": 5747.75,
+    "sell_value_cr": 19096.28
+  },
+  {
+    "buy_value_cr": 18988.03,
+    "category": "FII/FPI",
+    "date": "25-Jun-2026",
+    "net_value_cr": 383.76,
+    "sell_value_cr": 18604.27
+  },
+  {
+    "buy_value_cr": 55273.85,
+    "category": "DII",
+    "date": "29-Jun-2026",
+    "net_value_cr": 2801.45,
+    "sell_value_cr": 52472.4
+  },
+  {
+    "buy_value_cr": 24754.26,
+    "category": "FII/FPI",
+    "date": "29-Jun-2026",
+    "net_value_cr": -1350.1,
+    "sell_value_cr": 26104.36
+  }
+]

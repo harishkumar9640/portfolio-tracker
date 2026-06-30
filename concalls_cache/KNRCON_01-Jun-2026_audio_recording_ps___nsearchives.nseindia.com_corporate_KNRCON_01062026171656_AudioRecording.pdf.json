@@ -1,0 +1,24 @@
+{
+  "filing": {
+    "ticker": "KNRCON",
+    "company_name": "KNRCON",
+    "filing_kind": "audio_recording",
+    "filing_date": "01-Jun-2026",
+    "filing_datetime": "01-Jun-2026 17:17:07",
+    "pdf_url": "https://nsearchives.nseindia.com/corporate/KNRCON_01062026171656_AudioRecording.pdf",
+    "nse_attch_text": "KNR Constructions Limited has informed the Exchange about Link of Recording",
+    "nse_desc": "Analysts/Institutional Investor Meet/Con. Call Updates"
+  },
+  "summary_text": "TONE: unknown\nGUIDANCE: unknown\nBULLETS:\n- I apologize, but there is no excerpt provided that contains any meaningful information about KNR Constructions Limited's post-earnings conference call transcript or investor presentation. The given text appears to be a formal notification from the company to stock exchanges regarding the availability of an earnings call recording on their website.\n- As such, I cannot provide a summary in the requested format. If you could provide the actual excerpt containing information about the company's financial performance, guidance, and management commentary, I would be happy to assist you in summarizing it.\nKEY_PHRASES: ",
+  "management_tone": "unknown",
+  "key_topics": [
+    "I apologize, but there is no excerpt provided that contains any meaningful information about KNR Constructions Limited's post-earnings conference call transcript or investor presentation. The given text appears to be a formal notification from the company to stock exchanges regarding the availability of an earnings call recording on their website.",
+    "As such, I cannot provide a summary in the requested format. If you could provide the actual excerpt containing information about the company's financial performance, guidance, and management commentary, I would be happy to assist you in summarizing it."
+  ],
+  "raw_pdf_path": null,
+  "pdf_pages": 1,
+  "pdf_chars": 1175,
+  "llm_model": "llama3-pro:latest",
+  "llm_duration_sec": 6.151556124910712,
+  "summarized_at": "2026-06-29T08:52:20+05:30"
+}

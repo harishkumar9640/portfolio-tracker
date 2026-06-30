@@ -1,0 +1,35 @@
+{
+  "filing": {
+    "ticker": "KNRCON",
+    "company_name": "KNRCON",
+    "filing_kind": "transcript",
+    "filing_date": "06-Jun-2026",
+    "filing_datetime": "06-Jun-2026 10:25:18",
+    "pdf_url": "https://nsearchives.nseindia.com/corporate/KNRCON_06062026102508_Transcript.pdf",
+    "nse_attch_text": "KNR Constructions Limited has informed the Exchange about Transcript",
+    "nse_desc": "Analysts/Institutional Investor Meet/Con. Call Updates"
+  },
+  "summary_text": "TONE: confident\nGUIDANCE: raised\nBULLETS:\n- The company has made significant progress in its HAM projects, with physical progress ranging from 12.2% to 99.4%.\n- Management expects order activity to improve over the coming quarter due to government emphasis on infrastructure development.\n- The company is targeting order inflow of INR8,000 crores to INR10,000 crores during FY27, comprising a mix of NHAI projects and other state government infrastructure work.\n- As of March 31, 2026, the company has invested INR734.24 crores out of INR952.17 crores revised equity requirement for all HAM projects.\n- The company received letters of award for two HAM projects with a combined project value of INR3,897 crores and two EPC projects worth INR133 crores.\n- The order book for FY27 stands at INR11,900 crores, with a potential revenue of INR18,000-19,000 crores by the end of the fiscal.\n- The company expects EBITDA margins to be around 10% in FY28, with HAM projects potentially contributing decent margins.\n- Management is targeting INR350 crores to INR400 crores of turnover from mining projects in FY28, up from INR300 crores to INR350 crores initially expected.\n- The company plans to complete financial closure for the ECR Chennai project by this month and expects to appoint it in the next 2 months, with contributions starting in Q3 or Q4.\n- Key risk mentioned: receivables from Package 4 of the Palamuru irrigation project, which are pending due to land acquisition issues.\n- The company plans to execute INR1,000 crores to INR1,200 crores worth of orders from its HAMs combined in FY28.\n- Management is optimistic about margins, expecting 10% to 11% EBITDA margin for the entire FY28, driven by strong order book and aggressive execution.\n- The company targets revenue of around INR3,000 crores plus in FY28, a significant increase from INR2,000 crores in FY27.\nKEY_PHRASES: constructive outlook, sustainable public capital expenditure, rising private sector participation, fully operational, INR1, 000 crores turnover, mission mode, Definitely going aggressively, little bit sensibly, very strong trend",
+  "management_tone": "confident",
+  "key_topics": [
+    "The company has made significant progress in its HAM projects, with physical progress ranging from 12.2% to 99.4%.",
+    "Management expects order activity to improve over the coming quarter due to government emphasis on infrastructure development.",
+    "The company is targeting order inflow of INR8,000 crores to INR10,000 crores during FY27, comprising a mix of NHAI projects and other state government infrastructure work.",
+    "As of March 31, 2026, the company has invested INR734.24 crores out of INR952.17 crores revised equity requirement for all HAM projects.",
+    "The company received letters of award for two HAM projects with a combined project value of INR3,897 crores and two EPC projects worth INR133 crores.",
+    "The order book for FY27 stands at INR11,900 crores, with a potential revenue of INR18,000-19,000 crores by the end of the fiscal.",
+    "The company expects EBITDA margins to be around 10% in FY28, with HAM projects potentially contributing decent margins.",
+    "Management is targeting INR350 crores to INR400 crores of turnover from mining projects in FY28, up from INR300 crores to INR350 crores initially expected.",
+    "The company plans to complete financial closure for the ECR Chennai project by this month and expects to appoint it in the next 2 months, with contributions starting in Q3 or Q4.",
+    "Key risk mentioned: receivables from Package 4 of the Palamuru irrigation project, which are pending due to land acquisition issues.",
+    "The company plans to execute INR1,000 crores to INR1,200 crores worth of orders from its HAMs combined in FY28.",
+    "Management is optimistic about margins, expecting 10% to 11% EBITDA margin for the entire FY28, driven by strong order book and aggressive execution.",
+    "The company targets revenue of around INR3,000 crores plus in FY28, a significant increase from INR2,000 crores in FY27."
+  ],
+  "raw_pdf_path": null,
+  "pdf_pages": 19,
+  "pdf_chars": 50020,
+  "llm_model": "llama3-pro:latest",
+  "llm_duration_sec": 142.169553874759,
+  "summarized_at": "2026-06-29T08:52:11+05:30"
+}

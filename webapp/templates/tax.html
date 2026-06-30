@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="flex-between mb-4">
+  <div>
+    <h1 class="mb-0">Tax &amp; P&L Dashboard</h1>
+    <p class="text-muted mb-0">
+      Complete view: equity, MFs, SGBs, options, all charges, all FYs
+    </p>
+  </div>
+  <div class="flex-gap-2">
+    <button id="refreshTaxBtn" class="btn btn-secondary">🔄 Re-parse Tax PNL files</button>
+  </div>
+</header>
+
+{# ----- Top-level KPIs ----- #}
+<section class="grid grid-2 grid-4 mb-4">
+  <div class="kpi">
+    <div class="kpi-label">Total money OUT</div>
+    <div class="kpi-value is-negative">
+      ₹{{ "{:,.0f}".format(total_money_out) }}
+    </div>
+    <div class="kpi-sub text-muted">buy + options + all charges</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">Total money BACK</div>
+    <div class="kpi-value is-positive">
+      ₹{{ "{:,.0f}".format(total_money_back) }}
+    </div>
+    <div class="kpi-sub text-muted">sells + dividends</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">Total transaction costs</div>
+    <div class="kpi-value">
+      ₹{{ "{:,.0f}".format(total_costs) }}
+    </div>
+    <div class="kpi-sub text-muted">STT + stamp + brokerage + GST + …</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">Net gain / loss</div>
+    <div class="kpi-value {% if total_gain_loss >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {% if total_gain_loss >= 0 %}+{% endif %}₹{{ "{:,.0f}".format(total_gain_loss) }}
+    </div>
+    <div class="kpi-sub text-muted">
+      realised {{ "%.0f"|format(net_realised) }} +
+      unrealised {{ "%.0f"|format(net_unrealised) }} +
+      div {{ "%.0f"|format(totals.dividend_income) }}
+    </div>
+  </div>
+</section>
+
+{# ----- The big combined pie chart ----- #}
+<section class="card mb-4">
+  <div class="flex-between mb-3">
+    <h2 class="mb-0">Where every rupee went (FY 2022-23 to 2026-27)</h2>
+    <div class="flex-gap-2" id="chart-toggles">
+      <button class="btn btn-secondary is-active" data-chart="pie"
+              style="font-size:0.85rem;padding:0.3rem 0.7rem;">🥧 Pie</button>
+      <button class="btn btn-secondary" data-chart="bar"
+              style="font-size:0.85rem;padding:0.3rem 0.7rem;">📊 Bar</button>
+    </div>
+  </div>
+  <p class="text-muted mb-3">
+    Hover any slice for the exact number. Greens = money in / profit.
+    Reds = money out / loss. Greys = fees &amp; taxes.
+  </p>
+  <div id="big-pie" data-pie='{{ pie|tojson|forceescape }}' style="width:100%; height:520px;"></div>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="/static/js/tax_pie.js" defer></script>
+</section>
+
+{# ----- Per-FY breakdown table ----- #}
+<section class="card mb-4">
+  <h2 class="mb-3">Year-by-year breakdown</h2>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>FY</th>
+          <th class="text-right">Equity buy</th>
+          <th class="text-right">Equity sell</th>
+          <th class="text-right">STCG</th>
+          <th class="text-right">LTCG</th>
+          <th class="text-right">Intraday</th>
+          <th class="text-right">Equity P&amp;L</th>
+          <th class="text-right">Options P&amp;L</th>
+          <th class="text-right">Dividends</th>
+          <th class="text-right">STT</th>
+          <th class="text-right">Other chgs</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fy in fy_data %}
+        <tr>
+          <td><strong>{{ fy.fy }}</strong></td>
+          <td class="text-right">₹{{ "{:,.0f}".format(fy.equity_buy_value) }}</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(fy.equity_sell_value) }}</td>
+          <td class="text-right {% if fy.equity_stcg > 0 %}is-positive{% endif %}">
+            {{ "{:,.0f}".format(fy.equity_stcg) }}
+          </td>
+          <td class="text-right {% if fy.equity_ltcg > 0 %}is-positive{% endif %}">
+            {{ "{:,.0f}".format(fy.equity_ltcg) }}
+          </td>
+          <td class="text-right {% if fy.equity_intraday_pnl < 0 %}is-negative{% endif %}">
+            {{ "{:,.0f}".format(fy.equity_intraday_pnl) }}
+          </td>
+          <td class="text-right {% if fy.equity_pnl > 0 %}is-positive{% elif fy.equity_pnl < 0 %}is-negative{% endif %}">
+            {{ "{:,.0f}".format(fy.equity_pnl) }}
+          </td>
+          <td class="text-right {% if fy.fno_options_pnl < 0 %}is-negative{% endif %}">
+            {{ "{:,.0f}".format(fy.fno_options_pnl) }}
+          </td>
+          <td class="text-right">₹{{ "{:,.0f}".format(fy.dividend_income) }}</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(fy.equity_stt) }}</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(fy.equity_other_charges + fy.fno_charges) }}</td>
+        </tr>
+        {% endfor %}
+        <tr style="background: #f5f5f5; font-weight: bold;">
+          <td>TOTAL</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(totals.equity_buy_value) }}</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(totals.equity_sell_value) }}</td>
+          <td class="text-right is-positive">₹{{ "{:,.0f}".format(totals.equity_stcg) }}</td>
+          <td class="text-right is-positive">₹{{ "{:,.0f}".format(totals.equity_ltcg) }}</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(totals.equity_intraday_pnl) }}</td>
+          <td class="text-right {% if totals.equity_pnl > 0 %}is-positive{% elif totals.equity_pnl < 0 %}is-negative{% endif %}">
+            {{ "{:,.0f}".format(totals.equity_pnl) }}
+          </td>
+          <td class="text-right is-negative">₹{{ "{:,.0f}".format(totals.fno_options_pnl) }}</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(totals.dividend_income) }}</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(totals.equity_stt + totals.fno_stt) }}</td>
+          <td class="text-right">₹{{ "{:,.0f}".format(totals.equity_other_charges + totals.fno_charges) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{# ----- All charges breakdown ----- #}
+<section class="card mb-4">
+  <h2 class="mb-3">Every charge &amp; fee you paid</h2>
+  <div class="grid grid-2 grid-3">
+    <div class="kpi">
+      <div class="kpi-label">STT (equity delivery)</div>
+      <div class="kpi-value">₹{{ "{:,.0f}".format(totals.equity_stt) }}</div>
+      <div class="kpi-sub text-muted">0.1% on equity buy value</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">STT (F&amp;O)</div>
+      <div class="kpi-value">₹{{ "{:,.0f}".format(totals.fno_stt) }}</div>
+      <div class="kpi-sub text-muted">on options premium</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Stamp duty</div>
+      <div class="kpi-value">₹{{ "{:,.0f}".format(totals.equity_stamp_duty) }}</div>
+      <div class="kpi-sub text-muted">state-wise, 0.005%-0.015%</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Brokerage (equity)</div>
+      <div class="kpi-value">₹{{ "{:,.0f}".format(totals.equity_brokerage) }}</div>
+      <div class="kpi-sub text-muted">Angel One: ₹0 (equity delivery)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">F&amp;O charges + brokerage</div>
+      <div class="kpi-value">₹{{ "{:,.0f}".format(totals.fno_charges) }}</div>
+      <div class="kpi-sub text-muted">brokerage + STT + exchange fees</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Other charges (GST, SEBI, etc.)</div>
+      <div class="kpi-value">₹{{ "{:,.0f}".format(totals.equity_other_charges) }}</div>
+      <div class="kpi-sub text-muted">GST 18% on brokerage + SEBI + AMC</div>
+    </div>
+  </div>
+</section>
+
+{# ----- Open positions with unrealised P&L ----- #}
+<section class="card mb-4">
+  <h2 class="mb-3">Open positions (still held, unrealised P&amp;L)</h2>
+  <div class="grid grid-2 grid-4">
+    <div class="kpi">
+      <div class="kpi-label">Total cost basis</div>
+      <div class="kpi-value">₹{{ "{:,.0f}".format(totals.open_holdings_cost) }}</div>
+      <div class="kpi-sub text-muted">what you paid for current holdings</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Current market value</div>
+      <div class="kpi-value">₹{{ "{:,.0f}".format(totals.open_holdings_market_value) }}</div>
+      <div class="kpi-sub text-muted">at last reported close</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Unrealised STCG</div>
+      <div class="kpi-value is-negative">₹{{ "{:,.0f}".format(totals.open_holdings_st_unrealised) }}</div>
+      <div class="kpi-sub text-muted">held &lt; 1 year</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Unrealised LTCG</div>
+      <div class="kpi-value is-negative">₹{{ "{:,.0f}".format(totals.open_holdings_lt_unrealised) }}</div>
+      <div class="kpi-sub text-muted">held &gt; 1 year</div>
+    </div>
+  </div>
+</section>
+
+{# ----- 57 closed trades enriched with current LTP + verdict ----- #}
+<section class="card mb-4">
+  <h2 class="mb-3">Closed trades review — sell price vs current price</h2>
+  <p class="text-muted mb-3">
+    Every equity trade you closed since FY 2022-23. The third column
+    "Verdict" rates each sell: <strong style="color:#2f7a3d">GREAT</strong> /
+    <strong style="color:#5cb85c">GOOD</strong> / <strong style="color:#888">OK</strong> /
+    <strong style="color:#d58512">BAD TIMING</strong> /
+    <strong style="color:#b3382c">POOR</strong> /
+    <strong style="color:#7a1313">TERRIBLE</strong>.
+    Right-most column shows what would have happened if you still held
+    the stock (only for stocks with current LTP available).
+  </p>
+
+  <div id="trades-summary" data-trades-url="/api/tax/trades"
+       style="margin-bottom: 1rem;">
+    <p class="text-muted">Loading trades…</p>
+  </div>
+
+  {# ----- NEW: Compact side-by-side Buy / Sell / Current table ----- #}
+  <h3 class="mb-2" style="margin-top: 1.5rem;">Side-by-side: Buy vs Sell vs Current</h3>
+  <p class="text-muted mb-2" style="font-size: 0.9rem;">
+    Three prices per trade. The <strong style="color:#5cb85c">green</strong>
+    ▲ shows how much you'd be up if you still held. The
+    <strong style="color:#b3382c">red</strong> ▼ shows the loss.
+    Bad sells are highlighted in red.
+  </p>
+  <div id="side-by-side" data-sxs-url="/api/tax/trades"
+       style="max-height: 700px; overflow-y: auto; border: 1px solid var(--c-border, #eee); border-radius: 6px;">
+    <p class="text-muted" style="padding: 1rem;">Loading…</p>
+  </div>
+
+  <details>
+    <summary class="text-muted">Show all 57 trades (full table with details)</summary>
+    <div class="table-wrap mt-3" style="max-height: 600px; overflow-y: auto;">
+      <table class="data-table" id="trades-table">
+        <thead>
+          <tr>
+            <th>Stock</th>
+            <th>Buy date</th>
+            <th class="text-right">Buy@</th>
+            <th class="text-right">Qty</th>
+            <th>Sell date</th>
+            <th class="text-right">Sell@</th>
+            <th class="text-right">Sell value</th>
+            <th class="text-right">Current</th>
+            <th class="text-right">Realised P&amp;L</th>
+            <th>Verdict</th>
+            <th class="text-right">If held till now</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="11" class="text-muted">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+{# ----- All equity transactions ----- #}
+<section class="card mb-4">
+  <h2 class="mb-3">All equity transactions ({{ buys|length }} buys, {{ sells|length }} sells)</h2>
+  <details>
+    <summary class="text-muted">Show all transactions</summary>
+    <div class="table-wrap mt-3">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>FY</th>
+            <th>Date</th>
+            <th>Stock</th>
+            <th class="text-right">Qty</th>
+            <th class="text-right">Buy value</th>
+            <th class="text-right">Sell value</th>
+            <th class="text-right">P&amp;L</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in buys %}
+          <tr>
+            <td>{{ b.fy }}</td>
+            <td>{{ b.date or '—' }}</td>
+            <td><strong>{{ b.scrip }}</strong></td>
+            <td class="text-right">{{ b.qty }}</td>
+            <td class="text-right">₹{{ "{:,.0f}".format(b.buy_val) }}</td>
+            <td class="text-right">—</td>
+            <td class="text-right">—</td>
+          </tr>
+          {% endfor %}
+          {% for s in sells %}
+          <tr>
+            <td>{{ s.fy }}</td>
+            <td>{{ s.date or '—' }}</td>
+            <td><strong>{{ s.scrip }}</strong></td>
+            <td class="text-right">{{ s.qty }}</td>
+            <td class="text-right">—</td>
+            <td class="text-right">₹{{ "{:,.0f}".format(s.sell_val) }}</td>
+            <td class="text-right {% if s.pnl > 0 %}is-positive{% elif s.pnl < 0 %}is-negative{% endif %}">
+              {% if s.pnl > 0 %}+{% endif %}{{ "{:,.0f}".format(s.pnl) }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+{% endblock %}

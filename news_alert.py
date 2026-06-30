@@ -1030,20 +1030,89 @@ def _next_run_ist(hour: int = 8, minute: int = 55) -> datetime:
     return target.astimezone(timezone.utc).replace(tzinfo=None)
 
 
+# ---------- Scheduler missed-window logic (pure) ----------
+
+def _should_skip_missed_run(target_utc_naive: datetime,
+                            now_utc_naive: datetime,
+                            grace_secs: int = 5 * 60) -> tuple[bool, float]:
+    """
+    Decide whether to skip a scheduled run because the wake-up
+    happened past the target by more than ``grace_secs``.
+
+    Returns (skip, missed_by_secs).
+    """
+    missed_by = (now_utc_naive - target_utc_naive).total_seconds()
+    return (missed_by > grace_secs), missed_by
+
+
 def _scheduler_loop(stop_event: threading.Event) -> None:
-    """Background thread: run once a day at 8:55 AM IST."""
+    """Background thread: run once a day at 8:55 AM IST.
+
+    Missed-window guard: if the system was asleep (or otherwise
+    suspended) past the target time by more than MAX_MISSED_SECS,
+    skip the run and wait for tomorrow's window. Without this guard a
+    single overnight sleep would re-send the digest at the moment of
+    wake-up, doubling the daily message.
+    """
+    MAX_MISSED_SECS = 5 * 60  # 5 minutes
     while not stop_event.is_set():
-        next_run = _next_run_ist()
-        now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
-        wait_secs = (next_run - now_utc).total_seconds()
-        log.info("news_alert scheduler: next run at %s IST (in %.0fs)",
-                 next_run.strftime("%Y-%m-%d %H:%M:%S"), wait_secs)
+        # Compute next run as UTC-naive for easy arithmetic with
+        # datetime.now(timezone.utc).replace(tzinfo=None).
+        next_run_utc_naive = _next_run_ist()
+        now_utc_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+        wait_secs = (next_run_utc_naive - now_utc_naive).total_seconds()
+
+        # Convert to IST for the log line (the previous version logged
+        # a UTC-naive timestamp labelled "IST", which was misleading).
+        next_run_ist = next_run_utc_naive.replace(
+            tzinfo=timezone.utc
+        ).astimezone(IST)
+        log.info(
+            "news_alert scheduler: next run at %s IST (in %.0fs)",
+            next_run_ist.strftime("%Y-%m-%d %H:%M:%S"),
+            wait_secs,
+        )
+
         while wait_secs > 0 and not stop_event.is_set():
             chunk = min(60, wait_secs)
             stop_event.wait(chunk)
             wait_secs -= chunk
         if stop_event.is_set():
             break
+
+        # Re-check wall-clock against the target. threading.Event.wait()
+        # uses time.monotonic() under the hood, which pauses during
+        # system sleep on macOS — so if the Mac slept through the
+        # 8:55 AM window, this thread will resume only when the Mac
+        # wakes up and `wait_secs` will already be very negative.
+        # Without the guard below we'd fire a late digest the moment
+        # the lid opens, doubling the daily send.
+        now_utc_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+        skip, missed_by = _should_skip_missed_run(
+            next_run_utc_naive, now_utc_naive, MAX_MISSED_SECS
+        )
+        if skip:
+            log.warning(
+                "news_alert scheduler: missed target by %.0fs (>%ds) \u2014 "
+                "skipping today's run to avoid duplicate send. "
+                "Next attempt at tomorrow's 8:55 AM IST.",
+                missed_by, MAX_MISSED_SECS,
+            )
+            # Sleep until tomorrow's window so the outer loop doesn't
+            # tight-spin computing negative wait_secs forever.
+            tomorrow_target = (
+                next_run_utc_naive + timedelta(days=1)
+            )
+            while not stop_event.is_set():
+                now_utc_naive = datetime.now(
+                    timezone.utc
+                ).replace(tzinfo=None)
+                remaining = (tomorrow_target - now_utc_naive).total_seconds()
+                if remaining <= 0:
+                    break
+                stop_event.wait(min(60, remaining))
+            continue
+
         try:
             run_once()
         except Exception as e:
