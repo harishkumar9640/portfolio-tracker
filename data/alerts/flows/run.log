@@ -1,24 +1,16 @@
-2026-06-30 15:08:40,320 INFO    flows_alert: FII/DII fetch: 2 rows
-2026-06-30 15:08:40,322 INFO    flows_alert: FII/DII history now: 4 entries
-2026-06-30 15:08:40,322 INFO    flows_alert: FII/DII flows within threshold (FII=-1350, DII=+2801, threshold=5000) — no alert
-2026-06-30 15:08:40,676 INFO    flows_alert: bulk deals: 177 rows
-2026-06-30 15:08:40,683 INFO    flows_alert: deals history now: 361 entries
-2026-06-30 15:08:40,871 INFO    flows_alert: block deals: 4 rows
-2026-06-30 15:08:40,876 INFO    flows_alert: deals history now: 361 entries
-2026-06-30 15:08:40,877 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
-2026-06-30 15:14:26,393 INFO    flows_alert: FII/DII fetch: 2 rows
-2026-06-30 15:14:26,395 INFO    flows_alert: FII/DII history now: 4 entries
-2026-06-30 15:14:26,395 INFO    flows_alert: FII/DII flows within threshold (FII=-1350, DII=+2801, threshold=5000) — no alert
-2026-06-30 15:14:26,555 INFO    flows_alert: bulk deals: 177 rows
-2026-06-30 15:14:26,561 INFO    flows_alert: deals history now: 361 entries
-2026-06-30 15:14:26,702 INFO    flows_alert: block deals: 4 rows
-2026-06-30 15:14:26,707 INFO    flows_alert: deals history now: 361 entries
-2026-06-30 15:14:26,707 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
-2026-06-30 15:19:26,486 INFO    flows_alert: FII/DII fetch: 2 rows
-2026-06-30 15:19:26,487 INFO    flows_alert: FII/DII history now: 4 entries
-2026-06-30 15:19:26,487 INFO    flows_alert: FII/DII flows within threshold (FII=-1350, DII=+2801, threshold=5000) — no alert
-2026-06-30 15:19:26,853 INFO    flows_alert: bulk deals: 177 rows
-2026-06-30 15:19:26,861 INFO    flows_alert: deals history now: 361 entries
-2026-06-30 15:19:26,984 INFO    flows_alert: block deals: 4 rows
-2026-06-30 15:19:26,989 INFO    flows_alert: deals history now: 361 entries
-2026-06-30 15:19:26,989 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-30 15:50:03,004 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-30 15:50:03,005 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-30 15:50:03,005 INFO    flows_alert: FII/DII flows within threshold (FII=-1350, DII=+2801, threshold=5000) — no alert
+2026-06-30 15:50:03,158 INFO    flows_alert: bulk deals: 177 rows
+2026-06-30 15:50:03,164 INFO    flows_alert: deals history now: 361 entries
+2026-06-30 15:50:03,292 INFO    flows_alert: block deals: 4 rows
+2026-06-30 15:50:03,296 INFO    flows_alert: deals history now: 361 entries
+2026-06-30 15:50:03,296 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-06-30 15:54:23,482 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-06-30 15:54:23,483 INFO    flows_alert: FII/DII history now: 4 entries
+2026-06-30 15:54:23,483 INFO    flows_alert: FII/DII flows within threshold (FII=-1350, DII=+2801, threshold=5000) — no alert
+2026-06-30 15:54:23,989 INFO    flows_alert: bulk deals: 177 rows
+2026-06-30 15:54:23,994 INFO    flows_alert: deals history now: 361 entries
+2026-06-30 15:54:24,143 INFO    flows_alert: block deals: 4 rows
+2026-06-30 15:54:24,147 INFO    flows_alert: deals history now: 361 entries
+2026-06-30 15:54:24,147 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block

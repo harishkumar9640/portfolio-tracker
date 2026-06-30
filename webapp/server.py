@@ -40,7 +40,7 @@ from fastapi.templating import Jinja2Templates
 from pipeline.logging_setup import get_logger
 from webapp import TEMPLATES_DIR, STATIC_DIR
 from pathlib import Path
-PROJECT_CHARTS_DIR = Path(__file__).resolve().parent.parent / "charts"
+PROJECT_CHARTS_DIR = Path(__file__).resolve().parent.parent / "data" / "charts"
 from webapp.data import (
     get_portfolio_snapshot,
     get_fairvalue_snapshot,

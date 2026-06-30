@@ -56,7 +56,7 @@ log = get_logger("intraday")
 
 PROJECT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT / "data"
-CHARTS_DIR = PROJECT / "charts"
+CHARTS_DIR = PROJECT / "data" / "charts"
 DATA_DIR.mkdir(exist_ok=True)
 CHARTS_DIR.mkdir(exist_ok=True)
 

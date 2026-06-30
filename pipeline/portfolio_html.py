@@ -41,7 +41,7 @@ from .parallel import fetch_all
 log = get_logger("portfolio_html")
 
 PROJECT = Path(__file__).resolve().parent.parent
-CHARTS_DIR = PROJECT / "charts"
+CHARTS_DIR = PROJECT / "data" / "charts"
 CHARTS_DIR.mkdir(exist_ok=True)
 
 

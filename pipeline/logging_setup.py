@@ -25,7 +25,7 @@ from pathlib import Path
 import logzero
 from logzero import LogFormatter
 
-PROJECT = Path(__file__).resolve().parent.parent.parent  # portfolio-tracker/ root
+PROJECT = Path(__file__).resolve().parent.parent  # portfolio-tracker/ root
 LOGS_DIR = PROJECT / "data" / "logs"
 
 # Default log level. Override via PT_LOG_LEVEL=DEBUG|INFO|WARNING|ERROR env.
