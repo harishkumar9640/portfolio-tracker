@@ -66,7 +66,7 @@ from .portfolio_impact import PORTFOLIO_EXPOSURE  # type: ignore
 IST = ZoneInfo("Asia/Kolkata")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-LOG_FILE = PROJECT_ROOT / "flows_alert.log"
+LOG_FILE = PROJECT_ROOT / "data/alerts/flows/run.log"
 SEEN_FILE = PROJECT_ROOT / "data/alerts/flows/seen.json"        # dedup
 HISTORY_FILE = PROJECT_ROOT / "data/alerts/flows/fii_dii_history.json"      # daily FII/DII archive
 DEALS_HISTORY_FILE = PROJECT_ROOT / "data/alerts/flows/bulk_block_history.json"  # daily bulk/block archive

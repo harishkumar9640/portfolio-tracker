@@ -48,7 +48,7 @@ from ..logging_setup import get_logger
 log = get_logger("fair_value.search")
 
 PROJECT = Path(__file__).resolve().parent.parent.parent
-CACHE_FILE = PROJECT / "data" / "data/cache/nse_equity_list.csv"
+CACHE_FILE = PROJECT / "data" / "cache" / "nse_equity_list.csv"
 CACHE_TTL_SECONDS = 24 * 3600
 NSE_URL = "https://archives.nseindia.com/content/equities/EQUITY_L.csv"
 HEADERS = {

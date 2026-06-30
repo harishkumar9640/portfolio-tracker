@@ -242,7 +242,7 @@ def migrate_legacy_json(json_path: Path | str | None = None) -> int:
     If ``data/sgb_price_history.json`` exists, import it into the SQLite DB
     and return the number of rows imported. Safe to call repeatedly.
     """
-    src = Path(json_path) if json_path else PROJECT / "data" / "sgb_price_history.json"
+    src = Path(json_path) if json_path else PROJECT / "data" / "db" / "sgb_price_history.json"
     if not src.exists():
         return 0
     import json as _json

@@ -38,6 +38,11 @@ data/**/*.pdf
 !data/scripts/pre-publish-check.sh
 .cache/
 
+# SmartAPI (third-party library) hardcodes a "logs/" path relative
+# to the CWD in its constructor. We can't change the vendor code,
+# so we just ignore whatever it writes here.
+logs/
+
 # User portfolio lists (real holdings — never commit)
 mfs.json
 sgbs.json

@@ -38,7 +38,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)-7s %(name)s: %(message)s",
     handlers=[
-        logging.FileHandler(PROJECT_ROOT / "scheduler.log", encoding="utf-8"),
+        logging.FileHandler(PROJECT_ROOT / "data" / "alerts" / "scheduler.log", encoding="utf-8"),
         logging.StreamHandler(sys.stdout),
     ],
 )
