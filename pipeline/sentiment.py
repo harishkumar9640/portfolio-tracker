@@ -30,6 +30,12 @@ We bias toward caution: a single "slightly bearish" signal + one
 "neutral" signal => NEUTRAL, not bearish. The user is in charge of
 decisions, not us.
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 1 major sections (1671 lines total):
+#
+# 1. Display helpers ----------
+
 from __future__ import annotations
 
 import re

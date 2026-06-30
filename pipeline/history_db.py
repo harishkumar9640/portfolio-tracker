@@ -23,6 +23,12 @@ Usage:
     db.record_sgb_price("IN0020230184", "2026-06-24", 15511.42)
     rows = db.sgb_history("IN0020230184", days=30)
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 1 major sections (284 lines total):
+#
+# 1. One-shot migration from the JSON cache ----------
+
 from __future__ import annotations
 
 import sqlite3

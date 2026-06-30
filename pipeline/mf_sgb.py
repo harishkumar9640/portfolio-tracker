@@ -18,6 +18,18 @@ Sources:
             Note: mfapi.in is for mutual funds. For SGB prices we use the
             issuer isin + NSE public quote endpoint (best-effort).
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 7 major sections (703 lines total):
+#
+# 1. Data classes ----------
+# 2. IO ----------
+# 3. MF scheme code resolution ----------
+# 4. NAV fetch ----------
+# 5. SGB price fetch ----------
+# 6. SGB history helpers (DB-backed, lazily cached) ----------
+# 7. Aggregates ----------
+
 from __future__ import annotations
 
 import json

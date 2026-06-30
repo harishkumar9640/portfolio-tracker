@@ -7,6 +7,15 @@ Compare your complete portfolio (equity + mutual funds + SGBs) day-change to
 Run:
     python3 equity_compare.py
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 4 major sections (564 lines total):
+#
+# 1. Equity previous-day value (with single common baseline) ----------
+# 2. Chart ----------
+# 3. Snapshot builder (used by webapp) ----------
+# 4. Main ----------
+
 from __future__ import annotations
 
 from pathlib import Path

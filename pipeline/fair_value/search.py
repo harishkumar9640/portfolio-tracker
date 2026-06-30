@@ -27,6 +27,12 @@ Used by:
   - GET /api/fairvalue/search?q=REL&limit=10
   - POST /api/fairvalue/lookup {"ticker": "Reliance Industries"}
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 1 major sections (276 lines total):
+#
+# 1. CLI for ad-hoc testing ----------
+
 from __future__ import annotations
 
 import csv

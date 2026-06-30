@@ -61,6 +61,20 @@ CLI:
   python3 news_alert.py --force       # send even if no important news
   python3 news_alert.py --start-scheduler   # run forever as foreground daemon
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 9 major sections (1180 lines total):
+#
+# 1. Configuration ----------
+# 2. Article model ----------
+# 3. Fetch + filter + categorise ----------
+# 4. Render Telegram message ----------
+# 5. Telegram send ----------
+# 6. Main run ----------
+# 7. Scheduler ----------
+# 8. Scheduler missed-window logic (pure) ----------
+# 9. CLI ----------
+
 from __future__ import annotations
 
 import json

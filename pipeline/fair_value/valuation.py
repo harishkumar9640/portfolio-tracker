@@ -7,6 +7,14 @@ Three classic valuation models, all in pure Python (no numpy).
   - PE-relative:    EPS * industry_pe
   - Two-stage DCF:  PV of FCF for years 1-5 + discounted terminal value
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 3 major sections (350 lines total):
+#
+# 1. Pure model functions ----------
+# 2. Aggregated "check" helper ----------
+# 3. CLI ----------
+
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict

@@ -35,6 +35,17 @@ Storage:
   - data/mf_holdings_prev.json  — last snapshot we compared against
   - data/mf_holdings_alert_log.json — last N runs (success/failure/timestamp)
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 6 major sections (619 lines total):
+#
+# 1. Diff detection ----------
+# 2. Email rendering ----------
+# 3. SMTP ----------
+# 4. Daily run ----------
+# 5. Background scheduler ----------
+# 6. CLI ----------
+
 from __future__ import annotations
 
 import json

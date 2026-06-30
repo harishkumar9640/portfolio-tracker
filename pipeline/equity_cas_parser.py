@@ -15,6 +15,12 @@ Output: list of EquityTransaction named tuples, ready for lot tracking.
 
 Free dependencies only: pypdf
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 1 major sections (481 lines total):
+#
+# 1. CLI ----------
+
 from __future__ import annotations
 
 import json

@@ -22,6 +22,13 @@ Usage:
     python earnings_alert.py --start-scheduler   # daemon mode (8:55 AM IST)
     python earnings_alert.py --test-render ITC   # render alert for ITC for testing
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 2 major sections (1080 lines total):
+#
+# 1. HTTP ----------
+# 2. Logging ----------
+
 from __future__ import annotations
 
 import argparse

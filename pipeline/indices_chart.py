@@ -7,6 +7,16 @@ and produce a single-day %-change comparison chart.
 Run:
     python3 indices_chart.py            # previous trading day
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 5 major sections (327 lines total):
+#
+# 1. Config ----------
+# 2. Fetch ----------
+# 3. Normalize ----------
+# 4. Chart ----------
+# 5. Main ----------
+
 from __future__ import annotations
 
 import argparse

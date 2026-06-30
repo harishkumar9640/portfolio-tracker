@@ -10,6 +10,14 @@ Run:
     python3 indices_html.py --period 6mo
     python3 indices_html.py --period 1y --include mf sgb
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 3 major sections (227 lines total):
+#
+# 1. Portfolio value history (rebuilt from snapshots) ----------
+# 2. Plot ----------
+# 3. Main ----------
+
 from __future__ import annotations
 
 import argparse

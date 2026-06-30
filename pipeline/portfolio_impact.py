@@ -27,6 +27,19 @@ Delivery:
   Runs every 30 minutes during market hours (9 AM - 4 PM IST), plus
   once at 8:55 AM IST for the daily digest.
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 8 major sections (687 lines total):
+#
+# 1. Portfolio exposure map ----------
+# 2. Risk-category-based impact ----------
+# 3. Telegram alert rendering ----------
+# 4. Persistence ----------
+# 5. Telegram send (reuse from news_alert) ----------
+# 6. Main run ----------
+# 7. Scheduler ----------
+# 8. CLI ----------
+
 from __future__ import annotations
 
 import json

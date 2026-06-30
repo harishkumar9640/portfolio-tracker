@@ -25,6 +25,19 @@ Reality check (in case the user asks):
     candle API requires a token per symbol and we already have working
     yfinance integration. Real-time LTP could be layered on top later.
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 8 major sections (543 lines total):
+#
+# 1. Cache ----------
+# 2. Fetcher ----------
+# 3. Equity holdings -> intraday series ----------
+# 4. MF + SGB baseline (mostly flat during the day) ----------
+# 5. Normalise to base 100 from today's first bar ----------
+# 6. Chart ----------
+# 7. Snapshot (used by webapp) ----------
+# 8. Main ----------
+
 from __future__ import annotations
 
 import argparse

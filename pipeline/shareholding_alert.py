@@ -39,6 +39,21 @@ Storage:
   - data/shareholding_prev.json     — last snapshot we compared against
   - data/shareholding_alert_log.json — last 30 runs
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 10 major sections (843 lines total):
+#
+# 1. Data model ----------
+# 2. Parsing ----------
+# 3. Fetch ----------
+# 4. Diff detection ----------
+# 5. Email rendering ----------
+# 6. Email send (reuses mf_holdings_alert SMTP) ----------
+# 7. Persistence ----------
+# 8. Daily run ----------
+# 9. Scheduler ----------
+      # 10. CLI ----------
+
 from __future__ import annotations
 
 import json

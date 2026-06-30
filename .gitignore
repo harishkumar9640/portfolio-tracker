@@ -13,25 +13,35 @@ htmlcov/
 .env
 secrets.local.json
 
-# Local data
-data/*.csv
-data/*.json
-data/*.json.*
-data/*.db
-data/*.db-*
-charts/*.png
-charts/*.html
-logs/
-.cache
-!charts/.gitkeep
+# Local data (runtime state) — everything under data/ is gitignored
+# except the empty .gitkeep placeholders.
+data/**/*.csv
+data/**/*.json
+data/**/*.json.*
+data/**/*.db
+data/**/*.db-*
+data/**/*.log
+data/**/*.png
+data/**/*.html
+data/**/*.xlsx
+data/**/*.pdf
 !data/.gitkeep
-!mfs.json.example
-!sgbs.json.example
+!data/alerts/.gitkeep
+!data/alerts/*/.gitkeep
+!data/cache/.gitkeep
+!data/charts/.gitkeep
+!data/db/.gitkeep
+!data/logs/.gitkeep
+!data/runs/.gitkeep
+!data/scripts/.gitkeep
+!data/tax_pnl/.gitkeep
+!data/scripts/pre-publish-check.sh
+.cache/
 
 # User portfolio lists (real holdings — never commit)
 mfs.json
 sgbs.json
-runs/
+my_tickers.txt
 
 # AI session memory (regenerate each session — contains project context)
 MEMORY.md

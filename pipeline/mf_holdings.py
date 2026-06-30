@@ -44,6 +44,16 @@ Glossary (abbreviations used in the output and in Trendlyne's pages):
   - FII : Foreign Institutional Investor
   - ETF : Exchange-Traded Fund
 """
+# TABLE OF CONTENTS (read this first)
+#
+# This file has 5 major sections (526 lines total):
+#
+# 1. Ticker map ----------
+# 2. Cache helpers ----------
+# 3. HTML parsing ----------
+# 4. Main fetch ----------
+# 5. Public API ----------
+
 from __future__ import annotations
 
 import json
