@@ -5,13 +5,103 @@
   <div>
     <h1 class="mb-0">Tax &amp; P&L Dashboard</h1>
     <p class="text-muted mb-0">
-      Complete view: equity, MFs, SGBs, options, all charges, all FYs
+      {% if session %}
+        🔒 Analyzing <strong>{{ session.label }}</strong>
+        &middot; {{ session.source_files|length }} file{{ '' if session.source_files|length == 1 else 's' }}
+        &middot; expires {{ (session.expires_at | int) | ts_to_human }}
+      {% else %}
+        Complete view: equity, MFs, SGBs, options, all charges, all FYs
+      {% endif %}
     </p>
   </div>
   <div class="flex-gap-2">
-    <button id="refreshTaxBtn" class="btn btn-secondary">🔄 Re-parse Tax PNL files</button>
+    {% if session %}
+      <a href="/tax" class="btn btn-secondary">← Back to my files</a>
+      <a href="/api/tax/upload/{{ session.session_id }}/report" target="_blank"
+         class="btn btn-secondary">📋 Markdown report</a>
+    {% else %}
+      <button id="refreshTaxBtn" class="btn btn-secondary">🔄 Re-parse Tax PNL files</button>
+      <button id="openUploadBtn" class="btn btn-primary">📤 Upload someone's Tax PNL</button>
+    {% endif %}
   </div>
 </header>
+
+{% if session %}
+<section class="card mb-3" style="background:#fff8e1;border-left:4px solid #f0ad4e;padding:0.8rem 1rem;">
+  <strong>🔒 Ephemeral analysis.</strong>
+  This dashboard is rendering an <em>uploaded</em> Tax P&amp;L file, not your own.
+  Files are stored in <code>data/tax_pnl_uploads/{{ session.session_id[:8] }}…/</code>
+  and will be auto-deleted 24 hours after upload.
+  {% if session.detected_brokers %}
+    <div class="mt-1"><strong>Detected brokers:</strong>
+      {% for b in session.detected_brokers %}<span class="badge">{{ b }}</span>{% endfor %}
+    </div>
+  {% endif %}
+  {% if session.parse_warnings %}
+    <div class="mt-1"><strong>Parse warnings:</strong>
+      <ul class="mb-0">
+        {% for w in session.parse_warnings %}<li>{{ w }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</section>
+{% endif %}
+
+{# ---------- Upload modal (only shown on the default /tax page) ---------- #}
+{% if not session %}
+<div id="uploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+  <div class="card" style="max-width:560px;width:90%;max-height:90vh;overflow-y:auto;padding:1.5rem;">
+    <div class="flex-between mb-3">
+      <h3 class="mb-0">📤 Upload Tax P&amp;L files</h3>
+      <button onclick="closeUploadModal()" class="btn btn-secondary" style="padding:0.2rem 0.5rem;">✕</button>
+    </div>
+
+    <p class="text-muted mb-2">
+      Drop in up to 10 files. Supported:
+      <strong>Angel One</strong> (<code>Tax PNL *.xlsx</code>),
+      <strong>Zerodha</strong> (<code>Console P&L *.csv</code>).
+      Other tabular files are supported via manual column mapping.
+    </p>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+      <div class="mb-2">
+        <label class="form-label">Label (optional)</label>
+        <input type="text" name="label" class="form-control"
+               placeholder="e.g. Rohit's 2024-25 file">
+      </div>
+
+      <div class="mb-2" id="dropzone"
+           style="border:2px dashed #ccc;border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;background:#fafafa;">
+        <div style="font-size:1.5rem;">📁</div>
+        <div>Drag &amp; drop files here, or <strong>click to browse</strong></div>
+        <div class="text-muted" style="font-size:0.85rem;margin-top:0.3rem;">
+          .xlsx or .csv, max 20 MB each, max 10 files
+        </div>
+        <input type="file" id="fileInput" name="files" multiple
+               accept=".xlsx,.xlsm,.csv" style="display:none;">
+      </div>
+
+      <div id="fileList" class="mb-2" style="font-size:0.85rem;"></div>
+
+      <details class="mb-3">
+        <summary>My file isn't Angel One or Zerodha — map columns manually</summary>
+        <div id="mappingUI" class="mt-2" style="font-size:0.85rem;">
+          <p class="text-muted">After you select files, the next screen will let you
+          match the columns. This works with any tabular export that has at minimum
+          <em>scrip</em>, <em>quantity</em>, <em>buy value</em>, and <em>sell value</em>.</p>
+        </div>
+      </details>
+
+      <div class="flex-gap-2">
+        <button type="submit" class="btn btn-primary" id="uploadSubmitBtn">Upload &amp; analyze</button>
+        <button type="button" class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
+      </div>
+    </form>
+
+    <div id="uploadStatus" class="mt-3" style="display:none;"></div>
+  </div>
+</div>
+{% endif %}
 
 {# ----- Top-level KPIs ----- #}
 <section class="grid grid-2 grid-4 mb-4">
@@ -70,6 +160,9 @@
   <div id="big-pie" data-pie='{{ pie|tojson|forceescape }}' style="width:100%; height:520px;"></div>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
   <script src="/static/js/tax_pie.js" defer></script>
+  {% if not session %}
+  <script src="/static/js/tax.js" defer></script>
+  {% endif %}
 </section>
 
 {# ----- Per-FY breakdown table ----- #}

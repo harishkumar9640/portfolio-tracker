@@ -108,6 +108,16 @@ def _build_schedule() -> list[tuple[int, int, str, callable]]:
     except Exception as e:
         log.warning("could not register concalls: %s", e)
 
+    # 03:00 IST — sweep expired Tax P&L upload sessions (24h TTL).
+    # Cheap (just iterates data/tax_pnl_uploads/) but cleans up disk.
+    try:
+        from pipeline.tax_pnl.sessions import sweep_expired_sessions
+        schedule.append(
+            (3, 0, "tax_pnl.sweep_sessions", sweep_expired_sessions)
+        )
+    except Exception as e:
+        log.warning("could not register tax_pnl.sweep_sessions: %s", e)
+
     return schedule
 
 

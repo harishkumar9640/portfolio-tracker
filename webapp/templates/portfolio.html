@@ -128,6 +128,73 @@
   </div>
 </section>
 
+{# ----- Gold:Silver ratio (macro rotation signal) -----
+   Shows the current oz/oz ratio plus a 1-line rotation signal
+   (BUY SILVER / HOLD / TAKE PROFIT). The ratio is the number of
+   ounces of silver it takes to buy one ounce of gold. Historical
+   mean is 60-70; recent range 80-100. Used to time the planned
+   GOLDBEES -> SILVERBEES rotation. #}
+<section class="card mb-4" id="gsilver-section">
+  <div class="flex-between mb-2">
+    <h2 class="mb-0">Gold&nbsp;:&nbsp;Silver ratio</h2>
+    <span class="text-muted text-sm">
+      {% if gsilver.ratio is not none %}
+        as of <strong>{{ gsilver.asof_human }}</strong>
+        &middot; <a href="#" id="gsilverRefreshLink" class="text-sm">Refresh</a>
+      {% endif %}
+    </span>
+  </div>
+
+  <div class="gsilver-grid">
+    <div class="gsilver-ratio">
+      {% if gsilver.ratio is not none %}
+        <div class="gsilver-ratio-value"
+             style="color: {{ gsilver.signal_color }};">
+          {{ "%.1f"|format(gsilver.ratio) }}<span class="gsilver-ratio-unit">oz/oz</span>
+        </div>
+        <div class="gsilver-signal {{ gsilver.signal_class }}">
+          {{ gsilver.signal_label }}
+        </div>
+      {% else %}
+        <div class="gsilver-ratio-value text-muted">unavailable</div>
+        <div class="gsilver-signal text-muted">{{ gsilver.signal_label }}</div>
+      {% endif %}
+    </div>
+
+    <div class="gsilver-meta">
+      {% if gsilver.ratio is not none %}
+        <div class="gsilver-row">
+          <span class="text-muted">Gold</span>
+          <strong>${{ "{:,.2f}".format(gsilver.gold_usd_oz) }}</strong>
+          <span class="text-muted text-sm">/oz</span>
+        </div>
+        <div class="gsilver-row">
+          <span class="text-muted">Silver</span>
+          <strong>${{ "{:,.2f}".format(gsilver.silver_usd_oz) }}</strong>
+          <span class="text-muted text-sm">/oz</span>
+        </div>
+        <div class="gsilver-row">
+          <span class="text-muted">Source</span>
+          <span class="text-sm">{{ gsilver.source }}</span>
+        </div>
+      {% endif %}
+      <details class="gsilver-glossary mt-2">
+        <summary class="text-sm text-muted">What does this mean?</summary>
+        <p class="gsilver-historical text-sm text-muted mt-2">
+          {{ gsilver.historical }}
+        </p>
+        <p class="text-sm text-muted">
+          <strong>How to act on it:</strong> when the ratio is high, silver
+          is historically cheap vs gold and tends to catch up over 6-12
+          months. When the ratio is low, silver is historically rich and
+          you should take profit on any silver accumulation. The neutral
+          zone (60-90) is the long-run mean.
+        </p>
+      </details>
+    </div>
+  </div>
+</section>
+
 {# ----- MF holdings trend (Trendlyne) -----
    Shows the latest monthly MF holdings action for the user's 8 equity
    tickers. Click any row to expand the top buyer / seller. #}
@@ -472,6 +539,27 @@
 {# Signal the page loader that the snapshot is fully rendered. #}
 <script>
   if (window.__hidePageLoader) { window.__hidePageLoader(); }
+</script>
+
+{# Gold:Silver ratio refresh button. Reloads the page section with
+   the latest ratio from /api/gold_silver. Avoids a full page reload. #}
+<script>
+  (function () {
+    var link = document.getElementById('gsilverRefreshLink');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      link.textContent = 'Refreshing…';
+      fetch('/api/gold_silver?force=true', { cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (!data) { link.textContent = 'Refresh failed'; return; }
+          // Easiest: just reload the page to pick up server-rendered state.
+          window.location.reload();
+        })
+        .catch(function () { link.textContent = 'Refresh failed'; });
+    });
+  })();
 </script>
 
 {# Market-status badge updater. Polls /api/refresh/status every 60s

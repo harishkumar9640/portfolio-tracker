@@ -49,6 +49,7 @@ from webapp.data import (
     get_holdings_summary,
     get_flows_snapshot,
     get_concalls_snapshot,
+    get_gold_silver_ratio_snapshot,
     start_background_refresh,
 )
 from webapp.tax_dashboard import router as tax_router
@@ -64,6 +65,31 @@ app.include_router(tax_router)
 
 # Templates and static
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+
+
+def _ts_to_human(ts) -> str:
+    """Convert a unix timestamp (int/float) into a human-readable string
+    like 'in 23 hours' or '2 hours ago'. Used in the Tax & P&L upload banner."""
+    from datetime import datetime
+    try:
+        ts = float(ts)
+    except (TypeError, ValueError):
+        return ""
+    delta = ts - datetime.now().timestamp()
+    if abs(delta) < 60:
+        return "now"
+    hours = int(abs(delta) / 3600)
+    if hours == 0:
+        mins = int(abs(delta) / 60)
+        return f"in {mins} min" if delta > 0 else f"{mins} min ago"
+    if delta > 0:
+        return f"in {hours} hour{'s' if hours != 1 else ''}"
+    return f"{hours} hour{'s' if hours != 1 else ''} ago"
+
+
+templates.env.filters["ts_to_human"] = _ts_to_human
+
+
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 # Serve generated charts (PNG + HTML overlays) under /charts so the
 # history iframe can embed them. The chart files are written by
@@ -138,6 +164,7 @@ def portfolio_page(request: Request) -> HTMLResponse:
     snap = get_portfolio_snapshot()
     mf_holdings = get_mf_holdings_snapshot()
     shareholding = _get_shareholding_for_portfolio()
+    gsilver = get_gold_silver_ratio_snapshot()
     return templates.TemplateResponse(
         request,
         "portfolio.html",
@@ -147,8 +174,15 @@ def portfolio_page(request: Request) -> HTMLResponse:
             snapshot=snap,
             mf_holdings=mf_holdings,
             shareholding=shareholding,
+            gsilver=gsilver,
         ),
     )
+
+
+@app.get("/api/gold_silver")
+def api_gold_silver(force: bool = False) -> dict:
+    """JSON: gold:silver ratio snapshot. `?force=true` to bypass cache."""
+    return get_gold_silver_ratio_snapshot(force=force)
 
 
 @app.get("/flows", response_class=HTMLResponse)

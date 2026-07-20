@@ -97,6 +97,164 @@ def _current_cache_ttl() -> int:
     return 60 if _is_market_open() else 300
 
 
+# ---------- Gold:Silver ratio ----------
+# Cached separately from the main portfolio snapshot because yfinance is
+# slow and the ratio is only useful for the macro-rotation signal.
+_gold_silver_cache: dict = {"asof": None, "data": None, "ts": 0.0}
+_gold_silver_lock = _threading.Lock()
+_gold_silver_in_progress = False
+_gold_silver_in_progress_ts: float = 0.0
+
+# Module-level reference to the yfinance fetch function, so it can be
+# mocked in tests. Lazy-loaded on first use.
+_gsilver_fetcher = None
+
+# Signal thresholds (from pipeline/portfolio_monitor/concentration_check.py).
+# Historical mean: 60-70 oz/oz. Recent range: 80-100. >90 = buy silver,
+# <60 = take profit on silver.
+_GS_HIGH = 90.0
+_GS_LOW = 60.0
+
+
+def _gsilver_signal(ratio: float) -> tuple[str, str, str]:
+    """Return (signal_label, color_hex, css_class) for the gold:silver ratio.
+
+    The signal is what the user is meant to act on:
+      - ratio >= HIGH: "buy silver" (silver is historically cheap vs gold)
+      - ratio <= LOW:  "take profit on silver" (silver is historically rich)
+      - else:          "hold" (neutral zone)
+
+    Mirrors the logic in pipeline.portfolio_monitor.concentration_check.
+    """
+    if ratio >= _GS_HIGH:
+        return ("BUY SILVER \u2014 ratio is historically high", "#d62728", "is-negative")
+    if ratio <= _GS_LOW:
+        return ("TAKE PROFIT ON SILVER \u2014 ratio is historically low", "#ff7f0e", "is-negative")
+    return ("HOLD \u2014 ratio in neutral zone", "#2ca02c", "is-positive")
+
+
+def get_gold_silver_ratio_snapshot(force: bool = False) -> dict:
+    """Return today's gold:silver ratio with a rotation signal.
+
+    Cached in-process; default TTL is 60s during market hours, 300s otherwise
+    (same as the main portfolio snapshot). Calls into
+    pipeline.portfolio_monitor.concentration_check.get_gold_silver_ratio().
+
+    Returns a dict in the shape:
+        {
+            "ratio":         float,        # oz/oz (e.g. 88.5)
+            "gold_usd_oz":   float,        # USD/oz for gold
+            "silver_usd_oz": float,        # USD/oz for silver
+            "signal":        str,          # short label e.g. "BUY SILVER"
+            "signal_label":  str,          # long label with reason
+            "signal_color":  str,          # hex color
+            "signal_class":  str,          # "is-positive" or "is-negative"
+            "historical":    str,          # human-readable historical context
+            "asof":          str,          # ISO timestamp
+            "asof_human":    str,          # "2 min ago"
+            "source":        str,          # "yfinance" or "unavailable"
+        }
+    """
+    import time
+    global _gold_silver_in_progress, _gold_silver_in_progress_ts, _gold_silver_cache
+    now = time.time()
+    ttl = _current_cache_ttl()
+    cache_age = now - _gold_silver_cache["ts"] if _gold_silver_cache["ts"] else 1e9
+    if not force and _gold_silver_cache["data"] is not None and cache_age < ttl:
+        return _gold_silver_cache["data"]
+
+    with _gold_silver_lock:
+        # Double-checked locking: another thread may have just refreshed.
+        now = time.time()
+        cache_age = now - _gold_silver_cache["ts"] if _gold_silver_cache["ts"] else 1e9
+        if not force and _gold_silver_cache["data"] is not None and cache_age < ttl:
+            return _gold_silver_cache["data"]
+        if _gold_silver_in_progress and (now - _gold_silver_in_progress_ts) < 30:
+            # Another thread is fetching; return whatever we have.
+            return _gold_silver_cache["data"] or _empty_gsilver_snapshot()
+        _gold_silver_in_progress = True
+        _gold_silver_in_progress_ts = now
+
+    try:
+        global _gsilver_fetcher
+        if _gsilver_fetcher is None:
+            from pipeline.portfolio_monitor.concentration_check import (
+                get_gold_silver_ratio as _real_fetcher,
+            )
+            _gsilver_fetcher = _real_fetcher
+        raw = _gsilver_fetcher()
+        if raw is None:
+            snap = _empty_gsilver_snapshot()
+        else:
+            ratio = raw["ratio"]
+            signal, color, cls = _gsilver_signal(ratio)
+            snap = {
+                "ratio": ratio,
+                "gold_usd_oz": raw["gold_usd_oz"],
+                "silver_usd_oz": raw["silver_usd_oz"],
+                "signal": signal.split(" \u2014")[0],   # short label
+                "signal_label": signal,                  # long label
+                "signal_color": color,
+                "signal_class": cls,
+                "historical": _historical_context(ratio),
+                "asof": raw.get("asof", datetime.now().isoformat(timespec="seconds")),
+                "asof_human": _format_human_time(
+                    raw.get("asof", datetime.now().isoformat(timespec="seconds"))
+                ),
+                "source": "yfinance",
+            }
+        _gold_silver_cache = {
+            "asof": snap["asof"],
+            "data": snap,
+            "ts": time.time(),
+        }
+        return snap
+    except Exception as e:
+        log.warning("gold:silver ratio fetch failed: %s", e)
+        return _empty_gsilver_snapshot()
+    finally:
+        with _gold_silver_lock:
+            _gold_silver_in_progress = False
+
+
+def _empty_gsilver_snapshot() -> dict:
+    """Placeholder when the yfinance fetch fails."""
+    return {
+        "ratio": None,
+        "gold_usd_oz": None,
+        "silver_usd_oz": None,
+        "signal": "unavailable",
+        "signal_label": "Ratio unavailable \u2014 yfinance fetch failed",
+        "signal_color": "#888",
+        "signal_class": "text-muted",
+        "historical": ("Historical mean is 60-70 oz/oz. The ratio is the number "
+                      "of ounces of silver it takes to buy one ounce of gold."),
+        "asof": datetime.now().isoformat(timespec="seconds"),
+        "asof_human": "—",
+        "source": "unavailable",
+    }
+
+
+def _historical_context(ratio: float) -> str:
+    """Return a one-line historical-context string for the given ratio."""
+    if ratio >= 100:
+        return ("Historically very high (>100). Silver is very cheap vs gold. "
+                "Common during risk-off / recession fears (gold rallies, "
+                "silver lags).")
+    if ratio >= _GS_HIGH:
+        return ("Historically high. Silver is cheap relative to gold. "
+                "Past episodes at this level have favoured rotating "
+                "GOLDBEES \u2192 SILVERBEES over a 6-12 month horizon.")
+    if ratio >= 70:
+        return ("Above the long-run mean of ~60-70. Neutral-to-cautious "
+                "for silver. Standard allocation rules apply.")
+    if ratio >= _GS_LOW:
+        return ("Below the long-run mean. Silver is rich vs gold. "
+                "Take profit on any recent silver accumulation.")
+    return ("Historically very low (<60). Silver is expensive vs gold. "
+            "Last seen in 2010-2011 and briefly in early 2021.")
+
+
 _portfolio_lock = _threading.Lock()
 _portfolio_in_progress = False
 _portfolio_in_progress_ts: float = 0.0
@@ -407,11 +565,15 @@ def get_flows_snapshot() -> dict:
 
 def _format_human_time(iso: str) -> str:
     """Render an ISO timestamp as 'just now' / '5m ago' / '2h ago'."""
+    from datetime import datetime as _dt
     try:
-        d = datetime.fromisoformat(iso)
+        d = _dt.fromisoformat(iso)
     except (ValueError, TypeError):
         return iso or "—"
-    delta = datetime.now() - d
+    # Strip timezone info so we can subtract from naive datetime.now().
+    if d.tzinfo is not None:
+        d = d.replace(tzinfo=None)
+    delta = _dt.now() - d
     sec = int(delta.total_seconds())
     if sec < 10:
         return "just now"

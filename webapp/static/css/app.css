@@ -1434,3 +1434,45 @@ body.modal-open { overflow: hidden; }
   overflow-x: auto;
 }
 .flex-wrap { flex-wrap: wrap; }
+
+/* Gold:Silver ratio card */
+.gsilver-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 2fr;
+  gap: var(--s-4, 1.5rem);
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .gsilver-grid { grid-template-columns: 1fr; }
+}
+.gsilver-ratio-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.gsilver-ratio-unit {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--c-text-muted, #888);
+  margin-left: 0.3rem;
+}
+.gsilver-signal {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+.gsilver-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.gsilver-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+.gsilver-row > strong { font-variant-numeric: tabular-nums; }
+.gsilver-glossary summary { cursor: pointer; }
+.gsilver-historical { line-height: 1.4; }
