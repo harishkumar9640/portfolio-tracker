@@ -15,6 +15,16 @@ It also runs a small fleet of background alerts: **earnings calendar**,
 The whole thing ships as a single FastAPI webapp, a folder of CLI
 pipeline scripts, and a SQLite database for time-series data.
 
+In addition to the dashboard, the project has three
+**ad-hoc CLI modules** for one-off analysis:
+- **Cohorts** — group holdings by market-cap tier and compare CAGR
+  vs Nifty 50 / Nifty Next 50 / Nifty Midcap 150 / Nifty Smallcap 250
+- **XIRR** — money-weighted return on your capital (more accurate than
+  CAGR for uneven buy timing)
+- **Tax P&L upload** — analyse anyone else's Tax P&L file
+  (Angel One xlsx, Zerodha CSV, or any tabular file with a
+  user-supplied column mapping). Ephemeral, 24h TTL.
+
 ---
 
 ## Table of contents
@@ -22,15 +32,16 @@ pipeline scripts, and a SQLite database for time-series data.
 1. [What you get](#what-you-get)
 2. [Quick start](#quick-start)
 3. [Daily usage](#daily-usage)
-4. [The 7 pages](#the-7-pages)
+4. [The pages](#the-pages)
 5. [Project layout](#project-layout)
 6. [Configuration](#configuration)
 7. [Running automatically every day](#running-automatically-every-day)
 8. [Tax & P&L workflow](#tax--pl-workflow)
-9. [Tests](#tests)
-10. [Limitations & known issues](#limitations--known-issues)
-11. [Security — what's safe to publish](#security--whats-safe-to-publish)
-12. [Troubleshooting](#troubleshooting)
+9. [Cohorts, XIRR & ad-hoc analysis](#cohorts-xirr--ad-hoc-analysis)
+10. [Tests](#tests)
+11. [Limitations & known issues](#limitations--known-issues)
+12. [Security — what's safe to publish](#security--whats-safe-to-publish)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -38,10 +49,14 @@ pipeline scripts, and a SQLite database for time-series data.
 
 | Surface | What it does |
 |---|---|
-| **Web dashboard** | 7 pages: Portfolio, Flows, Con-calls, Tax & P&L, Fair Value, History, Settings. Mobile-friendly, dark-mode aware, real-time data with manual refresh. |
+| **Web dashboard** | 9 pages: Dashboard, Portfolio, Flows, Con-calls, Tax & P&L, Fair Value, History, CAGR, Settings. Mobile-friendly, dark-mode aware, real-time data with manual refresh. |
 | **Background alerts** | News digest (Telegram at 8:55 AM), earnings/board meetings, con-call summaries, FII/DII flows + bulk/block deals, MF-holdings changes, shareholding-pattern changes, portfolio-impact news. |
-| **Tax P&L parser** | Reads your Angel One "Tax PNL" xlsx files and renders a multi-year P&L dashboard with realised + unrealised gains, charges, and a per-trade verdict. |
+| **Tax P&L parser** | Reads your Angel One "Tax PNL" xlsx files and renders a multi-year P&L dashboard with realised + unrealised gains, charges, and a per-trade verdict. Also accepts ephemeral uploads of anyone else's Tax P&L (Angel One, Zerodha, or any tabular file with column mapping). |
 | **Fair-value checker** | Graham number + DCF + PE-relative value for any NSE/BSE stock, with screener.in fundamentals. |
+| **Cohorts / XIRR** | Per-tier CAGR analysis, Nifty-benchmark alpha, money-weighted XIRR. CLI + web. |
+| **Gold:Silver ratio** | Live oz/oz ratio with rotation signal (BUY SILVER / HOLD / TAKE PROFIT) on the Portfolio page. |
+| **Portfolio monitor** | Weekly concentration + 100-day review for the BALRAMCHIN/KNRCON/UNOMINDA midcap bets. |
+| **Project truth** | Single source of truth for all positions (equity + MF + SGB + watchlist) shared across modules. |
 
 ---
 
@@ -118,28 +133,60 @@ python -m webapp.server --host 0.0.0.0 --port 8000
 Refresh button on the Portfolio page rebuilds the snapshot on demand.
 
 For most users, the workflow is:
-1. Open the dashboard once a day.
+1. Open the dashboard once a day. The root URL redirects to `/dashboard`
+   (all-charts overview).
 2. Glance at the **Portfolio** page (your total P&L + day change + world
-   indices for context).
+   indices + Gold:Silver ratio + MF holdings + shareholding + SGBs).
 3. Skim the **Flows** page (what smart money did today).
 4. Read any **Telegram alerts** that arrived (8:55 AM news digest;
    mid-day portfolio-impact stories; 4:30 PM MF-holdings diff email).
 
+For deeper analysis, the **CAGR** page shows per-stock time-weighted
+returns vs Nifty benchmarks, and the **Tax & P&L** page has the
+per-trade verdicts. The CLI tools (`pipeline.cagr`, `pipeline.cohorts`,
+`pipeline.xirr`) cover the same data plus richer diagnostics.
+
 ---
 
-## The 7 pages
+## The pages
+
+### `/dashboard` — all-charts overview (default landing)
+
+Single-page summary built from a fresh snapshot:
+- **KPI strip** (4 tiles): Total Portfolio, My Equity, XIRR (ex-ETFs),
+  Total P&L
+- **Day change bar chart** — your portfolio vs 8 world indices
+- **3 per-tier cards** — Large-cap / Mid-cap / Small-cap CAGR + alpha
+- **Combined portfolio vs Nifty 50** chart
+- **Per-tier charts** (3 small) and today's intraday sparkline
+
+Built on the same data the Portfolio page uses; cold cache takes ~18s
+on first load, then sub-second.
 
 ### `/portfolio` — the main dashboard
 
 Four KPI tiles (Total / Equity / Mutual Funds / SGBs) + a horizontal
-bar chart of day change vs 8 world indices + the MF Holdings Trend
-section (which mutual funds bought/sold your stocks) + the Shareholding
-Pattern table (promoter / FII / DII / banks / insurance / public for
+bar chart of day change vs 8 world indices + the **Gold:Silver ratio**
+card (live oz/oz + rotation signal) + the **MF Holdings Trend**
+section (which mutual funds bought/sold your stocks) + the **Shareholding
+Pattern** table (promoter / FII / DII / banks / insurance / public for
 each of your 8 tickers) + the SGB breakdown (per-bond price & day %).
 
 **Refresh button** rebuilds the snapshot from scratch (5–10s on a cold
 cache). The button shows a live "Refreshing… Ns" countdown while
 building.
+
+### `/cagr` — per-stock CAGR vs Nifty benchmarks
+
+- **Top KPI grid**: 6 tiles including XIRR (ex-ETFs), XIRR (incl. ETFs),
+  XIRR vs TWR alpha, Total invested, Total current, XIRR definition.
+- **Combined portfolio vs Nifty 50** chart at the top.
+- **Per-stock CAGR table** with each stock's time-weighted return,
+  alpha vs Nifty 50, and per-tier cohort grouping.
+- **Why XIRR ≠ TWR** callout that explains the difference in plain
+  language.
+
+JSON endpoint: `GET /api/xirr` (with `?include_etfs=true`).
 
 ### `/flows` — FII/DII + bulk/block deals
 
@@ -176,8 +223,12 @@ A combined view of:
 - A **per-trade verdict** (GREAT / GOOD / OK / BAD / POOR / TERRIBLE)
   for every closed equity trade in the imported xlsx files.
 
-**Driven by Angel One "Tax PNL" xlsx files** — see
-[Tax & P&L workflow](#tax--pl-workflow) below.
+**Also accepts ephemeral uploads of anyone else's Tax P&L** via the
+📤 Upload button in the header. See [Tax & P&L workflow](#tax--pl-workflow).
+
+**Driven by your own Angel One "Tax PNL" xlsx files** in
+`data/tax_pnl/` (auto-detected). The ephemeral upload route is in
+addition, not a replacement.
 
 ### `/fairvalue` — fair-value checker
 
@@ -213,18 +264,32 @@ History page just embeds the HTML.
 ```
 portfolio-tracker/
 ├── README.md                    ← you are here
+├── MEMORY.md                    ← session-to-session AI handoff (gitignored)
+├── LATENCY_AUDIT.md             ← data-pipeline latency notes
+├── HARDWARE_RANKING.md          ← VPS / UPS / 4G-failover recommendations
 ├── requirements.txt             ← Python dependencies
 ├── pyproject.toml               ← tool config (pytest etc.)
 ├── .env.example                 ← safe template; copy to .env
 ├── .gitignore
-├── MEMORY.md                    ← session-to-session AI handoff
 │
 ├── webapp/                      ← FastAPI dashboard (UI + JSON API)
 │   ├── server.py                ← all routes + startup tasks
-│   ├── data.py                  ← snapshot builders + caches
-│   ├── tax_dashboard.py         ← Tax & P&L routes + parser
-│   ├── templates/               ← Jinja2 HTML (7 pages)
+│   ├── data.py                  ← snapshot builders + caches (incl. G/S ratio)
+│   ├── tax_dashboard.py         ← Tax & P&L routes + ephemeral upload
+│   ├── cache.py                 ← TTL cache helpers
+│   ├── templates/               ← Jinja2 HTML (9 pages)
+│   │   ├── dashboard.html       ← all-charts overview
+│   │   ├── portfolio.html       ← main P&L + holdings + G/S ratio
+│   │   ├── cagr.html            ← per-stock CAGR + XIRR
+│   │   ├── flows.html
+│   │   ├── concalls.html
+│   │   ├── tax.html
+│   │   ├── fairvalue.html
+│   │   ├── history.html
+│   │   └── settings.html
 │   └── static/                  ← CSS + JS
+│       ├── css/app.css
+│       └── js/                  ← tax_pie.js, tax.js (upload modal), etc.
 │
 ├── pipeline/                    ← all CLI data pipelines
 │   ├── angel_client.py          ← Angel One SmartAPI wrapper
@@ -246,8 +311,40 @@ portfolio-tracker/
 │   ├── intraday.py              ← today's intraday OHLC
 │   ├── history_db.py            ← SQLite schema + migrations
 │   ├── scheduler.py             ← unified daily scheduler (IST)
+│   ├── scheduler_utils.py       ← shared scheduler helpers
 │   ├── parallel.py              ← ThreadPool helpers
-│   └── logging_setup.py         ← daily-rotating log files
+│   ├── logging_setup.py         ← daily-rotating log files
+│   ├── cagr.py                  ← per-stock CAGR + XIRR (CLI)
+│   ├── cohorts.py               ← per-tier cohort analysis (CLI)
+│   ├── cohort_charts.py         ← cohort plot rendering
+│   ├── xirr.py                  ← XIRR solver + cash-flow builder
+│   ├── ledger.py                ← ledger-backed portfolio history
+│   ├── marketcap.py             ← market-cap classification
+│   ├── index_data.py            ← Nifty 50 / Midcap 150 / Smallcap 250 data
+│   ├── purge_ircon.py           ← one-off IRCON cleanup helper
+│   ├── project_start.py         ← bootstrap entry point
+│   │
+│   ├── tax_pnl/                 ← broker-agnostic Tax P&L parser
+│   │   ├── __init__.py          ← data model + parse_files()
+│   │   ├── report.py            ← template-based markdown report
+│   │   ├── sessions.py          ← ephemeral session storage
+│   │   └── adapters/
+│   │       ├── angel_one.py     ← fuzzy Angel One xlsx adapter
+│   │       ├── zerodha.py       ← Zerodha Console CSV adapter
+│   │       └── generic.py       ← column-mapping adapter
+│   │
+│   ├── portfolio_truth/         ← single source of truth for positions
+│   │   ├── __init__.py          ← data model + load/save
+│   │   ├── update.py            ← CLI updater
+│   │   └── bootstrap.py         ← project-start hook
+│   │
+│   └── portfolio_monitor/       ← weekly concentration + 100-day reviews
+│       ├── __init__.py
+│       ├── holdings.py          ← equity (broker → yfinance → static)
+│       ├── emailer.py           ← SMTP helper
+│       ├── calendar.py          ← 100-day review for midcaps
+│       ├── concentration_check.py
+│       └── rebalance_diagnostic.py
 │
 ├── tests/                       ← pytest suite (~980 tests)
 │
@@ -275,10 +372,15 @@ portfolio-tracker/
 │   │   ├── shareholding/        ← log.json + prev.json
 │   │   ├── portfolio_impact/    ← log.json + seen.json
 │   │   └── scheduler.log
+│   ├── tax_pnl_uploads/         ← ephemeral upload sessions (24h TTL)
+│   │   └── <session-uuid>/
+│   │       ├── meta.json
+│   │       ├── <uploaded files>
+│   │       └── parsed.json
 │   ├── charts/                  ← generated PNGs + HTML
 │   ├── logs/                    ← daily app logs (one folder per day)
 │   ├── runs/                    ← ad-hoc run outputs
-│   ├── scripts/                 ← pre-publish-check.sh
+│   ├── scripts/                 ← pre-publish-check.sh, fetch_index_history.py
 │   └── tax_pnl/                 ← drop your Angel One "Tax PNL" xlsx here
 │
 ├── mfs.json                     ← your mutual fund holdings (gitignored)
@@ -308,10 +410,12 @@ portfolio-tracker/
 | `MF_ALERT_SMTP_USER` | `pipeline.mf_holdings_alert` | No |
 | `MF_ALERT_SMTP_PASSWORD` | `pipeline.mf_holdings_alert` | No |
 | `MF_ALERT_SMTP_TO` | `pipeline.mf_holdings_alert` | No |
+| `PM_ALERT_SMTP_*` | `pipeline.portfolio_monitor` | No (overrides MF_*) |
 | `NEWS_DISABLED=1` | server | opt-out of news scheduler |
 | `MF_ALERT_DISABLED=1` | server | opt-out of MF alert scheduler |
 | `SHP_ALERT_DISABLED=1` | server | opt-out of shareholding scheduler |
 | `PORTFOLIO_IMPACT_DISABLED=1` | server | opt-out of impact scanner |
+| `PM_OVERDUE_TELEGRAM=1` | `pipeline.scheduler` | opt-in overdue-task Telegram alerts |
 | `NEWS_DRY_RUN=1` | `pipeline.news_alert` | log instead of send |
 | `PT_LOG_LEVEL` | `pipeline.logging_setup` | DEBUG / INFO / WARNING / ERROR |
 
@@ -330,6 +434,7 @@ The webapp starts the following schedulers as daemon threads when it boots:
 
 | Time (IST) | Job | Output |
 |---|---|---|
+| 03:00 AM | sweep expired Tax P&L upload sessions | local cleanup |
 | 08:55 AM | news digest | Telegram message |
 | 08:55 AM | earnings calendar scan | local cache |
 | 11:00 AM | MF holdings diff | email if changes |
@@ -339,9 +444,16 @@ The webapp starts the following schedulers as daemon threads when it boots:
 | 19:00 PM | con-call filings | local cache + (optional) Telegram |
 | every 30 min (market hours) | portfolio-impact news scan | Telegram alert per story |
 
-The **missed-window guard** in `news_alert._scheduler_loop` means that
-if your Mac was asleep past 8:55 AM, the next 8:55 AM digest will be
-**skipped** (not re-sent at wake-up) to avoid duplicates.
+**Startup catch-up** (on webapp boot) looks back 12h and fires any
+missed tasks within that window. The 5-minute per-task **missed-window
+guard** (`RUN_GRACE_SECS` in `pipeline.scheduler`) skips tasks older
+than 5 min past their target time to avoid sending stale alerts.
+
+The watchdog logs overdue tasks every 15 min to the orchestrator
+log. Telegram pings for overdue tasks are OFF by default (set
+`PM_OVERDUE_TELEGRAM=1` in `.env` to enable) so a multi-day Mac
+sleep doesn't spam you with "task due 18h ago" alerts that you
+already know about.
 
 For a more production-grade setup, run the unified scheduler in its
 own process:
@@ -354,6 +466,8 @@ python -m pipeline.scheduler --show-schedule   # print the schedule
 ---
 
 ## Tax & P&L workflow
+
+### Your own files (the default)
 
 1. Open Angel One → **Reports** → **Tax P&L** → download the
    `Tax PNL <FY>.xlsx` for the financial year you just closed.
@@ -368,6 +482,99 @@ The parser auto-detects CDSL/NSDL `Tax PNL` exports, splits delivery
 vs intraday vs F&O, and rolls up charges (STT, stamp duty, brokerage,
 GST) into a single P&L summary.
 
+### Someone else's file (ephemeral upload)
+
+The **📤 Upload someone's Tax P&L** button on the Tax & P&L page lets
+you analyse any Angel One or Zerodha (or other) Tax P&L export
+without saving it permanently. Sessions are **24h TTL** and live in
+`data/tax_pnl_uploads/<uuid>/` (separate from your own data so they
+can never pollute your pipeline).
+
+- **Angel One**: drop in `Tax PNL <FY>.xlsx` — auto-detected
+- **Zerodha**: drop in `Console P&L <FY>.csv` — auto-detected
+- **Any other tabular file**: select files, click "My file isn't
+  Angel One or Zerodha", map the columns, and submit. The mapping
+  is sent as a JSON form field.
+
+Once uploaded, the Tax & P&L dashboard re-renders against the
+upload with a banner showing the session ID and expiry. A "📋 Markdown
+report" button renders a template-based report (headline, year-by-year
+breakdown, verdict distribution, 3-6 plain-English insights) — no LLM,
+fully deterministic, copy-pasteable.
+
+API endpoints (also available for programmatic access):
+- `GET  /api/tax/upload/brokers` — supported brokers
+- `POST /api/tax/upload` — create session + upload files
+- `POST /api/tax/upload/{id}/mapping` — set column mapping
+- `GET  /api/tax/upload/{id}/report` — markdown report
+- `DELETE /api/tax/upload/{id}` — cleanup
+
+Limits: 10 files per session, 20 MB per file, xlsx/xlsm/csv only,
+xlsx magic bytes enforced, filenames sanitised against path traversal.
+
+A daily 03:00 IST sweep (`pipeline.scheduler.tax_pnl.sweep_sessions`)
+removes expired sessions.
+
+---
+
+## Cohorts, XIRR & ad-hoc analysis
+
+### Cohorts (per-market-cap-tier CAGR)
+
+Groups your holdings into Large-cap / Mid-cap / Small-cap tiers and
+compares each tier's CAGR vs the appropriate Nifty benchmark:
+
+```bash
+python -m pipeline.cohorts                 # show tier breakdown + alpha
+python -m pipeline.cohort_charts          # render combined vs Nifty 50 chart
+```
+
+Web UI: see the **/dashboard** page (3 per-tier cards + combined chart)
+and the **/cagr** page (per-stock CAGR table).
+
+### XIRR (money-weighted return)
+
+CAGR treats all your capital as if it were invested from day 1, which
+overstates or understates your actual return when buy timing is uneven.
+XIRR accounts for when each rupee actually went in:
+
+```bash
+python -m pipeline.xirr                    # print XIRR (ex-ETFs)
+python -m pipeline.xirr --include-etfs     # include GOLDBEES/SILVERBEES/etc.
+```
+
+Web UI: KPI tile at the top of **/cagr** with both XIRR numbers and
+the "Why XIRR ≠ TWR" callout. JSON endpoint: `GET /api/xirr`.
+
+### Project truth
+
+`pipeline.portfolio_truth` is the **single source of truth** for all
+your positions (equity + MF + SGB + watchlist). All other modules
+(portfolio snapshot, monitor, cohorts, XIRR) read from this file
+rather than broker responses directly. This guarantees consistency
+across modules and gives the portfolio-monitor module a stable
+baseline to detect drift.
+
+```bash
+python -m pipeline.project_start           # bootstrap on launch
+python -m pipeline.portfolio_truth.update  # refresh from broker
+```
+
+The truth file lives at `data/portfolio_truth.json` (gitignored).
+
+### Portfolio monitor (weekly checks)
+
+`pipeline.portfolio_monitor` runs weekly concentration + drift
+diagnostics and a 100-day review for the BALRAMCHIN / KNRCON / UNOMINDA
+midcap bets:
+
+```bash
+python -m pipeline.portfolio_monitor.run_all   # full check, all jobs
+```
+
+Email alerts use the same SMTP creds as the MF-holdings alerts
+(`MF_ALERT_SMTP_*`, with `PM_ALERT_SMTP_*` as an override).
+
 ---
 
 ## Tests
@@ -376,7 +583,7 @@ GST) into a single P&L summary.
 .venv/bin/python -m pytest tests/ -q
 ```
 
-The suite is ~980 tests, runs in ~5 min, all offline (uses local
+The suite is ~1,000 tests, runs in ~5 min, all offline (uses local
 fixtures for Angel One, mfapi.in, screener.in, NSE).
 
 The browser E2E tests (`test_fairvalue_e2e_browser.py`,
@@ -386,6 +593,15 @@ The browser E2E tests (`test_fairvalue_e2e_browser.py`,
 .venv/bin/python -m playwright install chromium
 .venv/bin/python -m pytest tests/test_fairvalue_e2e_browser.py
 ```
+
+**Recent test coverage highlights:**
+- `tests/test_tax_pnl_upload.py` (28 tests) — broker adapters, ephemeral
+  sessions, upload validation, Generic column mapping
+- `tests/test_gold_silver.py` (13 tests) — signal logic, yfinance
+  mock, cache behaviour
+- `tests/test_xirr.py`, `tests/test_cagr.py`, `tests/test_cohorts.py`,
+  `tests/test_cohort_charts.py` — return analysis
+- `tests/test_portfolio_truth.py` — single-source-of-truth file
 
 ---
 
@@ -405,6 +621,24 @@ The browser E2E tests (`test_fairvalue_e2e_browser.py`,
   Telegram messages. Adjust `interval_minutes` in `webapp.server.main()`.
 - **`bulk_block_history.json` grows unbounded.** Trim manually if it
   gets above 5 MB.
+- **Multi-day Mac sleep loses scheduled alerts.** The orchestrator's
+  startup catch-up looks back only 12h, and the per-task missed-window
+  guard is 5 min. Tasks older than that (e.g. last Saturday's 8:55 AM
+  news digest if you wake up this Saturday) are dropped. To catch up
+  manually after a long sleep, force-run the pipeline:
+  ```bash
+  python -m pipeline.news_alert --force
+  python -m pipeline.flows_alert --force
+  python -m pipeline.concalls --once
+  python -m pipeline.earnings_alert --once
+  ```
+- **Tax P&L ephemeral uploads are limited to 10 files × 20 MB per
+  session, 24h TTL.** xlsx/xlsm/csv only, with magic-byte validation
+  and filename sanitisation. Sessions live in
+  `data/tax_pnl_uploads/` and are auto-swept at 03:00 IST.
+- **Zerodha adapter is built from documented column names** (not a
+  real sample file). If your Console P&L export has different
+  columns, use the Generic column-mapping upload instead.
 
 ---
 
@@ -437,6 +671,11 @@ before any commit.
 | `Tax & P&L page shows old data` | Click **Refresh tax** (forces a 4-min cache bypass). |
 | `Port 8000 already in use` | `python -m webapp.server --port 8123`. |
 | Mac went to sleep and the news digest arrived twice | Already fixed in `news_alert._scheduler_loop` (missed-window guard). Update to latest. |
+| Mac went to sleep for a week and no alerts fired | Expected — the 12h catch-up + 5-min grace window deliberately skip stale alerts to avoid spamming. Force-run the pipelines manually. |
+| Gold:Silver ratio card shows "unavailable" | yfinance is down. Card will recover on the next page load (60s TTL). |
+| Tax P&L upload returns "no files accepted" | Check the file extension (xlsx/xlsm/csv only), size (≤20 MB), and that xlsx files start with the PK\x03\x04 magic bytes. |
+| `/cagr` page returns 500 | Run `python -m pipeline.cagr` from the CLI to see the traceback. Common cause: missing index history data (`data/scripts/fetch_index_history.py`). |
+| Chart on /dashboard is stale | Append `?v=<unix_timestamp>` to chart URLs (already done in template). Or hard-refresh the browser. |
 
 ---
 
