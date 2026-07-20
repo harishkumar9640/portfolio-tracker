@@ -1,0 +1,584 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="flex-between mb-4">
+  <div>
+    <h1 class="mb-0">Equity CAGR vs Indices (India)</h1>
+    <p class="text-muted mb-0">
+      Three cohorts (large-cap / mid-cap / small-cap) with ETFs excluded, each
+      compared to its respective NSE benchmark:
+      <strong>large-cap vs Nifty 50</strong>,
+      <strong>mid-cap vs Nifty Midcap 150</strong>,
+      <strong>small-cap vs Nifty Smallcap 250</strong>.
+      The <strong>large-cap</strong> cohort uses only long-term holdings
+      (held &gt; 1 year per the Indian IT Act, sourced from your P&amp;L
+      xlsx + currently held positions). The <strong>mid-cap</strong> and
+      <strong>small-cap</strong> cohorts include all history — both currently
+      held positions AND realized P&amp;L from past sales.
+    </p>
+    <p class="text-muted mb-0 mt-1">
+      <span class="meta-pill">As of {{ cagr.asof }}</span>
+      <span class="meta-pill">LTP source: {{ cagr.ltp_source }}</span>
+      <span class="meta-pill">Nifty50: {{ "%.2f"|format(cagr.nifty_now) }} ({{ cagr.nifty_last_date }})</span>
+      <a class="meta-link" href="/api/cagr?force=true">Force refresh</a>
+    </p>
+  </div>
+</header>
+
+{# ---- XIRR (money-weighted return) ---- #}
+{% set xirr_pct = (xirr.xirr_pct if xirr and xirr.xirr_pct is not none else 0) %}
+{% set xirr_etfs_pct = (xirr_with_etfs.xirr_pct if xirr_with_etfs and xirr_with_etfs.xirr_pct is not none else 0) %}
+{% set twr_pct = (cagr.aggregate.stock_cagr_pct if cagr.aggregate.stock_cagr_pct is not none else 0) %}
+{% if xirr and xirr.xirr_pct is not none %}
+<section class="grid grid-3 grid-6 mb-4">
+  <div class="kpi">
+    <div class="kpi-label">XIRR (equity, ex-ETFs)</div>
+    <div class="kpi-value {% if xirr_pct >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ "%+.2f"|format(xirr_pct) }}%
+    </div>
+    <div class="kpi-sub">
+      money-weighted &middot; {{ xirr.n_lots }} lots
+      {% if xirr.earliest_date %}since {{ xirr.earliest_date[:7] }}{% endif %}
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">XIRR (equity + ETFs)</div>
+    <div class="kpi-value {% if xirr_etfs_pct >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ "%+.2f"|format(xirr_etfs_pct) }}%
+    </div>
+    <div class="kpi-sub">
+      money-weighted &middot; {{ xirr_with_etfs.n_lots }} lots
+      {% if xirr_with_etfs.earliest_date %}since {{ xirr_with_etfs.earliest_date[:7] }}{% endif %}
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">XIRR vs TWR (alpha)</div>
+    <div class="kpi-value {% if (xirr_pct - twr_pct) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ "%+.2f"|format(xirr_pct - twr_pct) }}%
+    </div>
+    <div class="kpi-sub">
+      XIRR {{ "%+.2f"|format(xirr_pct) }}% &middot; TWR {{ "%+.2f"|format(twr_pct) }}%
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total invested</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(xirr.total_invested) }}</div>
+    <div class="kpi-sub">{{ xirr.n_open_lots }} open &middot; {{ xirr.n_closed_lots }} closed</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total current</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(xirr.total_realized + xirr.open_value) }}</div>
+    <div class="kpi-sub">
+      realized ₹{{ "{:,.0f}".format(xirr.total_realized) }} + open ₹{{ "{:,.0f}".format(xirr.open_value) }}
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">XIRR definition</div>
+    <div class="kpi-value" style="font-size: 0.85rem; font-family: monospace; line-height: 1.2;">
+      NPV(r) = 0
+    </div>
+    <div class="kpi-sub">
+      <abbr title="The discount rate r that makes the Net Present Value of all your cash flows (buys as negative, sells as positive, open positions at today's LTP) equal to zero. Accounts for WHEN you put money in.">money-weighted</abbr> &middot; <a href="/api/xirr">JSON</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if xirr %}
+<div class="callout mb-4" role="status">
+  <strong>Why XIRR ≠ TWR:</strong>
+  Your TWR is {{ "%+.2f"|format(twr_pct) }}% but your XIRR is {{ "%+.2f"|format(xirr_pct) }}%.
+  XIRR is more negative because you put most of your capital in during
+  early 2024 (when you had big losers like URJA -97%, IRFC -72%, HDFCBANK
+  ~ -10%). Money-weighted returns penalize you for having more money at
+  risk during the losing periods. Conversely, a TWR-only view can
+  overstate performance if you put most of your money in during a
+  bull run and only a small amount during a crash.
+</div>
+{% endif %}
+
+{% if cagr.aggregate.missing_buy_dates %}
+<div class="callout callout-warn mb-4" role="status">
+  <strong>Missing buy dates (no CAGR computed):</strong>
+  {{ cagr.aggregate.missing_buy_dates | join(', ') }}.
+</div>
+{% endif %}
+
+<section class="grid grid-3 grid-6 mb-4">
+  <div class="kpi">
+    <div class="kpi-label">Invested (all open)</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(cagr.aggregate.all_total_invested) }}</div>
+    <div class="kpi-sub">matches your broker</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Current value (all open)</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(cagr.aggregate.all_total_cur_value) }}</div>
+    <div class="kpi-sub">P&amp;L: <span class="{% if (cagr.aggregate.all_total_pnl or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">₹{{ "{:,.0f}".format(cagr.aggregate.all_total_pnl) }} ({{ "%+.2f"|format(cagr.aggregate.all_total_pnl_pct) }}%)</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Portfolio CAGR</div>
+    <div class="kpi-value {% if (cagr.aggregate.stock_cagr_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ "%+.2f"|format(cagr.aggregate.stock_cagr_pct or 0) }}%
+    </div>
+    <div class="kpi-sub">reliable lots only ({{ "%.2f"|format(cagr.aggregate.weighted_years or 0) }}y avg)</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Nifty50 (from first buy)</div>
+    <div class="kpi-value {% if (cagr.aggregate.nifty_cagr_from_first_buy_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ "%+.2f"|format(cagr.aggregate.nifty_cagr_from_first_buy_pct or 0) }}%
+    </div>
+    <div class="kpi-sub">since {{ cagr.aggregate.first_buy_date or "—" }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Alpha (apples-to-apples)</div>
+    <div class="kpi-value {% if (cagr.aggregate.alpha_from_first_buy_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ "%+.2f"|format(cagr.aggregate.alpha_from_first_buy_pct or 0) }}%
+    </div>
+    <div class="kpi-sub">portfolio − Nifty50 from {{ cagr.aggregate.first_buy_date or "—" }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Reliable invested</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(cagr.aggregate.total_invested) }}</div>
+    <div class="kpi-sub">≥ 30d held; used for CAGR</div>
+  </div>
+</section>
+
+{% if cagr.aggregate.unreliable_buy_dates %}
+<div class="callout callout-warn mb-4" role="status">
+  <strong>Lots with &lt; 30 days held (excluded from CAGR):</strong>
+  {{ cagr.aggregate.unreliable_buy_dates | join(', ') }}.
+  These are <em>included</em> in the "Invested" and "Current value" KPIs
+  above (matches your broker), but excluded from the CAGR calculation
+  (CAGR of a 3-day-old position is mathematically unstable).
+</div>
+{% endif %}
+
+{% if cagr.aggregate.counterfactual_nifty_value %}
+<section class="callout mb-4" role="status">
+  <strong>If you'd lump-sum invested ₹{{ "{:,.0f}".format(cagr.aggregate.all_total_invested) }}
+  in Nifty50 on {{ cagr.aggregate.first_buy_date }}:</strong>
+  it would be worth <strong>₹{{ "{:,.0f}".format(cagr.aggregate.counterfactual_nifty_value) }}</strong> today.
+  Your actual portfolio is worth
+  <strong class="{% if (cagr.aggregate.counterfactual_diff or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+    ₹{{ "{:,.0f}".format(cagr.aggregate.all_total_cur_value) }}
+  </strong>
+  —
+  <strong class="{% if (cagr.aggregate.counterfactual_diff or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+    ₹{{ "{:,.0f}".format(cagr.aggregate.counterfactual_diff) }}
+  </strong>
+  vs the Nifty50 counterfactual.
+  (Nifty50 from {{ cagr.aggregate.first_buy_date }}: {{ "%.2f"|format(cagr.aggregate.nifty_then_first_buy or 0) }}
+  → {{ "%.2f"|format(cagr.nifty_now) }} today.)
+</section>
+{% endif %}
+
+{# ---- Per-ticker summary ---- #}
+<section class="card mb-4">
+  <h2>Per-ticker summary (lots aggregated)</h2>
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th class="num">Qty</th>
+        <th class="num">Avg ₹</th>
+        <th class="num">LTP ₹</th>
+        <th class="num">Earliest lot</th>
+        <th class="num">Years</th>
+        <th class="num">CAGR</th>
+        <th class="num">Nifty50 (per-lot wt)</th>
+        <th class="num">Alpha</th>
+        <th class="num">Nifty50 (from first lot)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in cagr.ticker_summaries %}
+      <tr>
+        <td class="ticker"><a href="#lot-{{ s.ticker }}">{{ s.ticker }}</a></td>
+        <td class="num">{{ s.qty }}</td>
+        <td class="num">{{ "%.2f"|format(s.avg_price) }}</td>
+        <td class="num">{{ "%.2f"|format(s.ltp) }}</td>
+        <td class="num">{{ s.buy_date or '—' }}</td>
+        <td class="num">{{ "%.2f"|format(s.years or 0) }}</td>
+        <td class="num {% if (s.stock_cagr_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+          {{ "%+.2f"|format(s.stock_cagr_pct or 0) }}%
+        </td>
+        <td class="num">{{ "%+.2f"|format(s.nifty_cagr_pct or 0) }}%</td>
+        <td class="num {% if (s.alpha_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+          {{ "%+.2f"|format(s.alpha_pct or 0) }}
+        </td>
+        <td class="num">
+          {% if s.nifty_cagr_from_first_buy_pct is not none %}
+            <abbr title="Nifty50 CAGR from this ticker's first lot buy date ({{ s.first_buy_date }}) to today — apples-to-apples comparison for this ticker">
+              {{ "%+.2f"|format(s.nifty_cagr_from_first_buy_pct) }}%
+            </abbr>
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+
+{# ---- Per-lot detail ---- #}
+<section class="card mb-4">
+  <h2>Per-LOT detail (reconstructed from tax P&amp;L xlsx)</h2>
+  <p class="text-muted">
+    Each lot has its own buy date. <strong>Lot buy price = the current cumulative
+    average</strong> for that ticker (xlsx does not track per-lot cost basis for
+    still-open lots; this is the same value used across all lots of a ticker).
+    Lot buy date = <abbr title="Indian FY = Apr–Mar. For a FY ending 31/03/YYYY, the midpoint is 01/10/(YYYY-1). For the current partial FY (2026-27), we use the start of FY (Apr 1).">FY midpoint</abbr>
+    of when the position grew, derived from successive year-end Open Holdings
+    snapshots in your 5 tax P&amp;L xlsx files.
+  </p>
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Lot</th>
+        <th class="num">Qty</th>
+        <th class="num">Buy ₹</th>
+        <th class="num">LTP ₹</th>
+        <th class="num">Buy date</th>
+        <th class="num">Years</th>
+        <th class="num">CAGR</th>
+        <th class="num">Nifty50</th>
+        <th class="num">Alpha</th>
+        <th>Source</th>
+        <th>Flags</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in cagr.lots %}
+      <tr id="lot-{{ s.ticker }}" {% if s.unreliable_buy_date %}class="row-warn"{% endif %}>
+        <td class="ticker">{{ s.lot_id }}</td>
+        <td class="num">{{ s.qty }}</td>
+        <td class="num">{{ "%.2f"|format(s.avg_price) }}</td>
+        <td class="num">{{ "%.2f"|format(s.ltp) }}</td>
+        <td class="num">{{ s.buy_date or '—' }}</td>
+        <td class="num">{{ "%.2f"|format(s.years or 0) }}</td>
+        <td class="num {% if (s.stock_cagr_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+          {% if s.stock_cagr_pct is none %}—
+          {% elif s.stock_cagr_pct > 9999 %}&gt;9999%
+          {% elif s.stock_cagr_pct < -9999 %}&lt;-9999%
+          {% else %}{{ "%+.2f"|format(s.stock_cagr_pct) }}%{% endif %}
+        </td>
+        <td class="num">{{ "%+.2f"|format(s.nifty_cagr_pct or 0) }}%</td>
+        <td class="num {% if (s.alpha_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+          {% if s.alpha_pct is none %}—
+          {% elif s.alpha_pct > 9999 %}&gt;9999
+          {% elif s.alpha_pct < -9999 %}&lt;-9999
+          {% else %}{{ "%+.2f"|format(s.alpha_pct) }}{% endif %}
+        </td>
+        <td><code class="src-tag">{{ s.buy_date_source }}</code></td>
+        <td>
+          {% if s.unreliable_buy_date %}<span class="flag flag-warn">&lt;30d held</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Method &amp; data quality</h2>
+  <details>
+    <summary>How this is computed</summary>
+    <ul>
+      <li><strong>Lot reconstruction</strong>: We read the cumulative Open
+        Holdings at each year-end across your 5 tax P&amp;L xlsx files
+        (FY-end snapshots at 2023-03-31, 2024-03-31, 2025-03-31,
+        2026-03-31, and 2026-07-04 for the partial current FY). For each
+        successive snapshot, the qty change = net buys in that FY. We
+        subtract intra-FY sells (from each year's Delivery P&amp;L) to
+        figure out the buy lot. Each lot is dated at the FY midpoint
+        (Oct 1 for an Apr-Mar FY).</li>
+      <li><strong>FIFO matching</strong>: All Delivery P&amp;L sells are
+        applied to the earliest lot first. So the earliest lot of a
+        ticker shrinks when you sell, and replacement buys (implied by
+        flat cumulative position) create new lots at later dates.</li>
+      <li><strong>Lot price</strong>: For each still-open lot, the buy
+        price is backed out from the cumulative value change between
+        snapshots, after accounting for the cost basis of any sells (from
+        Delivery P&amp;L). For the <strong>oldest lot</strong>, the price
+        = the cumulative avg at the first snapshot where it's the only
+        remaining lot. For <strong>newer lots</strong>, the price is solved
+        from the cumulative value change. Delivery P&amp;L exact buy
+        prices are used where the buy dates match.</li>
+      <li><strong>Per-stock CAGR</strong>: <code>(LTP / avg_price) ^ (1 / years) − 1</code>,
+        where years = days from lot's buy date to today ÷ 365.25.</li>
+      <li><strong>Nifty50 CAGR (per-lot)</strong>: same formula, using the
+        Nifty50 close (^NSEI) on the lot's buy date vs today. Source:
+        <code>data/cache/indices_cache.csv</code> (4,609 trading days,
+        Sep 2007 → today).</li>
+      <li><strong>Nifty50 CAGR (from first buy date)</strong>: the
+        apples-to-apples benchmark. Nifty50 close on your earliest
+        open-lot buy date (typically your first ever investment) vs
+        today, as a single CAGR. Compared against your portfolio's
+        invested-weighted CAGR, this is the fairest head-to-head.</li>
+      <li><strong>Aggregate</strong>: invested-weighted average of years
+        held across all reliable lots, then total return ÷ weighted
+        years. Excludes lots with &lt; 30 days held
+        (<code>unreliable_buy_date</code> flag).</li>
+      <li><strong>Source labels</strong>:
+        <code>first_seen</code> = ticker first appeared in this xlsx's
+        Open Holdings (so this is the earliest lot we can infer);
+        <code>snapshot_diff</code> = the position grew between two
+        snapshots, so a buy must have happened in the FY;
+        <code>manual</code> / <code>manual_override</code> = from
+        MANUAL_BUY_DATES (UNOMINDA, BALRAMCHIN, NEXT50IETF);
+        <code>reconciliation</code> = fallback lot to make reconstructed
+        qty match the truth file (when our reconstruction was off).</li>
+      <li><strong>Limitations</strong>: lot buy dates are FY midpoints
+        for older holdings (±~3 months uncertainty). Per-lot buy prices
+        are backed out from the cumulative-avg change between snapshots
+        and cross-checked against Delivery P&amp;L where possible. For
+        very old pre-2024 holdings where Delivery P&amp;L has no
+        per-lot data, the price is the cumulative avg at the next
+        snapshot (where the lot is the only one remaining). The
+        2026-27 xlsx has a broker-template bug ("as of 29/06/2027")
+        which we clamp to today.</li>
+    </ul>
+  </details>
+</section>
+
+{# ---- Cohort comparison (Long-term / Mid-cap / Small-cap) ---- #}
+{% if cohorts %}
+<section class="card mb-4">
+  <h2>Cohort CAGR vs Index</h2>
+  <p class="text-muted">
+    Three cohorts (excluding ETFs) compared to their respective benchmark
+    indices. Includes <strong>both currently-held positions AND realized
+    P&amp;L from past sales</strong> in the totals.
+    {% if cohorts.indices_available.nifty_midcap_150.available %}
+      Nifty Midcap 150 data loaded ({{ cohorts.indices_available.nifty_midcap_150.points }} points).
+    {% else %}
+      <strong class="is-negative">⚠ Nifty Midcap 150 data not loaded — using Nifty50 as fallback.
+      Drop a CSV at <code>data/cache/indices/nifty_midcap_150.csv</code> to enable.</strong>
+    {% endif %}
+    {% if cohorts.indices_available.nifty_smallcap_250.available %}
+      Nifty Smallcap 250 data loaded ({{ cohorts.indices_available.nifty_smallcap_250.points }} points).
+    {% else %}
+      <strong class="is-negative">⚠ Nifty Smallcap 250 data not loaded — using Nifty50 as fallback.
+      Drop a CSV at <code>data/cache/indices/nifty_smallcap_250.csv</code> to enable.</strong>
+    {% endif %}
+  </p>
+
+  <details class="mb-3">
+    <summary><strong>Upload NSE index CSV (Midcap 150 / Smallcap 250)</strong></summary>
+    <p class="text-muted" style="margin-top: 0.5rem;">
+      To get a true cohort-vs-index comparison, download the historical
+      data from NSE:
+      <a href="https://www.nseindia.com/indices" target="_blank">https://www.nseindia.com/indices</a>
+      → click the index → "Historical Data" → "Download CSV".
+      Then drop the file here.
+      Format: <code>Date,Close</code> (or <code>Date,Open,High,Low,Close,...</code>).
+    </p>
+    <form id="indexUploadForm" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: end; margin-top: 0.5rem;">
+      <label>
+        <span style="display:block; font-size: 0.75rem; color: var(--c-fg-muted);">Index</span>
+        <select id="indexNameSelect" style="padding: 4px;">
+          <option value="nifty_midcap_150">Nifty Midcap 150</option>
+          <option value="nifty_smallcap_250">Nifty Smallcap 250</option>
+        </select>
+      </label>
+      <label>
+        <span style="display:block; font-size: 0.75rem; color: var(--c-fg-muted);">CSV file</span>
+        <input type="file" id="indexFileInput" accept=".csv" style="padding: 4px;" />
+      </label>
+      <button type="submit" id="indexUploadBtn" class="btn btn-primary" style="padding: 6px 12px;">Upload</button>
+    </form>
+    <div id="indexUploadStatus" style="margin-top: 0.5rem;"></div>
+  </details>
+
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Cohort</th>
+        <th>Benchmark</th>
+        <th class="num">Tickers</th>
+        <th class="num">Lots (open/closed)</th>
+        <th class="num">Invested</th>
+        <th class="num">Open value</th>
+        <th class="num">Realized P&amp;L</th>
+        <th class="num">Total current</th>
+        <th class="num">Total P&amp;L</th>
+        <th class="num">Years</th>
+        <th class="num">CAGR</th>
+        <th class="num">Benchmark</th>
+        <th class="num">Alpha</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ckey in ['large_cap_equity', 'midcap_equity', 'smallcap_equity'] %}
+        {% set c = cohorts[ckey] %}
+        <tr>
+          <td class="ticker">{{ c.label }}</td>
+          <td>
+            {{ c.benchmark.replace('_', ' ').replace('nifty', 'Nifty').upper() }}
+            {% if c.benchmark_using_fallback %}
+              <br><small class="is-negative">⚠ fallback to {{ c.fallback_to|upper }}</small>
+            {% endif %}
+          </td>
+          <td class="num">{{ c.n_tickers }}</td>
+          <td class="num">{{ c.n_lots }} ({{ c.n_open }}/{{ c.n_closed }})</td>
+          <td class="num">₹{{ "{:,.0f}".format(c.total_invested) }}</td>
+          <td class="num">₹{{ "{:,.0f}".format(c.open_value) }}</td>
+          <td class="num {% if (c.realized_pnl or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">₹{{ "{:+,.0f}".format(c.realized_pnl) }}</td>
+          <td class="num">₹{{ "{:,.0f}".format(c.total_current) }}</td>
+          <td class="num {% if (c.total_pnl or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+            ₹{{ "{:+,.0f}".format(c.total_pnl) }} ({{ "%+.2f"|format(c.total_return_pct) }}%)
+          </td>
+          <td class="num">{{ "%.2f"|format(c.weighted_years or 0) }}</td>
+          <td class="num {% if (c.cagr_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">{{ "%+.2f"|format(c.cagr_pct or 0) }}%</td>
+          <td class="num">{{ "%+.2f"|format(c.nifty_cagr_pct or 0) }}%</td>
+          <td class="num {% if (c.alpha_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">{{ "%+.2f"|format(c.alpha_pct or 0) }}%</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  {# ---- Per-cohort ticker breakdown (collapsed by default) ---- #}
+  {% for ckey in ['large_cap_equity', 'midcap_equity', 'smallcap_equity'] %}
+    {% set c = cohorts[ckey] %}
+    <details class="mb-2">
+      <summary><strong>{{ c.label }} — per-ticker breakdown</strong> ({{ c.tickers|length }} tickers)</summary>
+      <div class="table-wrap" style="margin-top: 0.5rem;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th class="num">Tier</th>
+            <th class="num">Open qty</th>
+            <th class="num">Open value</th>
+            <th class="num">Closed qty</th>
+            <th class="num">Closed P&amp;L</th>
+            <th class="num">First buy</th>
+            <th class="num">CAGR</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in c.tickers_detail %}
+            <tr>
+              <td class="ticker">{{ t.ticker }}</td>
+              <td class="num"><small>{{ t.tier }}</small></td>
+              <td class="num">{{ t.open_qty }}</td>
+              <td class="num">₹{{ "{:,.0f}".format(t.open_value) }}</td>
+              <td class="num">{{ t.closed_qty }}</td>
+              <td class="num {% if (t.closed_pnl or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">₹{{ "{:+,.0f}".format(t.closed_pnl) }}</td>
+              <td class="num"><small>{{ t.earliest_buy or "—" }}</small></td>
+              <td class="num {% if (t.cagr_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+                {% if t.cagr_pct is not none %}{{ "%+.2f"|format(t.cagr_pct) }}%{% else %}—{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </details>
+  {% endfor %}
+</section>
+{% endif %}
+
+{# ---- Combined portfolio vs Nifty 50 (single big chart at top) ---- #}
+{% if combined_chart_url %}
+<section class="card mb-4">
+  <h2>Combined Portfolio vs Nifty 50 (Lump-Sum Counterfactual)</h2>
+  <p class="text-muted">
+    Your entire equity book (all tiers combined, ETFs excluded) plotted
+    against a Nifty 50 lump-sum counterfactual: "if I'd invested my
+    total cost basis in Nifty 50 on the first buy date, what would it
+    be worth today?" Both lines are indexed to 100 at the anchor date
+    so you can compare growth rates directly.
+  </p>
+  <a href="{{ combined_chart_url }}" target="_blank">
+    <img src="{{ combined_chart_url }}"
+         alt="Combined portfolio vs Nifty 50"
+         style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" />
+  </a>
+  <p class="text-muted" style="font-size: 0.75rem; margin-top: 0.25rem;">
+    Click image to open full-size. Regenerated on every page load (cached for 15 min).
+  </p>
+</section>
+{% endif %}
+
+{# ---- Cohort benchmark charts (one per cohort) ---- #}
+{% if cohort_charts %}
+<section class="card mb-4">
+  <h2>Cohort Performance vs Benchmark (Charts)</h2>
+  <p class="text-muted">
+    One chart per cohort, showing your portfolio's cumulative total return
+    (₹100 of invested capital → current value) vs the cohort's benchmark
+    index over the same window. Charts are anchored at the cohort's
+    first buy date and use TWR-style normalization so adding new
+    positions doesn't reset the baseline.
+  </p>
+
+  {% for ckey in ['large_cap_equity', 'midcap_equity', 'smallcap_equity'] %}
+    {% set chart_url = cohort_charts.get(ckey) %}
+    {% if chart_url %}
+    <div class="mb-4">
+      <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">
+        {{ cohorts[ckey].label }} vs
+        {{ cohorts[ckey].benchmark|replace('_', ' ')|replace('nifty', 'Nifty')|upper }}
+      </h3>
+      <a href="{{ chart_url }}" target="_blank">
+        <img src="{{ chart_url }}"
+             alt="{{ cohorts[ckey].label }} benchmark comparison chart"
+             style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" />
+      </a>
+      <p class="text-muted" style="font-size: 0.75rem; margin-top: 0.25rem;">
+        Click image to open full-size in a new tab. Regenerated on every page load.
+      </p>
+    </div>
+    {% endif %}
+  {% endfor %}
+</section>
+{% endif %}
+
+{% endblock %}
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.__hidePageLoader) window.__hidePageLoader();
+    // Index CSV upload handler
+    var form = document.getElementById("indexUploadForm");
+    if (form) {
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        var idx = document.getElementById("indexNameSelect").value;
+        var fileInput = document.getElementById("indexFileInput");
+        var file = fileInput.files[0];
+        var status = document.getElementById("indexUploadStatus");
+        var btn = document.getElementById("indexUploadBtn");
+        if (!file) { status.textContent = "⚠ Please select a CSV file."; return; }
+        btn.disabled = true; btn.textContent = "Uploading...";
+        status.textContent = "Uploading " + file.name + "...";
+        var fd = new FormData();
+        fd.append("index_name", idx);
+        fd.append("file", file);
+        try {
+          var r = await fetch("/api/index/upload", { method: "POST", body: fd });
+          var d = await r.json();
+          if (d.ok) {
+            status.innerHTML = "✅ Loaded " + d.rows_loaded + " rows from " + d.index +
+              " (" + d.first_date + " → " + d.last_date + "). Reload to see new CAGR.";
+            // Auto-reload after 2s to show the new data
+            setTimeout(function () { location.reload(); }, 2000);
+          } else {
+            status.innerHTML = "❌ " + (d.error || "Upload failed");
+          }
+        } catch (err) {
+          status.innerHTML = "❌ " + err.message;
+        } finally {
+          btn.disabled = false; btn.textContent = "Upload";
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

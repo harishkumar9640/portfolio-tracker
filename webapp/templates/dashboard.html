@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="flex-between mb-4">
+  <div>
+    <h1 class="mb-0">Dashboard</h1>
+    <p class="text-muted mb-0">
+      Everything in one place: KPIs, day change, XIRR, per-tier charts, and today's intraday.
+      The other tabs (Portfolio, CAGR, Flows, etc.) have the full detail if you need it.
+    </p>
+  </div>
+  <div class="flex-gap-2">
+    <a href="/portfolio" class="btn btn-secondary">Full portfolio &rarr;</a>
+    <a href="/cagr" class="btn btn-secondary">Full CAGR &rarr;</a>
+  </div>
+</header>
+
+{# ============================================================
+   1. KPI STRIP — at-a-glance numbers
+   ============================================================ #}
+
+{# Compute derived values once for cleaner template code #}
+{% set total_value = (snap.total.value if snap and snap.total else 0) %}
+{% set equity_value = (snap.equity.value if snap and snap.equity else 0) %}
+{% set mf_value = (snap.mf.value if snap and snap.mf else 0) %}
+{% set sgb_value = (snap.sgb.value if snap and snap.sgb else 0) %}
+{% set xirr_pct = (xirr.xirr_pct if xirr and xirr.xirr_pct is not none else 0) %}
+{% set total_invested = (xirr.total_invested if xirr else 0) %}
+{% set total_current = ((xirr.total_realized + xirr.open_value) if xirr else 0) %}
+
+<section class="grid grid-2 grid-4 mb-4">
+  <div class="kpi">
+    <div class="kpi-label">Total Portfolio</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(total_value) }}</div>
+    <div class="kpi-sub {% if day_pct >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      today {{ "%+.2f"|format(day_pct) }}%
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">My Equity</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(equity_value) }}</div>
+    <div class="kpi-sub text-muted">
+      {{ snap.equity.holdings|length if snap and snap.equity and snap.equity.holdings else 0 }} holdings
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">XIRR (ex-ETFs)</div>
+    <div class="kpi-value {% if xirr_pct >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      {{ "%+.2f"|format(xirr_pct) }}%
+    </div>
+    <div class="kpi-sub">
+      money-weighted &middot; since {{ xirr.earliest_date[:7] if xirr and xirr.earliest_date else "—" }}
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total P&amp;L</div>
+    <div class="kpi-value {% if (total_current - total_invested) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+      ₹{{ "{:+,.0f}".format(total_current - total_invested) }}
+    </div>
+    <div class="kpi-sub text-muted">
+      ₹{{ "{:,.0f}".format(total_invested) }} invested &rarr; ₹{{ "{:,.0f}".format(total_current) }} now
+    </div>
+  </div>
+</section>
+
+{# ============================================================
+   2. DAY CHANGE BAR CHART — portfolio vs world indices
+   ============================================================ #}
+
+<section class="card mb-4">
+  <h2 class="mb-2">Day change vs world indices</h2>
+  <p class="text-muted mb-3">
+    Your portfolio's day-on-day % change compared to major global indices.
+  </p>
+  {% if day_chart_url %}
+    {# Cache-buster: the chart filename is the same every day
+       (portfolio_compare_YYYYMMDD.png), so browsers cache the old
+       version even after we regenerate. Appending a timestamp forces
+       the browser to re-fetch on every page load. #}
+    <a href="{{ day_chart_url }}?v={{ now_ts }}" target="_blank">
+      <img src="{{ day_chart_url }}?v={{ now_ts }}"
+           alt="Day change vs world indices"
+           style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" />
+    </a>
+    <p class="text-muted" style="font-size: 0.75rem; margin-top: 0.25rem;">
+      Click image to open full-size.
+    </p>
+  {% else %}
+    <p class="text-muted">Day-change chart not available (market may be closed).</p>
+  {% endif %}
+</section>
+
+{# ============================================================
+   3. PER-TIER QUICK CARDS — large / mid / small at a glance
+   ============================================================ #}
+
+<section class="grid grid-3 grid-3 mb-4">
+  {% for ckey in ['large_cap_equity', 'midcap_equity', 'smallcap_equity'] %}
+    {% set c = cohorts.get(ckey) %}
+    {% if c %}
+    <div class="card" style="padding: 1rem;">
+      <div class="kpi-label">{{ c.label }}</div>
+      <div class="kpi-value {% if (c.cagr_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}"
+           style="font-size: 1.4rem; margin: 0.25rem 0;">
+        {{ "%+.2f"|format(c.cagr_pct or 0) }}%
+      </div>
+      <div class="kpi-sub">
+        vs {{ c.benchmark|replace('_', ' ')|replace('nifty', 'Nifty')|upper }}:
+        <span class="{% if (c.alpha_pct or 0) >= 0 %}is-positive{% else %}is-negative{% endif %}">
+          {{ "%+.2f"|format(c.alpha_pct or 0) }} pp
+        </span>
+      </div>
+      <div class="kpi-sub text-muted" style="font-size: 0.7rem;">
+        {{ c.n_lots }} lots &middot; {{ c.tickers|length }} tickers &middot; ₹{{ "{:,.0f}".format(c.total_current) }}
+      </div>
+    </div>
+    {% endif %}
+  {% endfor %}
+</section>
+
+{# ============================================================
+   4. COMBINED PORTFOLIO VS NIFTY 50 — long-term chart
+   ============================================================ #}
+
+<section class="card mb-4">
+  <h2 class="mb-2">Combined portfolio vs Nifty 50 (since first buy)</h2>
+  <p class="text-muted mb-3">
+    Total-return trajectory of your entire equity book vs a Nifty 50 lump-sum
+    counterfactual. If you'd put your total cost basis in Nifty 50 on your first
+    buy date, what would it be worth today?
+  </p>
+  {% if combined_chart_url %}
+    <a href="{{ combined_chart_url }}?v={{ now_ts }}" target="_blank">
+      <img src="{{ combined_chart_url }}?v={{ now_ts }}"
+           alt="Combined portfolio vs Nifty 50"
+           style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" />
+    </a>
+  {% else %}
+    <p class="text-muted">Combined chart not available.</p>
+  {% endif %}
+</section>
+
+{# ============================================================
+   5. PER-COHORT CHARTS — 3 small charts (large / mid / small)
+   ============================================================ #}
+
+<section class="card mb-4">
+  <h2 class="mb-3">Per-tier charts (vs each benchmark)</h2>
+  <div class="grid grid-3 grid-3">
+    {% for ckey in ['large_cap_equity', 'midcap_equity', 'smallcap_equity'] %}
+      {% set c = cohorts.get(ckey) %}
+      {% set chart_url = cohort_chart_urls.get(ckey) %}
+      <div>
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.25rem;">
+          {{ c.label if c else ckey }}
+        </h3>
+        <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 0.5rem;">
+          vs {{ c.benchmark|replace('_', ' ')|replace('nifty', 'Nifty')|upper if c else '—' }}
+          &middot; CAGR {{ "%+.2f"|format(c.cagr_pct or 0) if c else 0 }}%
+        </p>
+        {% if chart_url %}
+          <a href="{{ chart_url }}" target="_blank">
+            <img src="{{ chart_url }}?v={{ now_ts }}"
+                 alt="{{ c.label }} chart"
+                 style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" />
+          </a>
+        {% else %}
+          <p class="text-muted" style="font-size: 0.8rem;">Chart not available.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ============================================================
+   6. TODAY'S INTRADAY MINI CHART
+   ============================================================ #}
+
+<section class="card mb-4">
+  <h2 class="mb-2">Today's intraday vs world indices</h2>
+  <p class="text-muted mb-3">
+    Live intraday line chart of your portfolio vs the world indices. Click
+    the <a href="/history">History tab</a> for the full 1m/5m/15m toggles.
+  </p>
+  <div id="dashboard-intraday" style="width: 100%; height: 50vh; min-height: 360px;"></div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  "use strict";
+
+  // Render a small Plotly intraday chart on the dashboard using the
+  // JSON snapshot we got from the server.
+  var snap = {{ intraday_snap | tojson }};
+  var el = document.getElementById("dashboard-intraday");
+  if (!el || !snap || !snap.series || Object.keys(snap.series).length === 0) {
+    if (el) el.innerHTML = '<p class="text-muted" style="padding: 2rem;">No intraday data available right now. The market may be closed or Yahoo Finance returned no data.</p>';
+    return;
+  }
+
+  var COLORS = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+    "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+  ];
+
+  function buildTraces(series) {
+    var traces = [];
+    var colorIdx = 0;
+    var portfolioKey = null, niftyKey = null;
+    for (var key in series) {
+      if (!series.hasOwnProperty(key)) continue;
+      if (key === "My Portfolio") { portfolioKey = key; continue; }
+      if (key === "Nifty 50 (IN)") { niftyKey = key; continue; }
+      var pts = series[key] || [];
+      if (pts.length === 0) continue;
+      traces.push({
+        type: "scatter", mode: "lines", name: key,
+        x: pts.map(function (p) { return p.t; }),
+        y: pts.map(function (p) { return p.v; }),
+        line: { color: COLORS[colorIdx % COLORS.length], width: 1.6 },
+        hovertemplate: "%{x|%H:%M}<br>" + key + ": %{y:.2f}<extra></extra>",
+      });
+      colorIdx += 1;
+    }
+    if (niftyKey && series[niftyKey] && series[niftyKey].length > 0) {
+      var np = series[niftyKey];
+      traces.push({
+        type: "scatter", mode: "lines", name: niftyKey + " \u2b50",
+        x: np.map(function (p) { return p.t; }),
+        y: np.map(function (p) { return p.v; }),
+        line: { color: "#0066CC", width: 2.5 },
+        hovertemplate: "%{x|%H:%M}<br>" + niftyKey + ": %{y:.2f}<extra></extra>",
+      });
+    }
+    if (portfolioKey && series[portfolioKey] && series[portfolioKey].length > 0) {
+      var pp = series[portfolioKey];
+      traces.push({
+        type: "scatter", mode: "lines", name: "My Portfolio (equity, mf, sgb)",
+        x: pp.map(function (p) { return p.t; }),
+        y: pp.map(function (p) { return p.v; }),
+        line: { color: "#000000", width: 2.8 },
+        hovertemplate: "%{x|%H:%M}<br>My Portfolio: %{y:.2f}<extra></extra>",
+      });
+    }
+    return traces;
+  }
+
+  var traces = buildTraces(snap.series);
+  if (traces.length === 0) return;
+
+  var layout = {
+    title: "Today (" + snap.interval + " bars, base 100 at open)",
+    xaxis: { title: "Time (IST)", type: "date", tickformat: "%H:%M" },
+    yaxis: { title: "Indexed value (open = 100)" },
+    hovermode: "x unified",
+    template: "plotly_white",
+    legend: { orientation: "h", yanchor: "top", y: -0.12, xanchor: "center", x: 0.5 },
+    margin: { l: 60, r: 20, t: 60, b: 80 },
+  };
+  if (typeof Plotly !== "undefined") {
+    Plotly.react(el, traces, layout, { responsive: true, displaylogo: false });
+  }
+})();
+</script>
+{% endblock %}
