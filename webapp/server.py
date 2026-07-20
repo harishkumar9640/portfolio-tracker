@@ -29,6 +29,7 @@ import argparse
 import json
 import os
 import threading
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -183,6 +184,152 @@ def portfolio_page(request: Request) -> HTMLResponse:
 def api_gold_silver(force: bool = False) -> dict:
     """JSON: gold:silver ratio snapshot. `?force=true` to bypass cache."""
     return get_gold_silver_ratio_snapshot(force=force)
+
+
+# ---------- CAGR / Cohorts / XIRR pages ----------
+# These were originally added in 2026-07-04 → 2026-07-08 sessions
+# (per MEMORY.md §Cohorts / §XIRR). The templates (cagr.html,
+# dashboard.html) were created but the route handlers were never
+# wired in. Adding them now so the templates don't 404.
+
+def _compute_xirr_safely(include_etfs: bool = False) -> dict:
+    """Run pipeline.xirr.compute_xirr() with a graceful fallback.
+
+    The XIRR computation requires the per-lot ledger + live LTPs. If
+    anything goes wrong (missing xlsx, broken broker, etc.) we return
+    a None-shaped dict so the template renders cleanly.
+    """
+    try:
+        from pipeline.xirr import compute_xirr
+        return compute_xirr(include_etfs=include_etfs) or {}
+    except Exception as e:
+        log.warning("XIRR computation failed (returning empty): %s", e)
+        return {}
+
+
+def _compute_cohorts_safely() -> dict:
+    """Run pipeline.cohorts.compute_cohorts() with a graceful fallback."""
+    try:
+        from pipeline.cohorts import compute_cohorts
+        return compute_cohorts() or {}
+    except Exception as e:
+        log.warning("cohorts computation failed (returning empty): %s", e)
+        return {}
+
+
+def _compute_equity_cagr_safely() -> dict:
+    """Run pipeline.cagr.get_equity_cagr() with a graceful fallback."""
+    try:
+        from pipeline.cagr import get_equity_cagr
+        return get_equity_cagr() or {}
+    except Exception as e:
+        log.warning("equity CAGR computation failed (returning empty): %s", e)
+        return {}
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard_page(request: Request) -> HTMLResponse:
+    """All-charts overview (default landing page)."""
+    snap = get_portfolio_snapshot()
+    xirr = _compute_xirr_safely(include_etfs=False)
+    cohorts = _compute_cohorts_safely()
+    # Per-tier card values (defaults to empty)
+    large_cap = cohorts.get("large_cap", {})
+    mid_cap = cohorts.get("mid_cap", {})
+    small_cap = cohorts.get("small_cap", {})
+    # Today's intraday for the sparkline at the bottom
+    try:
+        from pipeline.intraday import build_intraday_snapshot
+        intraday = build_intraday_snapshot("5m")
+    except Exception as e:
+        log.warning("intraday snapshot failed for /dashboard: %s", e)
+        intraday = {"error": str(e)}
+    # Find the most recent chart files in data/charts/
+    charts_dir = PROJECT_CHARTS_DIR
+    def _latest(pattern: str) -> str | None:
+        try:
+            matches = sorted(charts_dir.glob(pattern), reverse=True)
+            if matches:
+                return f"/charts/{matches[0].name}"
+        except Exception:
+            pass
+        return None
+    day_chart_url = _latest("portfolio_compare_*.png")
+    combined_chart_url = _latest("combined_vs_nifty50_*.png")
+    # Per-cohort charts: cohort_<name>_YYYY-MM-DD.png
+    cohort_chart_urls: dict[str, str] = {}
+    cohort_keys = ("large_cap", "mid_cap", "small_cap")
+    for ck in cohort_keys:
+        url = _latest(f"cohort_{ck}_*.png")
+        if url:
+            cohort_chart_urls[ck] = url
+    return templates.TemplateResponse(
+        request,
+        "dashboard.html",
+        _ctx(
+            active_nav="dashboard",
+            page_title="Dashboard",
+            snapshot=snap,
+            xirr=xirr,
+            cohorts=cohorts,
+            large_cap=large_cap,
+            mid_cap=mid_cap,
+            small_cap=small_cap,
+            intraday=intraday,
+            intraday_snap=intraday,
+            now_ts=int(time.time()),
+            day_chart_url=day_chart_url,
+            combined_chart_url=combined_chart_url,
+            cohort_chart_urls=cohort_chart_urls,
+            # Convenience aliases for the template (which uses
+            # short names like `day_pct` instead of `snap.total.pct`)
+            day_pct=(snap.get("total", {}).get("pct") if snap else 0),
+            total_value=(snap.get("total", {}).get("value") if snap else 0),
+            equity_value=(snap.get("equity", {}).get("value") if snap else 0),
+            mf_value=(snap.get("mf", {}).get("value") if snap else 0),
+            sgb_value=(snap.get("sgb", {}).get("value") if snap else 0),
+        ),
+    )
+
+
+@app.get("/cagr", response_class=HTMLResponse)
+def cagr_page(request: Request) -> HTMLResponse:
+    """Per-stock CAGR + XIRR vs Nifty benchmarks."""
+    equity_cagr = _compute_equity_cagr_safely()
+    xirr = _compute_xirr_safely(include_etfs=False)
+    xirr_with_etfs = _compute_xirr_safely(include_etfs=True)
+    return templates.TemplateResponse(
+        request,
+        "cagr.html",
+        _ctx(
+            active_nav="cagr",
+            page_title="CAGR vs Nifty Indices",
+            xirr=xirr,
+            xirr_with_etfs=xirr_with_etfs,
+            cagr=equity_cagr,
+            # TWR is the time-weighted return reported by cagr module
+            twr_pct=equity_cagr.get("aggregate", {}).get("stock_cagr_pct") or 0,
+        ),
+    )
+
+
+@app.get("/api/xirr")
+def api_xirr(include_etfs: bool = False) -> dict:
+    """JSON: money-weighted return. `?include_etfs=true` to include
+    GOLDBEES / SILVERBEES / METALIETF / NEXT50IETF in the cashflows."""
+    return _compute_xirr_safely(include_etfs=include_etfs)
+
+
+@app.get("/api/cagr")
+def api_cagr() -> dict:
+    """JSON: per-stock CAGR + benchmark alpha + cohort rollups."""
+    return _compute_equity_cagr_safely()
+
+
+@app.get("/api/cohorts")
+def api_cohorts() -> dict:
+    """JSON: per-market-cap-tier cohort rollups."""
+    return _compute_cohorts_safely()
 
 
 @app.get("/flows", response_class=HTMLResponse)
