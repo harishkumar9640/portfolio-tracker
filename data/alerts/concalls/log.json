@@ -1,2 +1,6 @@
 {"ts": "2026-06-29T08:49:28+05:30", "ticker": "KNRCON", "filing_kind": "transcript", "filing_date": "06-Jun-2026", "tone": "confident", "sent": false, "mode": "dry_run", "llm_duration_sec": 142.169553874759}
 {"ts": "2026-06-29T08:49:28+05:30", "ticker": "KNRCON", "filing_kind": "audio_recording", "filing_date": "01-Jun-2026", "tone": "unknown", "sent": false, "mode": "dry_run", "llm_duration_sec": 6.151556124910712}
+{"ts": "2026-07-19T19:00:00+05:30", "ticker": "RELIANCE", "filing_kind": "transcript", "filing_date": "19-Jul-2026", "tone": "confident", "sent": false, "mode": "error", "llm_duration_sec": 244.84080812497996}
+{"ts": "2026-07-19T19:00:00+05:30", "ticker": "RELIANCE", "filing_kind": "audio_recording", "filing_date": "18-Jul-2026", "tone": "unknown", "sent": false, "mode": "error", "llm_duration_sec": 6.488425749994349}
+{"ts": "2026-07-19T19:00:00+05:30", "ticker": "JIOFIN", "filing_kind": "audio_recording", "filing_date": "16-Jul-2026", "tone": "unknown", "sent": false, "mode": "error", "llm_duration_sec": 10.350272833005874}
+{"ts": "2026-07-19T19:00:00+05:30", "ticker": "JIOFIN", "filing_kind": "investor_presentation", "filing_date": "16-Jul-2026", "tone": "confident", "sent": false, "mode": "error", "llm_duration_sec": 75.12562641598925}

@@ -1,152 +1,5 @@
 [
   {
-    "ran_at": "2026-06-30T15:50:52+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "reason": "no changes"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:50:55+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "mode": "dry_run",
-      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
-      "to": "sourav1972h@yahoo.com",
-      "subject": "[MF Alert] No changes (May 2026)"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:50:55+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "reason": "no changes"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:50:59+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "reason": "no changes"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:51:01+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "mode": "dry_run",
-      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
-      "to": "sourav1972h@yahoo.com",
-      "subject": "[MF Alert] No changes (May 2026)"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:55:12+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "reason": "no changes"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:55:12+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "mode": "dry_run",
-      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
-      "to": "sourav1972h@yahoo.com",
-      "subject": "[MF Alert] No changes (May 2026)"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:55:12+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "reason": "no changes"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:55:16+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "reason": "no changes"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T15:55:18+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "mode": "dry_run",
-      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
-      "to": "sourav1972h@yahoo.com",
-      "subject": "[MF Alert] No changes (May 2026)"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T16:06:48+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "reason": "no changes"
-    },
-    "errors": []
-  },
-  {
-    "ran_at": "2026-06-30T16:06:50+05:30",
-    "snapshot_ok": true,
-    "stocks_with_changes": 0,
-    "tickers_changed": [],
-    "email": {
-      "sent": false,
-      "mode": "dry_run",
-      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
-      "to": "sourav1972h@yahoo.com",
-      "subject": "[MF Alert] No changes (May 2026)"
-    },
-    "errors": []
-  },
-  {
     "ran_at": "2026-06-30T16:06:50+05:30",
     "snapshot_ok": true,
     "stocks_with_changes": 0,
@@ -362,6 +215,167 @@
       "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
       "to": "sourav1972h@yahoo.com",
       "subject": "[MF Alert] No changes (May 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:27:25+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 8,
+    "tickers_changed": [
+      "BALRAMCHIN",
+      "BANKBARODA",
+      "IRCON",
+      "ITC",
+      "JIOFIN",
+      "KNRCON",
+      "NTPCGREEN",
+      "RELIANCE"
+    ],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] 8 stocks changed: Balrampur Chini Mills, Bank of Baroda, IRCON International, ITC, Jio Financial Services (+3 more)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:27:26+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (Jun 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:27:26+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:27:29+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:27:31+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (Jun 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:40:52+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:40:52+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (Jun 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:40:53+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:40:56+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T10:40:58+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "mode": "dry_run",
+      "reason": "missing SMTP creds or MF_ALERT_DRY_RUN=1",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] No changes (Jun 2026)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T16:30:02+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T16:30:00+05:30",
+    "snapshot_ok": true,
+    "stocks_with_changes": 2,
+    "tickers_changed": [
+      "IRCON",
+      "UNOMINDA"
+    ],
+    "email": {
+      "sent": true,
+      "mode": "smtp",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[MF Alert] 2 stocks changed: IRCON, Uno Minda"
     },
     "errors": []
   }

@@ -30,3 +30,19 @@
 2026-06-30 16:31:47,866 INFO    flows_alert: block deals: 4 rows
 2026-06-30 16:31:47,870 INFO    flows_alert: deals history now: 361 entries
 2026-06-30 16:31:47,870 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-07-19 10:26:30,504 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-07-19 10:26:30,508 INFO    flows_alert: FII/DII history now: 6 entries
+2026-07-19 10:26:30,509 INFO    flows_alert: FII/DII flows within threshold (FII=-376, DII=+1018, threshold=5000) — no alert
+2026-07-19 10:26:31,775 WARNING flows_alert: bulk deals fetch failed: HTTP Error 503: Service Unavailable
+2026-07-19 10:26:31,784 INFO    flows_alert: deals history now: 361 entries
+2026-07-19 10:26:32,598 WARNING flows_alert: block deals fetch failed: HTTP Error 503: Service Unavailable
+2026-07-19 10:26:32,605 INFO    flows_alert: deals history now: 361 entries
+2026-07-19 10:26:32,606 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block
+2026-07-19 10:39:53,906 INFO    flows_alert: FII/DII fetch: 2 rows
+2026-07-19 10:39:53,908 INFO    flows_alert: FII/DII history now: 6 entries
+2026-07-19 10:39:53,908 INFO    flows_alert: FII/DII flows within threshold (FII=-376, DII=+1018, threshold=5000) — no alert
+2026-07-19 10:39:54,710 WARNING flows_alert: bulk deals fetch failed: HTTP Error 503: Service Unavailable
+2026-07-19 10:39:54,719 INFO    flows_alert: deals history now: 361 entries
+2026-07-19 10:39:55,409 WARNING flows_alert: block deals fetch failed: HTTP Error 503: Service Unavailable
+2026-07-19 10:39:55,419 INFO    flows_alert: deals history now: 361 entries
+2026-07-19 10:39:55,419 INFO    flows_alert: portfolio-matched deals: 0 bulk + 0 block

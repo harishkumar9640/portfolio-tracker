@@ -173,5 +173,37 @@
       "reason": "no changes"
     },
     "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T16:30:05+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 7,
+    "tickers_changed": [
+      "BALRAMCHIN",
+      "BANKBARODA",
+      "ITC",
+      "JIOFIN",
+      "KNRCON",
+      "NTPCGREEN",
+      "RELIANCE"
+    ],
+    "email": {
+      "sent": true,
+      "mode": "smtp",
+      "to": "sourav1972h@yahoo.com",
+      "subject": "[SHP Alert] 7 stocks changed shareholding: Balrampur Chini Mills, Bank of Baroda, ITC, Jio Financial Services, KNR Constructions (+2 more)"
+    },
+    "errors": []
+  },
+  {
+    "ran_at": "2026-07-19T16:35:00+05:30",
+    "fetch_ok": true,
+    "stocks_with_changes": 0,
+    "tickers_changed": [],
+    "email": {
+      "sent": false,
+      "reason": "no changes"
+    },
+    "errors": []
   }
 ]

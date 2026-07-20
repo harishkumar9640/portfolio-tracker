@@ -1,62 +1,18 @@
 [
   {
-    "ran_at": "2026-06-30T16:22:02+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "ran_at": "2026-07-19T15:10:11+05:30",
+    "url": "https://www.thehindu.com/news/international/afghanistan-seeks-deeper-trade-ties-with-india-pitches-for-easier-business-access/article71240998.ece",
+    "title": "Afghanistan seeks deeper trade ties with India, pitches for easier business access",
     "category": null,
     "impacts": [
       {
-        "ticker": "RELIANCE",
+        "ticker": "ITC",
         "score": 5,
-        "reason": "ril"
+        "reason": "itc"
       }
     ],
     "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:22:02+05:30",
-    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
-    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "KNRCON",
-        "score": 6,
-        "reason": "highways, highway"
-      }
-    ],
-    "sentiment": {
-      "KNRCON": {
+      "ITC": {
         "direction": "neutral",
         "confidence": "low",
         "net_score": 0,
@@ -81,22 +37,22 @@
       }
     ],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:22:02+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "ran_at": "2026-07-19T15:40:17+05:30",
+    "url": "https://www.thehindu.com/news/cities/Coimbatore/residents-demand-a-flyover-at-ayothiyapattinam-railway-gate-in-salem/article71240989.ece",
+    "title": "Residents demand a flyover at Ayothiyapattinam railway gate in Salem",
     "category": null,
     "impacts": [
       {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
+        "ticker": "IRCON",
+        "score": 6,
+        "reason": "rail, railway"
       }
     ],
     "sentiment": {
-      "ITC": {
+      "IRCON": {
         "direction": "neutral",
         "confidence": "low",
         "net_score": 0,
@@ -107,12 +63,96 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:22:02+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "ran_at": "2026-07-19T16:10:24+05:30",
+    "url": "https://www.thehindubusinessline.com/companies/reliance-retail-to-scale-online-business-in-fy27-aims-to-double-pre-tax-earnings-in-3-years/article71241096.ece",
+    "title": "Reliance Retail to scale online business in FY27, aims to double pre-tax earnings in 3 years",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 13,
+        "reason": "retail, reliance, reliance retail"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T16:40:30+05:30",
+    "url": "https://www.bloomberg.com/news/articles/2026-07-18/oil-s-battered-shock-absorbers-risk-price-spike-as-war-returns",
+    "title": "Oil\u2019s Battered Shock Absorbers Risk Price Spike as War Returns",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [
+          "oil price"
+        ],
+        "bearish_signals": [
+          "price war"
+        ],
+        "key_reason": "mixed: +oil price / -price war"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T17:10:35+05:30",
+    "url": "https://www.theguardian.com/environment/2026/jul/19/molten-salt-human-sweat-weird-batteries-store-renewable-energy",
+    "title": "Molten salt and human sweat: the weird batteries that could store renewable energy",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 15,
+        "reason": "renewable, clean energy, solar"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "bullish",
+        "confidence": "low",
+        "net_score": 1,
+        "bullish_signals": [
+          "solar scheme"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: solar scheme"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T17:10:35+05:30",
+    "url": "https://www.theguardian.com/us-news/2026/jul/19/how-trump-and-his-administration-have-mired-the-us-in-multiple-crises",
+    "title": "How Trump and his administration have mired the US in multiple crises",
     "category": null,
     "impacts": [
       {
@@ -133,165 +173,342 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:22:02+05:30",
-    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
-    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "ran_at": "2026-07-19T17:10:35+05:30",
+    "url": "https://www.theguardian.com/media/2026/jul/19/money-soft-power-draining-world-cup-football-magic-fifa",
+    "title": "Are money and soft power draining World Cup football of its magic? | Richard Partington",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T17:40:42+05:30",
+    "url": "https://www.ndtvprofit.com/technology/india-uses-ai-to-stress-test-nearly-500-government-apps-for-cyber-vulnerabilities-11791875",
+    "title": "India Uses AI To Stress-Test Nearly 500 Government Apps For Cyber Vulnerabilities",
     "category": null,
     "impacts": [
       {
         "ticker": "IRCON",
-        "score": 9,
-        "reason": "rail, rail project, high-speed rail"
+        "score": 6,
+        "reason": "infrastructure, rail"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T17:40:42+05:30",
+    "url": "https://sports.ndtv.com/fifa-world-cup-2026/jude-bellinghams-emotional-admission-after-englands-3rd-place-win-goes-viral-11791033",
+    "title": "Bellingham's Emotional Admission After England's 3rd Place Win Goes Viral",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T17:40:42+05:30",
+    "url": "https://www.ndtv.com/entertainment/meet-the-dhurandhar-team-behind-the-national-film-award-winning-film-article-370-11791812",
+    "title": "Meet The 'Dhurandhar' Team Behind National Film Award-Winning Film Article 370",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T17:40:42+05:30",
+    "url": "https://www.thehindu.com/news/national/telangana/telangana-employees-health-scheme-suffers-birth-pangs/article71240981.ece",
+    "title": "Telangana Employees Health Scheme suffers birth pangs",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "telangana"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T18:10:49+05:30",
+    "url": "https://www.theguardian.com/us-news/2026/jul/19/trump-palm-beach-airport-renamed",
+    "title": "Trump\u2019s rebranding of Palm Beach airport hasn\u2019t taken off as he planned",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T18:40:57+05:30",
+    "url": "https://indianexpress.com/article/india/indian-railways-clarification-hydrogen-train-diesel-engine-viral-video-10793848/",
+    "title": "Indian Railways clarifies after video of hydrogen train pulled by diesel engine goes viral",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 11,
+        "reason": "indian railways, rail, railways"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T19:11:02+05:30",
+    "url": "https://www.thehindubusinessline.com/news/national/ram-temple-donation-theft-neet-paper-leak-to-dominate-indias-parliament-session/article71241366.ece",
+    "title": "Ram temple donation theft, NEET paper leak to dominate India\u2019s parliament session",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "BALRAMCHIN",
+        "score": 5,
+        "reason": "monsoon, ethanol"
+      }
+    ],
+    "sentiment": {
+      "BALRAMCHIN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "monsoon",
+        "name": "Monsoon / Rainfall",
+        "signals": [
+          "monsoon"
+        ],
+        "affected_tickers": [
+          "ITC",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T19:11:02+05:30",
+    "url": "https://www.thehindu.com/news/national/andhra-pradesh/tdpp-seeks-legislation-to-sternly-deal-with-social-media-abuse/article71241340.ece",
+    "title": "TDPP seeks legislation to sternly deal with social media abuse",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "monsoon, tobacco"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "bullish",
+        "confidence": "low",
+        "net_score": 1,
+        "bullish_signals": [
+          "monsoon"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: monsoon"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "monsoon",
+        "name": "Monsoon / Rainfall",
+        "signals": [
+          "monsoon"
+        ],
+        "affected_tickers": [
+          "ITC",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T19:41:08+05:30",
+    "url": "https://www.livemint.com/companies/news/reliance-retail-plans-to-expand-online-business-and-dark-stores-in-fy27-cfo-dinesh-taluja-lays-out-three-year-roadmap-11784466003212.html",
+    "title": "Reliance Retail plans to expand online business and dark stores in FY27, CFO Dinesh Taluja lays out three-year roadmap",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 13,
+        "reason": "retail, reliance, reliance retail"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T19:41:08+05:30",
+    "url": "https://www.thehindu.com/news/national/andhra-pradesh/high-speed-rail-corridor-likely-to-boost-connectivity-in-rayalaseema-says-mla/article71241280.ece",
+    "title": "High-speed rail corridor likely to boost connectivity in Rayalaseema, says MLA",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 5,
+        "reason": "rail, high-speed rail"
       }
     ],
     "sentiment": {
       "IRCON": {
         "direction": "bullish",
-        "confidence": "medium",
-        "net_score": 2,
+        "confidence": "low",
+        "net_score": 1,
         "bullish_signals": [
-          "bullet train",
           "high-speed rail"
         ],
         "bearish_signals": [],
-        "key_reason": "positive: bullet train, high-speed rail"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "mumbai"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:22:11+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
+        "key_reason": "positive: high-speed rail"
       }
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:22:11+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:22:11+05:30",
-    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
-    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "KNRCON",
-        "score": 6,
-        "reason": "highways, highway"
-      }
-    ],
-    "sentiment": {
-      "KNRCON": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "delhi"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:22:11+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "ran_at": "2026-07-19T20:11:13+05:30",
+    "url": "https://timesofindia.indiatimes.com/india/parliament-should-discuss-if-new-anti-defection-law-needed-congress-manish-tewari-after-tmc-shiv-sena-ubt-splits/articleshow/132495561.cms",
+    "title": "'Parliament should discuss if new anti-defection law needed': Congress' Manish Tewari after TMC, Shiv Sena (UBT) splits",
     "category": null,
     "impacts": [
       {
@@ -310,14 +527,93 @@
         "key_reason": "no clear directional signal"
       }
     },
-    "indian_themes": [],
+    "indian_themes": [
+      {
+        "theme": "local_politics",
+        "name": "State / Local Politics",
+        "signals": [
+          "lok sabha"
+        ],
+        "affected_tickers": [
+          "BANKBARODA",
+          "KNRCON",
+          "IRCON",
+          "ITC"
+        ]
+      }
+    ],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:22:11+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "ran_at": "2026-07-19T20:41:18+05:30",
+    "url": "https://www.bbc.co.uk/news/articles/c5ywxp2d826o?at_medium=RSS&at_campaign=rss",
+    "title": "The 1975's Matty Healy marries model Gabbriette Bechtel in Los Angeles",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 5,
+        "reason": "ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T21:11:26+05:30",
+    "url": "https://www.ndtvprofit.com/markets/corporate-actions-this-week-angel-one-bharti-airtel-hero-motocorp-zydus-lifesciences-and-pidilite-industries-full-list-11792470",
+    "title": "Corporate Actions: Angel One, Bharti Airtel, Hero MotoCorp, Zydus Lifesciences | Full List",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "NTPCGREEN",
+        "score": 7,
+        "reason": "rpo, ngel"
+      }
+    ],
+    "sentiment": {
+      "NTPCGREEN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "auto_sales",
+        "name": "Auto Sales / 2W Numbers",
+        "signals": [
+          "hero motocorp"
+        ],
+        "affected_tickers": [
+          "KNRCON",
+          "BANKBARODA",
+          "JIOFIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T22:11:39+05:30",
+    "url": "https://www.theguardian.com/business/2026/jul/19/thames-water-creditors-prepare-legal-fight-nationalisation",
+    "title": "Thames Water creditors prepare for legal fight over possible nationalisation",
     "category": null,
     "impacts": [
       {
@@ -338,65 +634,48 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:22:11+05:30",
-    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
-    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "ran_at": "2026-07-19T22:11:39+05:30",
+    "url": "https://www.theguardian.com/business/2026/jul/19/thames-water-creditors-prepare-legal-fight-nationalisation",
+    "title": "Thames Water creditors prepare for legal fight over possible nationalisation",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-19T22:11:39+05:30",
+    "url": "https://www.thehindu.com/news/national/telangana/railways-urged-to-grant-approval-for-mmts-halt-stations-at-anandbagh-and-loyola-college/article71242122.ece",
+    "title": "Railways urged to grant approval for MMTS halt stations at Anandbagh and Loyola College",
     "category": null,
     "impacts": [
       {
         "ticker": "IRCON",
         "score": 9,
-        "reason": "rail, rail project, high-speed rail"
+        "reason": "rail, railways, railway"
       }
     ],
     "sentiment": {
       "IRCON": {
-        "direction": "bullish",
-        "confidence": "medium",
-        "net_score": 2,
-        "bullish_signals": [
-          "bullet train",
-          "high-speed rail"
-        ],
-        "bearish_signals": [],
-        "key_reason": "positive: bullet train, high-speed rail"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "mumbai"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:27:51+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
         "direction": "neutral",
         "confidence": "low",
         "net_score": 0,
@@ -407,96 +686,12 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:27:51+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:27:51+05:30",
-    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
-    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "KNRCON",
-        "score": 6,
-        "reason": "highways, highway"
-      }
-    ],
-    "sentiment": {
-      "KNRCON": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "delhi"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:27:51+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "ran_at": "2026-07-19T23:41:55+05:30",
+    "url": "https://www.ndtv.com/feature/us-families-sue-hospital-claiming-their-children-were-switched-at-birth-38-years-ago-11792872",
+    "title": "Switched At Birth, 2 Men Live Each Other's Lives For 38 Years",
     "category": null,
     "impacts": [
       {
@@ -517,18 +712,18 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:27:51+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "ran_at": "2026-07-19T23:41:55+05:30",
+    "url": "https://www.ndtvprofit.com/business/relaince-retail-to-rapidly-scale-online-business-expand-dark-stores-to-boosts-margins-earnings-growth-11792819",
+    "title": "Reliance Retail To Rapidly Scale Online Business, Expand Dark Stores To Boosts Margins",
     "category": null,
     "impacts": [
       {
         "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
+        "score": 13,
+        "reason": "retail, reliance, reliance retail"
       }
     ],
     "sentiment": {
@@ -543,165 +738,12 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:27:51+05:30",
-    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
-    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "IRCON",
-        "score": 9,
-        "reason": "rail project, high-speed rail, rail"
-      }
-    ],
-    "sentiment": {
-      "IRCON": {
-        "direction": "bullish",
-        "confidence": "medium",
-        "net_score": 2,
-        "bullish_signals": [
-          "bullet train",
-          "high-speed rail"
-        ],
-        "bearish_signals": [],
-        "key_reason": "positive: bullet train, high-speed rail"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "mumbai"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:27:54+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:27:54+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:27:54+05:30",
-    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
-    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "KNRCON",
-        "score": 6,
-        "reason": "highways, highway"
-      }
-    ],
-    "sentiment": {
-      "KNRCON": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "delhi"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:27:54+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.bbc.co.uk/news/articles/c0kyml1zxz4o?at_medium=RSS&at_campaign=rss",
+    "title": "This farmer wanted to quit the cocaine industry - he couldn't",
     "category": null,
     "impacts": [
       {
@@ -722,191 +764,12 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:27:54+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:27:54+05:30",
-    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
-    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "IRCON",
-        "score": 9,
-        "reason": "rail project, high-speed rail, rail"
-      }
-    ],
-    "sentiment": {
-      "IRCON": {
-        "direction": "bullish",
-        "confidence": "medium",
-        "net_score": 2,
-        "bullish_signals": [
-          "bullet train",
-          "high-speed rail"
-        ],
-        "bearish_signals": [],
-        "key_reason": "positive: bullet train, high-speed rail"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "mumbai"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:28:04+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:28:04+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:28:04+05:30",
-    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
-    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "KNRCON",
-        "score": 6,
-        "reason": "highways, highway"
-      }
-    ],
-    "sentiment": {
-      "KNRCON": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "delhi"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:28:04+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.bbc.co.uk/news/articles/c0kyml1zxz4o?at_medium=RSS&at_campaign=rss",
+    "title": "This farmer wanted to quit the cocaine industry - he couldn't",
     "category": null,
     "impacts": [
       {
@@ -927,161 +790,70 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:28:04+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.theguardian.com/world/2026/jul/20/us-strikes-iran-strait-of-hormuz-oil-prices",
+    "title": "US launches ninth night of Iran strikes as strait of Hormuz standoff sees oil price pass $90 a barrel",
     "category": null,
     "impacts": [
       {
         "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
+        "score": 4,
+        "reason": "brent crude, oil price"
       }
     ],
     "sentiment": {
       "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:28:04+05:30",
-    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
-    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "IRCON",
-        "score": 9,
-        "reason": "rail project, high-speed rail, rail"
-      }
-    ],
-    "sentiment": {
-      "IRCON": {
         "direction": "bullish",
-        "confidence": "medium",
-        "net_score": 2,
+        "confidence": "high",
+        "net_score": 4,
         "bullish_signals": [
-          "bullet train",
-          "high-speed rail"
+          "brent crude",
+          "crude oil price",
+          "crude oil prices",
+          "oil price",
+          "oil prices"
         ],
-        "bearish_signals": [],
-        "key_reason": "positive: bullet train, high-speed rail"
+        "bearish_signals": [
+          "price war"
+        ],
+        "key_reason": "positive: brent crude, crude oil price, crude oil prices"
       }
     },
     "indian_themes": [
       {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
         "signals": [
-          "mumbai"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:42+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:42+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
+          "crude oil",
+          "brent"
         ],
         "affected_tickers": [
           "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
+          "BALRAMCHIN",
+          "KNRCON"
         ]
       }
     ],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:42+05:30",
-    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
-    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.theguardian.com/politics/2026/jul/19/burnham-warn-uk-honest-challenges-prepares-become-pm",
+    "title": "Burnham to say UK must be honest about its challenges as he prepares to become PM",
     "category": null,
     "impacts": [
       {
-        "ticker": "KNRCON",
-        "score": 6,
-        "reason": "highway, highways"
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
       }
     ],
     "sentiment": {
-      "KNRCON": {
+      "RELIANCE": {
         "direction": "neutral",
         "confidence": "low",
         "net_score": 0,
@@ -1090,28 +862,92 @@
         "key_reason": "no clear directional signal"
       }
     },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "delhi"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
+    "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:42+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.theguardian.com/politics/2026/jul/19/no-10-north-utilities-north-sea-drilling-andy-burnham-plans-government",
+    "title": "Fossil fuels, utilities and housing: what we know about Andy Burnham\u2019s plans",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.investing.com/news/stock-market-news/suzukis-nofrills-cars-once-ruled-india-then-buyers-demanded-frills-4799798",
+    "title": "Suzuki\u2019s no-frills cars once ruled India. Then buyers demanded frills.",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.investing.com/news/stock-market-news/analysiscould-ai-chip-boom-make-asml-europes-first-trilliondollar-firm-4799801",
+    "title": "Analysis-Could AI chip boom make ASML Europe\u2019s first trillion-dollar firm?",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.ft.com/content/07ec1df0-7ded-45e0-aad9-9dde31d6ba15?syn-25a6b1a6=1",
+    "title": "Trump Media\u2019s pitched fee for early access to posts",
     "category": null,
     "impacts": [
       {
@@ -1132,12 +968,124 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:42+05:30",
-    "url": "https://www.thehindubusinessline.com/markets/commodities/india-plans-to-cut-reliance-on-west-asian-oil-after-war-shock/article71165388.ece",
-    "title": "India plans to cut reliance on West Asian oil after war shock",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.business-standard.com/finance/news/rupee-falls-12-paise-to-96-42-against-us-dollar-during-early-trade-126072000230_1.html",
+    "title": "Rupee falls 12 paise to 96.42 against US dollar during early trade",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 6,
+        "reason": "brent crude, crude oil price, oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 3,
+        "bullish_signals": [
+          "brent crude",
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: brent crude, crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "crude oil",
+          "brent"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/q1-results-today-live-updates-ultratech-cement-paytm-iob-karur-vysya-bank-shyam-metalics-sobha-jp-power-bluestone-hdfc-bank-kotak-icici-yes-bank-axis-bank-ril-results-20-july-2026/article71241085.ece",
+    "title": "Q1 Results Today Live: UltraTech, Paytm, IOB, KVB, Shyam Metalics, Sobha, JP Power, Bluestone to announce Q1 results, RIL & ICICI Bank gain after Q1, HDFC Bank, Kotak Mahindra, Axis Bank shares fall",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 5,
+        "reason": "ril"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "auto_sales",
+        "name": "Auto Sales / 2W Numbers",
+        "signals": [
+          "mahindra"
+        ],
+        "affected_tickers": [
+          "KNRCON",
+          "BANKBARODA",
+          "JIOFIN"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.thehindubusinessline.com/money-and-banking/wedge-between-deposit-growth-and-credit-growth-may-continue-with-geo-political-risks-sbi-research/article71243883.ece",
+    "title": "Wedge between deposit growth and credit growth may continue with geo-political risks: SBI Research",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "BANKBARODA",
+        "score": 7,
+        "reason": "deposit growth, banking, credit growth"
+      }
+    ],
+    "sentiment": {
+      "BANKBARODA": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 2,
+        "bullish_signals": [
+          "credit growth",
+          "deposit growth"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: credit growth, deposit growth"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/stock-markets/reliance-shares-nudge-higher-as-record-q1-earnings-draw-analyst-upgrades/article71243871.ece",
+    "title": "Reliance shares nudge higher as record Q1 earnings draw analyst upgrades",
     "category": null,
     "impacts": [
       {
@@ -1158,217 +1106,54 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:42+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/commodities/brent-crude-oil-tops-90-as-us-iran-intensify-attacks/article71243683.ece",
+    "title": "Brent crude oil tops $90 as US, Iran intensify attacks",
     "category": null,
     "impacts": [
       {
         "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
+        "score": 7,
+        "reason": "ril, brent crude"
       }
     ],
     "sentiment": {
       "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:42+05:30",
-    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
-    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "IRCON",
-        "score": 9,
-        "reason": "bullet train, rail project, high-speed rail"
-      }
-    ],
-    "sentiment": {
-      "IRCON": {
         "direction": "bullish",
-        "confidence": "medium",
-        "net_score": 2,
+        "confidence": "low",
+        "net_score": 1,
         "bullish_signals": [
-          "bullet train",
-          "high-speed rail"
+          "brent crude"
         ],
         "bearish_signals": [],
-        "key_reason": "positive: bullet train, high-speed rail"
+        "key_reason": "positive: brent crude"
       }
     },
     "indian_themes": [
       {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
         "signals": [
-          "mumbai"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:45+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:45+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
+          "crude oil",
+          "brent"
         ],
         "affected_tickers": [
           "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
+          "BALRAMCHIN",
+          "KNRCON"
         ]
       }
     ],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:45+05:30",
-    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
-    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "KNRCON",
-        "score": 6,
-        "reason": "highway, highways"
-      }
-    ],
-    "sentiment": {
-      "KNRCON": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "delhi"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:45+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "ITC",
-        "score": 5,
-        "reason": "itc"
-      }
-    ],
-    "sentiment": {
-      "ITC": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:45+05:30",
-    "url": "https://www.thehindubusinessline.com/markets/commodities/india-plans-to-cut-reliance-on-west-asian-oil-after-war-shock/article71165388.ece",
-    "title": "India plans to cut reliance on West Asian oil after war shock",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.ndtvprofit.com/markets/reliance-infrastructure-shares-hit-5-percent-lower-circuit-after-cbi-search-operation-key-details-inside-11794118",
+    "title": "Reliance Infrastructure Shares Hit 5% Lower Circuit After CBI Search Operation Key Detail",
     "category": null,
     "impacts": [
       {
@@ -1389,81 +1174,40 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:45+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:45+05:30",
-    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
-    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://indianexpress.com/article/india/india-bullet-train-e10-shinkansen-delay-10794267/",
+    "title": "India chose to have its own bullet train as Japan could not have delivered E10 before 2034: Railway official",
     "category": null,
     "impacts": [
       {
         "ticker": "IRCON",
-        "score": 9,
-        "reason": "bullet train, rail project, high-speed rail"
+        "score": 8,
+        "reason": "rail, railway, bullet train"
       }
     ],
     "sentiment": {
       "IRCON": {
         "direction": "bullish",
-        "confidence": "medium",
-        "net_score": 2,
+        "confidence": "low",
+        "net_score": 1,
         "bullish_signals": [
-          "bullet train",
-          "high-speed rail"
+          "bullet train"
         ],
         "bearish_signals": [],
-        "key_reason": "positive: bullet train, high-speed rail"
+        "key_reason": "positive: bullet train"
       }
     },
-    "indian_themes": [
-      {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
-        "signals": [
-          "mumbai"
-        ],
-        "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
-        ]
-      }
-    ],
+    "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:54+05:30",
-    "url": "https://www.cnbc.com/2026/06/30/magnificent-7-stocks-sell-off-investors-grow-jittery-on-ai-spending.html",
-    "title": "Mag 7 value shrinks by $2.3 trillion amid AI spending jitters \u2014 but investors are still backing chipmakers",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.thehindu.com/news/national/india-advises-citizens-to-postpone-travel-to-iran-amid-rising-instability/article71243674.ece",
+    "title": "India advises citizens to postpone travel to Iran amid rising instability",
     "category": null,
     "impacts": [
       {
@@ -1484,66 +1228,22 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:54+05:30",
-    "url": "https://www.business-standard.com/finance/news/govt-approves-1-25-trillion-outlay-for-india-semiconductor-mission-2-0-126063000569_1.html",
-    "title": "Govt approves \u20b91.25 trillion outlay for India Semiconductor Mission 2.0",
+    "ran_at": "2026-07-20T10:55:31+05:30",
+    "url": "https://www.thehindu.com/news/national/maharashtra/maharashtra-govt-allows-hotels-restaurants-bars-to-remain-open-till-4-am-for-fifa-world-cup-final/article71242712.ece",
+    "title": "Maharashtra govt allows hotels, restaurants, bars to remain open till 4 a.m. for FIFA World Cup final",
     "category": null,
     "impacts": [
       {
-        "ticker": "RELIANCE",
-        "score": 5,
-        "reason": "ril"
-      }
-    ],
-    "sentiment": {
-      "RELIANCE": {
-        "direction": "neutral",
-        "confidence": "low",
-        "net_score": 0,
-        "bullish_signals": [],
-        "bearish_signals": [],
-        "key_reason": "no clear directional signal"
-      }
-    },
-    "indian_themes": [
-      {
-        "theme": "global_supply_chain",
-        "name": "Global Supply Chain / Trade",
-        "signals": [
-          "semiconductor"
-        ],
-        "affected_tickers": [
-          "RELIANCE",
-          "KNRCON",
-          "ITC",
-          "JIOFIN",
-          "BANKBARODA",
-          "NTPCGREEN",
-          "IRCON",
-          "BALRAMCHIN"
-        ]
-      }
-    ],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:54+05:30",
-    "url": "https://www.livemint.com/companies/news/uber-launches-in-app-ride-video-recording-ambulance-feature-in-india-nitin-gadkari-lauds-road-safety-push-accidents-11782814940677.html",
-    "title": "Uber launches in-app ride video recording, ambulance feature in India; Nitin Gadkari lauds road safety push",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "KNRCON",
+        "ticker": "ITC",
         "score": 6,
-        "reason": "highway, highways"
+        "reason": "hospitality, hotel"
       }
     ],
     "sentiment": {
-      "KNRCON": {
+      "ITC": {
         "direction": "neutral",
         "confidence": "low",
         "net_score": 0,
@@ -1557,7 +1257,8 @@
         "theme": "local_politics",
         "name": "State / Local Politics",
         "signals": [
-          "delhi"
+          "mumbai",
+          "maharashtra"
         ],
         "affected_tickers": [
           "BANKBARODA",
@@ -1568,12 +1269,51 @@
       }
     ],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:54+05:30",
-    "url": "https://www.livemint.com/companies/modenik-lifestyle-innerwear-growth-strategy-enamor-dixcy-scott-levis-11782801823595.html",
-    "title": "Stitching together growth: Modenik bets on legacy brands in India's innerwear battle",
+    "ran_at": "2026-07-20T11:26:22+05:30",
+    "url": "https://www.livemint.com/politics/news/in-his-monsoon-session-opening-remarks-pm-modi-takes-swipe-at-56-year-old-youth-rahul-gandhi-cjp-march-11784521662758.html",
+    "title": "In Parliament Session opening remarks, PM Modi takes swipe at '56-year-old youth' Rahul Gandhi",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "BALRAMCHIN",
+        "score": 5,
+        "reason": "monsoon, ethanol"
+      }
+    ],
+    "sentiment": {
+      "BALRAMCHIN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "monsoon",
+        "name": "Monsoon / Rainfall",
+        "signals": [
+          "monsoon"
+        ],
+        "affected_tickers": [
+          "ITC",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T11:56:27+05:30",
+    "url": "https://www.thehindubusinessline.com/money-and-banking/cryptocurrency/bitcoin-etfs-log-second-week-of-inflows-breaking-two-month-rout/article71244070.ece",
+    "title": "Bitcoin ETFs log second week of inflows, breaking two-month rout",
     "category": null,
     "impacts": [
       {
@@ -1594,22 +1334,22 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:54+05:30",
-    "url": "https://www.thehindubusinessline.com/markets/commodities/india-plans-to-cut-reliance-on-west-asian-oil-after-war-shock/article71165388.ece",
-    "title": "India plans to cut reliance on West Asian oil after war shock",
+    "ran_at": "2026-07-20T12:26:30+05:30",
+    "url": "https://www.investing.com/news/company-news/ringkjbing-landbobank-buys-back-shares-worth-dkk-213m-93CH-4799873",
+    "title": "Ringkj\u00f8bing Landbobank buys back shares worth DKK 21.3m",
     "category": null,
     "impacts": [
       {
-        "ticker": "RELIANCE",
+        "ticker": "BANKBARODA",
         "score": 5,
-        "reason": "reliance"
+        "reason": "bob"
       }
     ],
     "sentiment": {
-      "RELIANCE": {
+      "BANKBARODA": {
         "direction": "neutral",
         "confidence": "low",
         "net_score": 0,
@@ -1620,12 +1360,90 @@
     },
     "indian_themes": [],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
   },
   {
-    "ran_at": "2026-06-30T16:35:54+05:30",
-    "url": "https://www.ndtvprofit.com/markets/transformers-rectifiers-shares-jump-over-7-after-securing-rs-1-000-crore-power-grid-order-11706840",
-    "title": "Transformers & Rectifiers Shares Jump Over 7% On Securing Rs 1,000-Crore Power Grid Order",
+    "ran_at": "2026-07-20T12:26:30+05:30",
+    "url": "https://www.business-standard.com/finance/personal-finance/automatic-epf-transfer-after-a-job-switch-here-s-what-can-delay-it-126072000421_1.html",
+    "title": "Automatic EPF transfer after a job switch? Here's what can delay it",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "ITC",
+        "score": 5,
+        "reason": "itc"
+      }
+    ],
+    "sentiment": {
+      "ITC": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T12:26:30+05:30",
+    "url": "https://www.thehindubusinessline.com/markets/stock-markets/sg-finserve-stock-jumps-7-as-nbfc-ties-up-with-bharatpe-money-successship-for-digital-merchant-lending/article71244086.ece",
+    "title": "SG Finserve stock jumps 7% as NBFC ties up with BharatPe Money, Successship for digital merchant lending",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "JIOFIN",
+        "score": 6,
+        "reason": "nbfc, lending"
+      }
+    ],
+    "sentiment": {
+      "JIOFIN": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T12:26:30+05:30",
+    "url": "https://indianexpress.com/article/india/assam-floods-train-services-suspended-simaluguri-namtiali-selenghat-indian-railways-10794698/",
+    "title": "Assam floods halt train services: Indian Railways suspends operations in Simaluguri",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "IRCON",
+        "score": 11,
+        "reason": "rail, railway, indian railways"
+      }
+    ],
+    "sentiment": {
+      "IRCON": {
+        "direction": "neutral",
+        "confidence": "low",
+        "net_score": 0,
+        "bullish_signals": [],
+        "bearish_signals": [],
+        "key_reason": "no clear directional signal"
+      }
+    },
+    "indian_themes": [],
+    "is_generic_only": false,
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T12:26:30+05:30",
+    "url": "https://www.thehindu.com/news/national/uttarakhand/chardham-yatra-temporarily-halted-owing-to-heavy-rains-in-uttarakhand/article71244084.ece",
+    "title": "Chardham Yatra temporarily halted owing to heavy rains in Uttarakhand",
     "category": null,
     "impacts": [
       {
@@ -1644,51 +1462,64 @@
         "key_reason": "no clear directional signal"
       }
     },
-    "indian_themes": [],
-    "is_generic_only": false,
-    "telegram_sent": false
-  },
-  {
-    "ran_at": "2026-06-30T16:35:54+05:30",
-    "url": "https://indianexpress.com/article/india/mumbai-ahmedabad-bullet-train-how-indias-first-high-speed-rail-project-could-transform-the-regional-economy-10764445/",
-    "title": "Mumbai-Ahmedabad bullet train: How India\u2019s first high-speed rail project could transform the regional economy",
-    "category": null,
-    "impacts": [
-      {
-        "ticker": "IRCON",
-        "score": 9,
-        "reason": "bullet train, rail project, high-speed rail"
-      }
-    ],
-    "sentiment": {
-      "IRCON": {
-        "direction": "bullish",
-        "confidence": "medium",
-        "net_score": 2,
-        "bullish_signals": [
-          "bullet train",
-          "high-speed rail"
-        ],
-        "bearish_signals": [],
-        "key_reason": "positive: bullet train, high-speed rail"
-      }
-    },
     "indian_themes": [
       {
-        "theme": "local_politics",
-        "name": "State / Local Politics",
+        "theme": "monsoon",
+        "name": "Monsoon / Rainfall",
         "signals": [
-          "mumbai"
+          "rainfall"
         ],
         "affected_tickers": [
-          "BANKBARODA",
-          "KNRCON",
-          "IRCON",
-          "ITC"
+          "ITC",
+          "BALRAMCHIN",
+          "KNRCON"
         ]
       }
     ],
     "is_generic_only": false,
-    "telegram_sent": false
+    "telegram_sent": true
+  },
+  {
+    "ran_at": "2026-07-20T13:30:12+05:30",
+    "url": "https://www.bbc.co.uk/news/articles/cn8nldwj12jo?at_medium=RSS&at_campaign=rss",
+    "title": "Ryanair profits drop as Iran war puts off passengers and lifts fuel costs",
+    "category": null,
+    "impacts": [
+      {
+        "ticker": "RELIANCE",
+        "score": 4,
+        "reason": "brent crude, oil price"
+      }
+    ],
+    "sentiment": {
+      "RELIANCE": {
+        "direction": "bullish",
+        "confidence": "medium",
+        "net_score": 3,
+        "bullish_signals": [
+          "brent crude",
+          "crude oil prices",
+          "oil prices"
+        ],
+        "bearish_signals": [],
+        "key_reason": "positive: brent crude, crude oil prices, oil prices"
+      }
+    },
+    "indian_themes": [
+      {
+        "theme": "commodity_prices",
+        "name": "Commodity Prices",
+        "signals": [
+          "brent"
+        ],
+        "affected_tickers": [
+          "RELIANCE",
+          "BALRAMCHIN",
+          "KNRCON"
+        ]
+      }
+    ],
+    "is_generic_only": false,
+    "telegram_sent": true
   }
 ]
