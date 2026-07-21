@@ -4,6 +4,6 @@
   "private": true,
   "description": "Node tests for the Personal ITR Workbook tax engine",
   "scripts": {
-    "test": "node --test js/tests/test_tax_engine.spec.js js/tests/test_statutory_compliance.spec.js js/tests/test_schema_validation.spec.js"
+    "test": "node --test js/tests/test_tax_engine.spec.js js/tests/test_statutory_compliance.spec.js js/tests/test_schema_validation.spec.js js/tests/test_integrations.spec.js"
   }
 }
