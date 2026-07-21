@@ -303,21 +303,33 @@
 
   /**
    * Save a workbook to localStorage. Returns the workbook on success.
+   * In Node.js (no localStorage), this is a no-op (returns the workbook
+   * unchanged). Tests can detect the save by spying on the function.
    */
   function saveWorkbook(workbook) {
     if (!workbook || !workbook.ay) {
       throw new Error("saveWorkbook: workbook.ay is required");
     }
     workbook.updated_at = new Date().toISOString();
-    localStorage.setItem(storageKey(workbook.ay), JSON.stringify(workbook));
+    if (typeof localStorage !== "undefined" && localStorage) {
+      try {
+        localStorage.setItem(storageKey(workbook.ay), JSON.stringify(workbook));
+      } catch (e) {
+        // localStorage might be disabled (private mode, quota exceeded)
+        // Don't crash — just log and return.
+        console.warn("saveWorkbook: localStorage write failed:", e);
+      }
+    }
     return workbook;
   }
 
   /**
    * Load a workbook from localStorage. Returns the merged (with
-   * defaults) workbook, or null if none exists.
+   * defaults) workbook, or null if none exists. In Node.js
+   * (no localStorage), always returns null.
    */
   function loadWorkbook(ay) {
+    if (typeof localStorage === "undefined" || !localStorage) return null;
     const raw = localStorage.getItem(storageKey(ay));
     if (!raw) return null;
     try {
@@ -333,6 +345,7 @@
    * List all AYs that have a saved workbook.
    */
   function listSavedAys() {
+    if (typeof localStorage === "undefined" || !localStorage) return [];
     const result = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -348,6 +361,7 @@
    * Delete a workbook from localStorage. Returns true on success.
    */
   function deleteWorkbook(ay) {
+    if (typeof localStorage === "undefined" || !localStorage) return true;
     localStorage.removeItem(storageKey(ay));
     return true;
   }
@@ -356,6 +370,7 @@
    * Delete ALL workbooks. Used by a "Reset all data" button.
    */
   function deleteAllWorkbooks() {
+    if (typeof localStorage === "undefined" || !localStorage) return 0;
     const toDelete = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);

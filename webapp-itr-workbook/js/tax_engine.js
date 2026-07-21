@@ -431,6 +431,27 @@
    * @returns {Object} Detailed computation
    */
   function computeForRegime(wb, regimeKind) {
+    // Defensive: if wb is null/undefined or has no ay, build an
+    // empty AY 2025-26 workbook inline (so callers don't have to
+    // null-check). Mirrors data_model.emptyWorkbook for AY 2025-26.
+    if (!wb || !wb.ay) {
+      const dm = (typeof window !== "undefined" && window.taxDataModel) ||
+                  (typeof require !== "undefined" && require("./data_model.js"));
+      if (dm && typeof dm.emptyWorkbook === "function") {
+        wb = dm.emptyWorkbook("2025-26");
+      } else {
+        // Fallback: minimal empty shape (shouldn't happen in practice)
+        wb = {
+          ay: "2025-26",
+          salary: { employers: [], tds_total: 0 },
+          house_property: { properties: [] },
+          other_sources: {},
+          capital_gains: {},
+          deductions: {},
+          taxes_paid: {},
+        };
+      }
+    }
     const ay = wb.ay;
     const cfgs = getRegimeConfigs(ay);
     const regime = regimeKind === "new" ? cfgs.new : cfgs.old;
