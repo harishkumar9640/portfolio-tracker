@@ -391,6 +391,65 @@ portfolio-tracker/
 
 ---
 
+## Sub-projects
+
+Two **standalone, client-side** web apps live alongside the main
+FastAPI dashboard. Each is a separate Vercel project with its own
+URL, its own deployment, and its own tests. They share the
+"no backend, no data leaves the browser" architecture.
+
+### `webapp-static-tax/` — static Tax P&L viewer
+
+A pure-frontend HTML/JS app that reads a broker Tax P&L xlsx/CSV
+(Angel One, Zerodha, or any tabular file with manual column
+mapping), shows the capital gains breakdown, a pie/bar chart of
+where every rupee went, and downloads a self-contained HTML
+report. Files never leave the browser.
+
+- **Path on this machine:** `webapp-static-tax/`
+- **Live URL:** https://tax-pnl-pied.vercel.app
+- **Branch:** `feature/static-tax-pnl-poc`
+- **Tests:** `tests/static/` — 233 tests via `npm test`
+- **Stack:** HTML + SheetJS + Plotly, all from CDN. No backend.
+
+### `webapp-itr-workbook/` — Personal ITR-1 / ITR-2 checker
+
+A privacy-first ITR workbook for the ~70% of Indian taxpayers who
+file ITR-1 or ITR-2 (salaried + small investor). Same architecture:
+no backend, all data in `localStorage`. Computes tax under both
+old and new regimes with a side-by-side comparison and a
+recommendation, supports Form 16 PDF and Form 26AS JSON import.
+
+- **Path on this machine:** `webapp-itr-workbook/`
+- **Branch:** `feature/itr-workbook`
+- **Tests:** 233 tests in 7 suites via `npm test` (~160ms total):
+  - Suite 1: Statutory Compliance & Tax Logic (48 tests)
+  - Suite 2: Schema Validation (38 tests)
+  - Suite 3: API Integration & E-Filing (28 tests)
+  - Suite 4: Security & Data Privacy (27 tests)
+  - Suite 5: Functional Stability (25 tests)
+  - Suite 6: Performance & Non-Functional Stability (17 tests)
+  - Suite 7: Industry Benchmarking (24 tests)
+  - Engine (26 tests)
+- **Stack:** Pure JS, no build step, no npm runtime deps. ~68KB
+  total source. The HTML UI is planned for v2; the engine is
+  fully usable via Node REPL or as a library today.
+
+### Why these are separate projects (not routes on the main app)
+
+1. **Different deployment lifecycles.** The main dashboard
+   depends on a Python backend and APIs. These are pure static
+   files. Mixing them would slow down deploys of either.
+2. **Different threat models.** The main app authenticates with
+   Angel One, has rate limits, etc. The static apps run entirely
+   in the browser; no auth, no server, no PII leaves the device.
+3. **Different users.** The main dashboard is for you (the
+   portfolio owner). The static apps are tools that can be
+   shared with anyone (your CA, your family) without giving
+   them access to your live portfolio.
+
+---
+
 ## Configuration
 
 ### Environment variables (`.env`)
