@@ -158,6 +158,47 @@ class TestFindAffectedTickers:
         )
         assert "ITC" in scores
 
+    def test_short_alias_does_not_match_inside_unrelated_word(self):
+        """
+        Regression test for a real false positive: the BANKBARODA alias
+        "bob" matched as a substring inside "Landbobank" (an unrelated
+        Danish bank buying back its own shares), producing a bogus
+        direct-hit alert. Whole-word matching must reject this.
+        """
+        scores = _find_affected_tickers(
+            "Ringkj\u00f8bing Landbobank buys back shares worth DKK 21.3m",
+            "",
+        )
+        assert "BANKBARODA" not in scores
+
+    def test_sector_word_does_not_match_inside_unrelated_word(self):
+        """
+        "rail" (IRCON sector keyword) must not match inside "retail" or
+        "trailer", and must not fire just because an unrelated flood
+        story happens to mention train services being suspended without
+        naming IRCON, Indian Railways, or a railway capex/project theme.
+        """
+        scores = _find_affected_tickers(
+            "Retailer opens new trailer park showroom",
+            "Big discounts on retail goods this festive season",
+        )
+        assert "IRCON" not in scores
+
+    def test_generic_bank_word_alone_does_not_trigger_alert_threshold(self):
+        """
+        An unrelated foreign-bank story that only contains the generic
+        word "bank" should not reach the alert threshold for BANKBARODA
+        just from one sector-keyword hit (score 3 < 4).
+        """
+        a_scores = _find_affected_tickers(
+            "Ringkj\u00f8bing Landbobank buys back shares worth DKK 21.3m",
+            "A small Danish bank announced a buyback programme",
+        )
+        # "bank" alone is not one of BANKBARODA's sector keywords
+        # ("psu bank", "public sector bank", etc. require more context),
+        # so no match should occur at all for this unrelated story.
+        assert a_scores.get("BANKBARODA", 0) < 4
+
 
 # ---------- _score_article_for_portfolio ----------
 
@@ -172,16 +213,23 @@ class TestScoreArticle:
         assert not is_generic
         assert any(t == "RELIANCE" for t, _, _ in impacts)
 
-    def test_market_wide_risk_is_generic(self):
+    def test_market_wide_risk_without_specific_hit_is_not_alerted(self):
+        """
+        Generic macro news with no direct/sector/theme keyword match must
+        NOT trigger a portfolio-impact alert, even if it matches a broad
+        risk category. The old behaviour synthesized an "affects all 8
+        holdings" alert purely from the category, which is exactly the
+        noise the user asked to eliminate: alerts must be tied to a real
+        mention of a holding or its sector in the article.
+        """
         a = make_article(
             "S&P 500 plunges 3% on inflation fears",
             "Broad market sell-off continues",
             category="market_risk",
         )
         impacts, is_generic = _score_article_for_portfolio(a)
-        assert is_generic
-        # All 8 tickers should be affected
-        assert len(impacts) == 8
+        assert impacts == []
+        assert is_generic is False
 
     def test_no_match_returns_empty(self):
         a = make_article(
