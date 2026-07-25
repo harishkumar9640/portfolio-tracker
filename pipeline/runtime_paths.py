@@ -61,3 +61,26 @@ def data_root() -> Path:
         root = PROJECT_ROOT / "data"
     root.mkdir(parents=True, exist_ok=True)
     return root
+
+
+def fetch_retry_budget() -> tuple[int, float]:
+    """
+    Return (max_attempts, base_backoff_seconds) for network-fetch retry
+    loops (yfinance, etc.).
+
+    Locally: 3 attempts with a 2s/4s/6s backoff (unchanged behaviour) --
+    fine on a long-lived process where a slow Yahoo Finance response is
+    just a minor delay.
+
+    On Vercel: a single Vercel Function invocation has a hard wall-clock
+    limit (as low as 10s on some plans, up to a few minutes on others).
+    A retry loop with multi-second sleeps run once per ticker, across
+    several tickers, can easily blow past that limit and get killed by
+    the platform with a bare "Internal Server Error" (no Python
+    traceback, since the process is killed from outside). We cut both
+    the attempt count and the backoff down so one slow/blocked ticker
+    can't cascade into a platform timeout.
+    """
+    if is_vercel():
+        return 1, 0.0
+    return 3, 2.0

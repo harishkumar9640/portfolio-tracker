@@ -108,8 +108,10 @@ def _download_one(ticker: str, period: str, interval: str) -> pd.Series:
     (indexed by timestamp). Raises RuntimeError on persistent failure."""
     import yfinance as yf
 
+    from pipeline.runtime_paths import fetch_retry_budget
+    max_attempts, backoff = fetch_retry_budget()
     last_err: Exception | None = None
-    for attempt in range(3):
+    for attempt in range(max_attempts):
         try:
             df = yf.download(
                 ticker,
@@ -128,7 +130,8 @@ def _download_one(ticker: str, period: str, interval: str) -> pd.Series:
                     return s
         except Exception as e:
             last_err = e
-            time.sleep(2 * (attempt + 1))
+            if backoff:
+                time.sleep(backoff * (attempt + 1))
     raise RuntimeError(f"yfinance failed for {ticker}: {last_err}")
 
 
