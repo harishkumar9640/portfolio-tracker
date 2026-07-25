@@ -103,12 +103,13 @@ from .logging_setup import get_logger
 
 log = get_logger("news_alert")
 
-PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data"
-DATA_DIR.mkdir(exist_ok=True)
+from pipeline.runtime_paths import data_root
 
-LOG_FILE = PROJECT / "data/alerts/news/log.json"
-SEEN_FILE = PROJECT / "data/alerts/news/seen.json"
+PROJECT = Path(__file__).resolve().parent.parent
+DATA_DIR = data_root()
+
+LOG_FILE = DATA_DIR / "alerts" / "news" / "log.json"
+SEEN_FILE = DATA_DIR / "alerts" / "news" / "seen.json"
 
 IST = timezone(timedelta(hours=5, minutes=30))
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 PortfolioTracker/1.0"
@@ -645,6 +646,7 @@ def _load_seen() -> dict[str, str]:
 
 
 def _save_seen(seen: dict[str, str]) -> None:
+    SEEN_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = SEEN_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(seen, indent=2))
     tmp.replace(SEEN_FILE)
@@ -968,6 +970,7 @@ def _append_log(entry: dict) -> None:
             log_list = []
     log_list.append(entry)
     log_list = log_list[-30:]
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = LOG_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(log_list, indent=2, default=str))
     tmp.replace(LOG_FILE)

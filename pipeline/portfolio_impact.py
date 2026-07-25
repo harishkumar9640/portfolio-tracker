@@ -64,12 +64,13 @@ from .logging_setup import get_logger
 
 log = get_logger("portfolio_impact")
 
-PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data"
-DATA_DIR.mkdir(exist_ok=True)
+from pipeline.runtime_paths import data_root
 
-IMPACT_LOG_FILE = PROJECT / "data/alerts/portfolio_impact/log.json"
-SEEN_IMPACT_FILE = PROJECT / "data/alerts/portfolio_impact/seen.json"
+PROJECT = Path(__file__).resolve().parent.parent
+DATA_DIR = data_root()
+
+IMPACT_LOG_FILE = DATA_DIR / "alerts" / "portfolio_impact" / "log.json"
+SEEN_IMPACT_FILE = DATA_DIR / "alerts" / "portfolio_impact" / "seen.json"
 
 IST = timezone(timedelta(hours=5, minutes=30))
 USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -480,6 +481,7 @@ def _load_impact_seen() -> dict[str, str]:
 
 
 def _save_impact_seen(seen: dict[str, str]) -> None:
+    SEEN_IMPACT_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = SEEN_IMPACT_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(seen, indent=2))
     tmp.replace(SEEN_IMPACT_FILE)
@@ -494,6 +496,7 @@ def _append_log(entry: dict) -> None:
             log_list = []
     log_list.append(entry)
     log_list = log_list[-50:]
+    IMPACT_LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = IMPACT_LOG_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(log_list, indent=2, default=str))
     tmp.replace(IMPACT_LOG_FILE)

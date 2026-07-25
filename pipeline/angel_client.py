@@ -35,7 +35,8 @@ load_dotenv(PROJECT / ".env")
 # Where we cache the SmartAPI session (jwtToken + refreshToken + feed token).
 # SmartAPI's jwtToken is valid until ~6:30 AM IST next day; caching avoids a
 # fresh TOTP+MPIN login on every script run.
-ANGEL_SESSION_FILE = PROJECT / "data" / "cache" / "angel_session.json"
+from pipeline.runtime_paths import data_root
+ANGEL_SESSION_FILE = data_root() / "cache" / "angel_session.json"
 
 
 def _get(name: str) -> str:

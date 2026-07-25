@@ -81,12 +81,13 @@ from .logging_setup import get_logger
 
 log = get_logger("shareholding_alert")
 
-PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data"
-DATA_DIR.mkdir(exist_ok=True)
+from pipeline.runtime_paths import data_root
 
-PREV_FILE = PROJECT / "data/alerts/shareholding/prev.json"
-LOG_FILE = PROJECT / "data/alerts/shareholding/log.json"
+PROJECT = Path(__file__).resolve().parent.parent
+DATA_DIR = data_root()
+
+PREV_FILE = DATA_DIR / "alerts" / "shareholding" / "prev.json"
+LOG_FILE = DATA_DIR / "alerts" / "shareholding" / "log.json"
 
 IST = timezone(timedelta(hours=5, minutes=30))
 USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -707,6 +708,7 @@ def _save_curr(curr: dict[str, TickerShareholding]) -> None:
             "fetched_at": ts.fetched_at,
             "quarters": [q.to_dict() for q in ts.quarters],
         }
+    PREV_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = PREV_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(serialised, indent=2, default=str))
     tmp.replace(PREV_FILE)
@@ -721,6 +723,7 @@ def _append_log(entry: dict) -> None:
             log_list = []
     log_list.append(entry)
     log_list = log_list[-30:]
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = LOG_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(log_list, indent=2, default=str))
     tmp.replace(LOG_FILE)

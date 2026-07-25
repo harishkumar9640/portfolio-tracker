@@ -37,10 +37,11 @@ from .parallel import map_parallel
 log = get_logger("indices")
 
 # ---------- Config ----------
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data"
-CHARTS_DIR = PROJECT / "data" / "charts"
-DATA_DIR.mkdir(exist_ok=True)
+DATA_DIR = data_root()
+CHARTS_DIR = DATA_DIR / "charts"
 CHARTS_DIR.mkdir(exist_ok=True)
 
 # Map: display_name -> yfinance ticker

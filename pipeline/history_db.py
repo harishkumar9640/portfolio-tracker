@@ -40,11 +40,12 @@ from pathlib import Path
 from typing import Iterable
 
 from .logging_setup import get_logger
+from .runtime_paths import data_root
 
 log = get_logger("history")
 
 PROJECT = Path(__file__).resolve().parent.parent
-DB_FILE = PROJECT / "data" / "history.db"
+DB_FILE = data_root() / "history.db"
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS sgb_price (

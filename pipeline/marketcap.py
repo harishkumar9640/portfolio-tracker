@@ -20,8 +20,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parents[1]
-CACHE_FILE = PROJECT / "data" / "cache" / "marketcap.json"
+CACHE_FILE = data_root() / "cache" / "marketcap.json"
 CACHE_TTL = timedelta(hours=24)
 
 LARGE_CAP_THRESHOLD_CR = 70_000  # in Cr

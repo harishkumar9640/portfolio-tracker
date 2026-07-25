@@ -89,7 +89,8 @@ def _master_list() -> list[dict]:
     global _MASTER_CACHE
     if _MASTER_CACHE is not None:
         return _MASTER_CACHE
-    cache_file = PROJECT / "data" / "cache" / "mf_master_cache.json"
+    from pipeline.runtime_paths import data_root
+    cache_file = data_root() / "cache" / "mf_master_cache.json"
     if cache_file.exists():
         _MASTER_CACHE = json.loads(cache_file.read_text())
         if _MASTER_CACHE:

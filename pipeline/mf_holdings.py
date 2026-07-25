@@ -71,10 +71,11 @@ from .parallel import map_parallel
 
 log = get_logger("mf_holdings")
 
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data"
-DATA_DIR.mkdir(exist_ok=True)
-CACHE_FILE = PROJECT / "data/cache/mf_holdings_cache.json"
+DATA_DIR = data_root()
+CACHE_FILE = DATA_DIR / "cache" / "mf_holdings_cache.json"
 
 CACHE_TTL = timedelta(days=7)
 
@@ -151,6 +152,7 @@ def _load_cache() -> dict:
 
 
 def _save_cache(cache: dict) -> None:
+    CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = CACHE_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(cache, indent=2))
     tmp.replace(CACHE_FILE)
