@@ -54,10 +54,11 @@ from .parallel import map_parallel
 
 log = get_logger("intraday")
 
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data"
-CHARTS_DIR = PROJECT / "data" / "charts"
-DATA_DIR.mkdir(exist_ok=True)
+DATA_DIR = data_root()
+CHARTS_DIR = DATA_DIR / "charts"
 CHARTS_DIR.mkdir(exist_ok=True)
 
 Interval = Literal["1m", "5m", "15m"]
@@ -107,8 +108,10 @@ def _download_one(ticker: str, period: str, interval: str) -> pd.Series:
     (indexed by timestamp). Raises RuntimeError on persistent failure."""
     import yfinance as yf
 
+    from pipeline.runtime_paths import fetch_retry_budget
+    max_attempts, backoff = fetch_retry_budget()
     last_err: Exception | None = None
-    for attempt in range(3):
+    for attempt in range(max_attempts):
         try:
             df = yf.download(
                 ticker,
@@ -127,7 +130,8 @@ def _download_one(ticker: str, period: str, interval: str) -> pd.Series:
                     return s
         except Exception as e:
             last_err = e
-            time.sleep(2 * (attempt + 1))
+            if backoff:
+                time.sleep(backoff * (attempt + 1))
     raise RuntimeError(f"yfinance failed for {ticker}: {last_err}")
 
 

@@ -62,10 +62,12 @@ from pipeline.portfolio_truth import load_truth, truth_mtime
 
 log = get_logger("cagr")
 
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parents[1]
-TAX_DIR = PROJECT / "data" / "tax_pnl"
-INDICES_CSV = PROJECT / "data" / "cache" / "indices_cache.csv"
-CACHE_FILE = PROJECT / "data" / "cagr_cache.json"
+TAX_DIR = data_root() / "tax_pnl"
+INDICES_CSV = data_root() / "cache" / "indices_cache.csv"
+CACHE_FILE = data_root() / "cagr_cache.json"
 
 
 # ---------------------------------------------------------------------------

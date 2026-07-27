@@ -37,10 +37,11 @@ from .parallel import map_parallel
 log = get_logger("indices")
 
 # ---------- Config ----------
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data"
-CHARTS_DIR = PROJECT / "data" / "charts"
-DATA_DIR.mkdir(exist_ok=True)
+DATA_DIR = data_root()
+CHARTS_DIR = DATA_DIR / "charts"
 CHARTS_DIR.mkdir(exist_ok=True)
 
 # Map: display_name -> yfinance ticker
@@ -99,8 +100,10 @@ def fetch_indices(period: str) -> pd.DataFrame:
 
     def _download_one(t: str) -> pd.Series:
         """yfinance helper that returns a single ticker's close series, with retries."""
+        from pipeline.runtime_paths import fetch_retry_budget
+        max_attempts, backoff = fetch_retry_budget()
         last_err: Exception | None = None
-        for attempt in range(3):
+        for attempt in range(max_attempts):
             try:
                 df = yf.download(
                     t,
@@ -114,7 +117,8 @@ def fetch_indices(period: str) -> pd.DataFrame:
                     return df["Close"]
             except Exception as e:  # network blips, "database is locked", etc.
                 last_err = e
-                time.sleep(2 * (attempt + 1))
+                if backoff:
+                    time.sleep(backoff * (attempt + 1))
         raise RuntimeError(f"yfinance failed for {t}: {last_err}")
 
     if CACHE_FILE.exists():

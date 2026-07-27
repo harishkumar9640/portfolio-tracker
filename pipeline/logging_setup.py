@@ -25,8 +25,10 @@ from pathlib import Path
 import logzero
 from logzero import LogFormatter
 
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parent.parent  # portfolio-tracker/ root
-LOGS_DIR = PROJECT / "data" / "logs"
+LOGS_DIR = data_root() / "logs"
 
 # Default log level. Override via PT_LOG_LEVEL=DEBUG|INFO|WARNING|ERROR env.
 _DEFAULT_LEVEL = "INFO"

@@ -23,8 +23,16 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
+from pipeline.runtime_paths import data_root
+
 # Stored OUTSIDE data/tax_pnl/ so uploaded files never pollute your own pipeline.
-UPLOAD_ROOT = Path("/Users/hkc21/portfolio-tracker/data/tax_pnl_uploads")
+# NOTE: this used to be a hardcoded absolute path
+# (/Users/hkc21/portfolio-tracker/data/tax_pnl_uploads), which only ever
+# worked on one specific machine and would break on any other host,
+# CI runner, or serverless deployment (Vercel). data_root() resolves to
+# <project>/data locally, or /tmp/portfolio-tracker-data on Vercel
+# (see pipeline/runtime_paths.py).
+UPLOAD_ROOT = data_root() / "tax_pnl_uploads"
 MAX_FILES_PER_SESSION = 10
 MAX_FILE_BYTES = 20 * 1024 * 1024  # 20 MB
 SESSION_TTL_HOURS = 24

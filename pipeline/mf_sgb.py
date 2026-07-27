@@ -89,7 +89,8 @@ def _master_list() -> list[dict]:
     global _MASTER_CACHE
     if _MASTER_CACHE is not None:
         return _MASTER_CACHE
-    cache_file = PROJECT / "data" / "cache" / "mf_master_cache.json"
+    from pipeline.runtime_paths import data_root
+    cache_file = data_root() / "cache" / "mf_master_cache.json"
     if cache_file.exists():
         _MASTER_CACHE = json.loads(cache_file.read_text())
         if _MASTER_CACHE:
@@ -147,16 +148,19 @@ def _fetch_mf_history(code: int) -> list[dict]:
     """Fetch latest NAV history. mfapi.in returns ~last 30 prints.
     Retries up to 3 times with exponential backoff to handle timeouts."""
     import time as _time
+    from pipeline.runtime_paths import fetch_retry_budget
+    max_attempts, backoff = fetch_retry_budget()
     last_err: Exception | None = None
-    for attempt in range(3):
+    for attempt in range(max_attempts):
         try:
             r = requests.get(f"https://api.mfapi.in/mf/{code}", timeout=15)
             r.raise_for_status()
             return r.json().get("data", [])
         except Exception as e:
             last_err = e
-            _time.sleep(1.0 * (attempt + 1))
-    raise RuntimeError(f"mfapi.in failed for {code} after 3 attempts: {last_err}")
+            if backoff:
+                _time.sleep(backoff * 0.5 * (attempt + 1))
+    raise RuntimeError(f"mfapi.in failed for {code} after {max_attempts} attempts: {last_err}")
 
 
 def fetch_mf_rows(mfs: list[dict]) -> list[AssetRow]:

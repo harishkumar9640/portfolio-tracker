@@ -2,6 +2,9 @@
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+[tool.vercel]
+entrypoint = "webapp.server:app"
+
 [project]
 name = "portfolio-tracker"
 version = "0.1.0"
@@ -25,6 +28,8 @@ dependencies = [
     "python-multipart>=0.0.9",
     "httpx2>=0.0.1",
     "beautifulsoup4>=4.12.0",
+    "playwright>=1.40.0",
+    "openpyxl>=3.1.0",
 ]
 
 [project.optional-dependencies]

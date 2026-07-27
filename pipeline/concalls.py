@@ -60,12 +60,15 @@ from .portfolio_impact import PORTFOLIO_EXPOSURE  # type: ignore
 
 IST = ZoneInfo("Asia/Kolkata")
 
+from pipeline.runtime_paths import data_root
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-LOG_FILE = PROJECT_ROOT / "data/alerts/concalls/run.log"
-SEEN_FILE = PROJECT_ROOT / "data/alerts/concalls/seen.json"          # dedup: filing_key -> date
-SUMMARY_DIR = PROJECT_ROOT / "data/alerts/concalls/cache"            # one .json per filing
-LOG_FILE_HISTORY = PROJECT_ROOT / "data/alerts/concalls/log.json"    # alert send history
-SUMMARY_DIR.mkdir(exist_ok=True)
+_CONCALLS_DIR = data_root() / "alerts" / "concalls"
+LOG_FILE = _CONCALLS_DIR / "run.log"
+SEEN_FILE = _CONCALLS_DIR / "seen.json"          # dedup: filing_key -> date
+SUMMARY_DIR = _CONCALLS_DIR / "cache"            # one .json per filing
+LOG_FILE_HISTORY = _CONCALLS_DIR / "log.json"    # alert send history
+SUMMARY_DIR.mkdir(parents=True, exist_ok=True)
 
 NSE_ANNOUNCEMENTS_URL = (
     "https://www.nseindia.com/api/corporate-announcements"

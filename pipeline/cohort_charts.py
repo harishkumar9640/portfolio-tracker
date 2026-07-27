@@ -42,8 +42,10 @@ from pipeline.logging_setup import get_logger
 
 log = get_logger("cohort_charts")
 
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parents[1]
-CHARTS_DIR = PROJECT / "data" / "charts"
+CHARTS_DIR = data_root() / "charts"
 CHARTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Cache TTL: how long to reuse a previously generated chart (seconds).

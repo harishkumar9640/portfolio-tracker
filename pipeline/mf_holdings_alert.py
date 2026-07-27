@@ -63,8 +63,10 @@ import pipeline.mf_holdings as mf_holdings
 
 log = get_logger("mf_holdings_alert")
 
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data/alerts/mf_holdings"
+DATA_DIR = data_root() / "alerts" / "mf_holdings"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # Load .env as early as possible so the CLI picks up SMTP creds without

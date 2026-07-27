@@ -64,12 +64,13 @@ from .logging_setup import get_logger
 
 log = get_logger("portfolio_impact")
 
-PROJECT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT / "data"
-DATA_DIR.mkdir(exist_ok=True)
+from pipeline.runtime_paths import data_root
 
-IMPACT_LOG_FILE = PROJECT / "data/alerts/portfolio_impact/log.json"
-SEEN_IMPACT_FILE = PROJECT / "data/alerts/portfolio_impact/seen.json"
+PROJECT = Path(__file__).resolve().parent.parent
+DATA_DIR = data_root()
+
+IMPACT_LOG_FILE = DATA_DIR / "alerts" / "portfolio_impact" / "log.json"
+SEEN_IMPACT_FILE = DATA_DIR / "alerts" / "portfolio_impact" / "seen.json"
 
 IST = timezone(timedelta(hours=5, minutes=30))
 USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -192,6 +193,40 @@ for tkr, info in PORTFOLIO_EXPOSURE.items():
         _KEYWORD_TO_TICKERS.setdefault(k, []).append(tkr)
 
 
+def _keyword_regex(keyword: str) -> re.Pattern:
+    """
+    Compile a whole-word/whole-phrase matcher for a keyword.
+
+    Using plain substring matching (the old approach) causes false
+    positives like the ticker alias "bob" (Bank of Baroda) matching
+    inside "Landbobank" (an unrelated Danish bank), or "rail" matching
+    inside "retail" or "trailer". \\b word boundaries fix this: a match
+    only counts if the keyword appears as a standalone word/phrase, not
+    as a substring of some other word.
+
+    Keywords in the source data sometimes carry deliberate leading/
+    trailing spaces or punctuation (e.g. "rbi ", " fed ", "boe,") which
+    were originally there to fake word-boundary behaviour under plain
+    substring matching. We strip that decoration and rely on \\b instead.
+    """
+    cleaned = keyword.strip(" .,:")
+    if not cleaned:
+        cleaned = keyword.strip()
+    escaped = re.escape(cleaned)
+    return re.compile(rf"\b{escaped}\b", re.IGNORECASE)
+
+
+_ALIAS_REGEX_CACHE: dict[str, re.Pattern] = {}
+
+
+def _cached_regex(keyword: str) -> re.Pattern:
+    pat = _ALIAS_REGEX_CACHE.get(keyword)
+    if pat is None:
+        pat = _keyword_regex(keyword)
+        _ALIAS_REGEX_CACHE[keyword] = pat
+    return pat
+
+
 def _find_affected_tickers(title: str, description: str) -> dict[str, int]:
     """
     Return {ticker: score} for tickers affected by this article.
@@ -200,27 +235,32 @@ def _find_affected_tickers(title: str, description: str) -> dict[str, int]:
       ticker/alias hit  → +5
       sector hit         → +3
       theme hit          → +2
+
+    All matching uses whole-word/whole-phrase regex (see _keyword_regex)
+    so that short aliases like "bob" or sector words like "rail" can't
+    match as substrings inside unrelated words (e.g. "Landbobank",
+    "retail", "trailer").
     """
-    text = (title + " " + description).lower()
+    text = f"{title} {description}"
     hits: dict[str, set[str]] = {}  # ticker → set of matched keys
 
     # Check direct ticker/alias hits first (most specific)
     for tkr, info in PORTFOLIO_EXPOSURE.items():
-        for alias in [tkr.lower()] + [a.lower() for a in info["aliases"]]:
-            if alias and len(alias) >= 3 and alias in text:
-                hits.setdefault(tkr, set()).add(f"direct:{alias}")
+        for alias in [tkr] + list(info["aliases"]):
+            if alias and len(alias.strip()) >= 3 and _cached_regex(alias).search(text):
+                hits.setdefault(tkr, set()).add(f"direct:{alias.lower()}")
 
     # Sector hits
     for tkr, info in PORTFOLIO_EXPOSURE.items():
         for sec in info["sectors"]:
-            if sec in text:
-                hits.setdefault(tkr, set()).add(f"sector:{sec}")
+            if _cached_regex(sec).search(text):
+                hits.setdefault(tkr, set()).add(f"sector:{sec.lower()}")
 
     # Theme hits
     for tkr, info in PORTFOLIO_EXPOSURE.items():
         for th in info["themes"]:
-            if th in text:
-                hits.setdefault(tkr, set()).add(f"theme:{th}")
+            if _cached_regex(th).search(text):
+                hits.setdefault(tkr, set()).add(f"theme:{th.lower()}")
 
     # Convert sets → scores
     score_per_tier = {"direct:": 5, "sector:": 3, "theme:": 2}
@@ -237,10 +277,15 @@ def _find_affected_tickers(title: str, description: str) -> dict[str, int]:
 
 
 # ---------- Risk-category-based impact ----------
-# Generic market risks (rate hikes, market crash) affect all stocks.
-# We always include all 8 tickers when an article matches a market-wide
-# risk category — the alert is rendered as a single consolidated message
-# (see _render_generic_alert) so we don't spam 8 separate notifications.
+# NOTE: this module used to also fire a "market-wide" alert for every
+# holding whenever an article matched a broad risk category (rate
+# hikes, inflation, market crash, FX) even with ZERO direct/sector/
+# theme keyword hits. Per user requirement, alerts must only be sent
+# when the article actually names a held company, its sector, or one
+# of its specific risk-driver themes — a generic macro category match
+# alone is no longer sufficient. That fallback path has been removed;
+# generic macro news is still covered by the separate news_alert.py
+# daily digest, just not re-sent here as a portfolio-impact alert.
 
 
 def _score_article_for_portfolio(
@@ -251,54 +296,34 @@ def _score_article_for_portfolio(
 
     Returns:
       (impacts, is_generic_only)
-        impacts: [(ticker, score, reason), ...] for tickers affected
-        is_generic_only: True if all impacts come from generic market-wide
-                         risk categories (no direct/sector/theme hits).
-                         When True, the alert is batched into a single
-                         "affects your whole portfolio" message instead of N
-                         individual ticker alerts.
+        impacts: [(ticker, score, reason), ...] for tickers affected.
+        is_generic_only: always False now (kept for return-shape
+                         compatibility with callers) — every alert
+                         returned here comes from a real direct/
+                         sector/theme keyword match, matched with
+                         whole-word boundaries so short aliases like
+                         "bob" can't match inside unrelated words like
+                         "Landbobank".
 
     Score is the sum of points from matches at different specificity levels:
       ticker/alias hit  → +5
       sector hit         → +3
       theme hit          → +2
-      generic risk       → +1
+    An article must reach score >= 4 for a ticker to be included, i.e.
+    at least one direct hit, or a sector + theme combination.
     """
-    # Direct/sector/theme hits — these are SPECIFIC to a company
     scores = _find_affected_tickers(article.title, article.description)
     impacts: list[tuple[str, int, str]] = []
-    specific_hit = False
+    text = f"{article.title} {article.description}"
     for tkr, score in scores.items():
         if score >= 4:
             reasons = []
-            text = (article.title + " " + article.description).lower()
             for kw, affected_list in _KEYWORD_TO_TICKERS.items():
-                if tkr in affected_list and kw in text:
+                if tkr in affected_list and _cached_regex(kw).search(text):
                     if len(reasons) < 3:
                         reasons.append(kw)
             reason = ", ".join(reasons[:3]) if reasons else "matches portfolio"
             impacts.append((tkr, score, reason))
-            specific_hit = True
-
-    # If we have specific hits, return them — DON'T pad with generic-risk
-    # alerts for the other 7 tickers. The user can think about second-
-    # order effects themselves; we just point out the directly-affected
-    # ones.
-    if specific_hit:
-        return impacts, False
-
-    # No specific hits → this is a market-wide risk that affects
-    # all 8 holdings equally. Render one consolidated alert.
-    if article.category in (
-        "market_risk", "interest_rate", "purchasing_power", "exchange_rate"
-    ):
-        cat_pretty = article.category.replace("_", " ")
-        all_tickers = sorted(PORTFOLIO_EXPOSURE.keys())
-        generic_impacts = [
-            (t, 1, f"market-wide {cat_pretty} risk")
-            for t in all_tickers
-        ]
-        return generic_impacts, True
 
     return impacts, False
 
@@ -456,6 +481,7 @@ def _load_impact_seen() -> dict[str, str]:
 
 
 def _save_impact_seen(seen: dict[str, str]) -> None:
+    SEEN_IMPACT_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = SEEN_IMPACT_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(seen, indent=2))
     tmp.replace(SEEN_IMPACT_FILE)
@@ -470,6 +496,7 @@ def _append_log(entry: dict) -> None:
             log_list = []
     log_list.append(entry)
     log_list = log_list[-50:]
+    IMPACT_LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     tmp = IMPACT_LOG_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(log_list, indent=2, default=str))
     tmp.replace(IMPACT_LOG_FILE)

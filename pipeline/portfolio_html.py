@@ -40,8 +40,10 @@ from .parallel import fetch_all
 
 log = get_logger("portfolio_html")
 
+from pipeline.runtime_paths import data_root
+
 PROJECT = Path(__file__).resolve().parent.parent
-CHARTS_DIR = PROJECT / "data" / "charts"
+CHARTS_DIR = data_root() / "charts"
 CHARTS_DIR.mkdir(exist_ok=True)
 
 

@@ -22,3 +22,7 @@ beautifulsoup4>=4.12.0
 # (NSE's API rejects plain urllib requests; the Playwright fallback
 # uses a real browser session to bypass Akamai blocking)
 playwright>=1.40.0
+# Interactive charts (dashboard/history/tax pages)
+plotly>=5.18.0
+# Tax & P&L Excel/CSV upload parsing
+openpyxl>=3.1.0
