@@ -89,7 +89,7 @@ USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
 PORTFOLIO_EXPOSURE: dict[str, dict] = {
     "ITC": {
         "name": "ITC Limited",
-        "aliases": ["itc ltd", "itc limited", "india tobacco", "i.t.c."],
+        "aliases": ["itc ltd", "itc limited", "i.t.c.", "india tobacco company"],
         "sectors": ["fmcg", "tobacco", "cigarette", "cigarettes", "hotel",
                     "hospitality", "ciggy", "fmcg sector"],
         "themes": ["sin tax", "tobacco tax", "excise duty", "tax on cigarettes",
@@ -98,11 +98,12 @@ PORTFOLIO_EXPOSURE: dict[str, dict] = {
     },
     "RELIANCE": {
         "name": "Reliance Industries",
-        "aliases": ["ril", "reliance jio", "reliance retail", "jio platforms",
-                    "ambani", "mukesh ambani"],
+        "aliases": ["reliance industries", "reliance jio", "reliance retail",
+                    "jio platforms", "ambani", "mukesh ambani",
+                    "reliance industries limited"],
         "sectors": ["oil refining", "oil refinery", "petrochemical", "petrochem",
-                    "refining", "telecom", "wireless", "5g", "retail",
-                    "oil & gas", "ongc", "energy sector", "consumer"],
+                    "refining", "telecom", "wireless", "5g",
+                    "oil & gas", "ongc", "energy sector"],
         "themes": ["crude oil price", "oil price", "opec cut", "opec",
                    "brent crude", "wti crude", "singapore complex", "GRM",
                    "gas pricing", "kg-d6", "jio arpu", "tariff hike",
@@ -111,28 +112,30 @@ PORTFOLIO_EXPOSURE: dict[str, dict] = {
     },
     "JIOFIN": {
         "name": "Jio Financial Services",
-        "aliases": ["jio fin", "jiofinancial", "jio black nw", "jio lending"],
+        "aliases": ["jio financial", "jiofinancial", "jio lending", "jio fin"],
         "sectors": ["nbfc", "non-banking", "lending", "consumer finance",
                     "financial services", "fintech", "loan"],
         "themes": ["loan growth", "nbfc crisis", "nbfc stress", "nbfc regulation",
                    "rbi policy", "consumer credit", "personal loan",
                    "digital lending", "lending app", "loan default",
-                   "asset quality", "npa"],
+                   "asset quality", "npa", "rbi rate", "repo rate",
+                   "reverse repo", "monetary policy"],
     },
     "BANKBARODA": {
         "name": "Bank of Baroda",
-        "aliases": ["bob", "baroda bank", "bank of baroda"],
+        "aliases": ["bank of baroda", "baroda bank"],
         "sectors": ["psu bank", "public sector bank", "psb", "banking",
                     "public bank", "indian bank", "bank stock", "bank nifty"],
         "themes": ["psu bank merger", "psb merger", "psu disinvestment",
                    "rbi rate", "repo rate", "reverse repo", "npa cycle",
                    "asset quality", "msci inclusion", "fii flows",
                    "deposit growth", "credit growth", "cd ratio",
-                   "psu bank privatization"],
+                   "psu bank privatization", "rbi policy", "rate hike",
+                   "rate cut", "monetary policy"],
     },
     "NTPCGREEN": {
         "name": "NTPC Green Energy",
-        "aliases": ["ntpc green", "ntpc renewable", "ngel"],
+        "aliases": ["ntpc green", "ntpc renewable", "ngel", "ntpc green energy"],
         "sectors": ["renewable energy", "solar", "green energy", "wind energy",
                     "clean energy", "power sector", "renewable",
                     "renewables", "solar panel", "solar power", "renewable sector"],
@@ -144,7 +147,7 @@ PORTFOLIO_EXPOSURE: dict[str, dict] = {
     },
     "KNRCON": {
         "name": "KNR Constructions",
-        "aliases": ["knr", "knr constructions", "knr const"],
+        "aliases": ["knr constructions", "knr const", "knr constructions limited"],
         "sectors": ["construction", "infrastructure", "highway", "roads",
                     "highways", "road construction", "infra sector", "epc"],
         "themes": ["nhai award", "nhai tender", "highway project",
@@ -153,28 +156,54 @@ PORTFOLIO_EXPOSURE: dict[str, dict] = {
                    "pmgsy", "rural road", "irb", "irb invitat",
                    "asset divestment", "asset sale", "toll collection"],
     },
-    "IRCON": {
-        "name": "IRCON International",
-        "aliases": ["ircon intl", "ircon international ltd"],
-        "sectors": ["railway", "railways", "rail", "infrastructure",
-                    "construction", "rail construction", "epc", "psu"],
-        "themes": ["railway capex", "rail capex", "indian railways",
-                   "railway board", "vande bharat", "bullet train",
-                   "metro project", "dedicated freight corridor", "dfc",
-                   "railway electrification", "rail project", "railway order",
-                   "railway tender", "high-speed rail", "hsr",
-                   "railway ministry", "rail budget", "capex push"],
-    },
     "BALRAMCHIN": {
         "name": "Balrampur Chini Mills",
-        "aliases": ["balrampur", "balrampur chini", "bcml"],
+        "aliases": ["balrampur", "balrampur chini", "bcml", "balrampur chini mills"],
         "sectors": ["sugar", "sugar mill", "sugar sector", "ethanol",
                     "distillery", "agro", "sugarcane"],
         "themes": ["sugar export", "sugar quota", "msp sugarcane",
                    "fair and remunerative price", "frp", "sugar production",
                    "ethanol blending", "ebp", "ethanol procurement",
                    "sugar prices", "sugar inventory", "cane arrears",
-                   "monsoon", "sugarcane acreage", "sugar mills"],
+                   "monsoon", "sugarcane acreage", "sugar mills",
+                   "sugarcane harvest", "cane crushing", "sugar crushing",
+                   "heavy rainfall", "rainfall"],
+    },
+    "UNOMINDA": {
+        "name": "Uno Minda",
+        "aliases": ["uno minda", "minda industries", "minda corp",
+                    "uno minda limited", "spark minds"],
+        "sectors": ["auto components", "auto ancillary", "auto electronics",
+                    "ev components", "wiring harness", "automotive components",
+                    "auto parts", "switchgear", "battery components"],
+        "themes": ["maruti sales", "tata motors ev", "two-wheeler demand",
+                   "automotive electronics", "ev demand", "ev penetration",
+                   "auto component export", "auto demand", "auto sales",
+                   "passenger vehicle", "two wheeler", "auto sector"],
+    },
+    "GOLDBEES": {
+        "name": "Gold ETF (GOLDBEES)",
+        "aliases": ["goldbees", "gold etf", "nippon gold"],
+        "sectors": ["gold", "gold price", "precious metals", "bullion"],
+        "themes": ["gold rate", "mcx gold", "spot gold", "gold futures",
+                   "rupee gold", "gold import", "gold demand",
+                   "safe haven"],
+    },
+    "METALIETF": {
+        "name": "Metals ETF (METALIETF)",
+        "aliases": ["metal etf", "metalbees", "nippon metal"],
+        "sectors": ["metals", "metal index", "base metals", "copper",
+                    "zinc", "aluminum", "lead", "nickel"],
+        "themes": ["lme", "london metal exchange", "metal prices",
+                   "copper price", "aluminum price", "zinc price",
+                   "steel price", "iron ore"],
+    },
+    "NEXT50IETF": {
+        "name": "Nifty Next 50 ETF (NEXT50IETF)",
+        "aliases": ["next 50 etf", "next50 etf", "next50"],
+        "sectors": ["nifty next 50", "next50 index", "nifty next"],
+        "themes": ["nifty next 50 rebalance", "next50 reweight",
+                   "nifty next 50 inclusion", "next50 exclusion"],
     },
 }
 
@@ -240,14 +269,28 @@ def _find_affected_tickers(title: str, description: str) -> dict[str, int]:
     so that short aliases like "bob" or sector words like "rail" can't
     match as substrings inside unrelated words (e.g. "Landbobank",
     "retail", "trailer").
+
+    Bare ticker (e.g. "RELIANCE") is matched CASE-SENSITIVELY so
+    "self-reliance" / "energy reliance" / "strategic reliance" don't
+    fire (those are English idioms, lowercase). Real news uses
+    "Reliance" or "RELIANCE" (uppercase, often in titles).
+    Aliases are matched case-insensitively because they're phrases
+    like "Reliance Industries" that may be lowercased in body text.
     """
     text = f"{title} {description}"
     hits: dict[str, set[str]] = {}  # ticker → set of matched keys
 
-    # Check direct ticker/alias hits first (most specific)
+    # Check direct ticker/alias hits first (most specific).
     for tkr, info in PORTFOLIO_EXPOSURE.items():
-        for alias in [tkr] + list(info["aliases"]):
-            if alias and len(alias.strip()) >= 3 and _cached_regex(alias).search(text):
+        # Bare ticker, case-sensitive (prevents "self-reliance" idiom)
+        if len(tkr.strip()) >= 3:
+            pat = re.compile(rf"\b{re.escape(tkr.strip())}\b")
+            if pat.search(text):
+                hits.setdefault(tkr, set()).add(f"direct:{tkr.lower()}")
+        # Aliases, case-insensitive (need >= 4 chars to avoid the
+        # "ril"/"bob"/"knr" substring-matches-inside-other-words class)
+        for alias in info["aliases"]:
+            if alias and len(alias.strip()) >= 4 and _cached_regex(alias).search(text):
                 hits.setdefault(tkr, set()).add(f"direct:{alias.lower()}")
 
     # Sector hits

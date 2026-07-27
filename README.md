@@ -471,6 +471,7 @@ recommendation, supports Form 16 PDF and Form 26AS JSON import.
 | `MF_ALERT_SMTP_TO` | `pipeline.mf_holdings_alert` | No |
 | `PM_ALERT_SMTP_*` | `pipeline.portfolio_monitor` | No (overrides MF_*) |
 | `NEWS_DISABLED=1` | server | opt-out of news scheduler |
+| `NEWS_PORTFOLIO_ONLY=0` | `pipeline.news_alert` | disable portfolio-impact filter (default 1 = drop articles with no holding match — no FIFA-finals noise) |
 | `MF_ALERT_DISABLED=1` | server | opt-out of MF alert scheduler |
 | `SHP_ALERT_DISABLED=1` | server | opt-out of shareholding scheduler |
 | `PORTFOLIO_IMPACT_DISABLED=1` | server | opt-out of impact scanner |

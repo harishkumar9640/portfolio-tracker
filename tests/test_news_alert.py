@@ -279,6 +279,87 @@ class TestFilterFresh:
         assert len(kept) == 1
 
 
+# ---------- Portfolio filter (2026-07-27) ----------
+
+class TestFilterForPortfolio:
+    """
+    The news digest is filtered through portfolio_impact._find_affected_tickers
+    so that only articles scoring >= 4 against the user's holdings reach
+    the user. FIFA-finals-style stories must be dropped.
+    """
+
+    def test_unrelated_article_is_dropped(self):
+        """FIFA finals / cat rescue / etc. score 0 and are dropped."""
+        article = Article(title="FIFA World Cup final highlights",
+                         url="https://sport/fifa-final",
+                         source="BBC", published=datetime.now())
+        kept, dropped = na._filter_for_portfolio([article])
+        assert dropped == 1
+        assert kept == []
+
+    def test_reliance_industries_article_is_kept(self):
+        article = Article(
+            title="Reliance Industries announces record quarterly profit",
+            url="https://biz/reliance-q1",
+            source="MoneyControl", published=datetime.now(),
+        )
+        kept, dropped = na._filter_for_portfolio([article])
+        assert dropped == 0
+        assert len(kept) == 1
+
+    def test_unominda_article_is_kept(self):
+        article = Article(
+            title="Uno Minda auto component exports surge 30% YoY",
+            url="https://biz/unominda",
+            source="MoneyControl", published=datetime.now(),
+        )
+        kept, dropped = na._filter_for_portfolio([article])
+        assert dropped == 0
+        assert len(kept) == 1
+
+    def test_gold_price_article_kept_for_goldbees(self):
+        article = Article(
+            title="Gold price hits fresh record on US Fed pivot",
+            url="https://biz/gold-record",
+            source="Bloomberg", published=datetime.now(),
+        )
+        kept, dropped = na._filter_for_portfolio([article])
+        assert dropped == 0
+        assert len(kept) == 1
+
+    def test_disabled_when_env_var_zero(self):
+        """NEWS_PORTFOLIO_ONLY=0 disables the filter (legacy behavior)."""
+        article = Article(title="FIFA World Cup final highlights",
+                         url="https://sport/fifa", source="BBC",
+                         published=datetime.now())
+        with patch.dict(os.environ, {"NEWS_PORTFOLIO_ONLY": "0"}):
+            kept, dropped = na._filter_for_portfolio([article])
+        assert dropped == 0
+        assert len(kept) == 1
+
+    def test_unqualified_reliance_idiom_is_dropped(self):
+        """English idiom 'self-reliance' must not pass the filter."""
+        article = Article(
+            title="Economic self-reliance key to India's rise in new global order",
+            url="https://opinion/gurumurthy", source="The Hindu",
+            published=datetime.now(),
+        )
+        kept, dropped = na._filter_for_portfolio([article])
+        assert dropped == 1
+        assert kept == []
+
+    def test_drop_count_includes_unrelated_articles(self):
+        relevant = Article(title="Reliance Industries Q1 profit",
+                          url="https://a", source="x",
+                          published=datetime.now())
+        irrelevant = Article(title="Local cricket match highlights",
+                            url="https://b", source="x",
+                            published=datetime.now())
+        kept, dropped = na._filter_for_portfolio([relevant, irrelevant])
+        assert dropped == 1
+        assert len(kept) == 1
+
+
 # ---------- Categorise and dedup ----------
 
 class TestCategoriseAndDedup:

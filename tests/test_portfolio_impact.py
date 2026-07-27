@@ -1,6 +1,6 @@
 """
 Tests for pipeline.portfolio_impact.py — the portfolio-impact scanner that
-cross-references news against the user's 8 holdings and sends Telegram
+cross-references news against the user's 11 holdings and sends Telegram
 alerts when a story affects one of them.
 
 Covers:
@@ -10,8 +10,10 @@ Covers:
   - _render_generic_alert: lists all tickers when market-wide risk
   - Scan dedup: same URL is not alerted twice
   - Score threshold: low-score articles are not alerted
-  - PORTFOLIO_EXPOSURE: all 8 tickers are present
+  - PORTFOLIO_EXPOSURE: all 11 tickers are present
   - _KEYWORD_TO_TICKERS reverse-lookup works
+  - Alias tightening (2026-07-27): "ril" / "bob" / unqualified
+    "reliance" no longer fire as direct hits
 """
 from __future__ import annotations
 
@@ -85,11 +87,16 @@ def clean_smtp_env(monkeypatch):
 # ---------- Portfolio exposure map ----------
 
 class TestPortfolioExposure:
-    def test_all_eight_tickers_present(self):
+    def test_all_eleven_tickers_present(self):
         assert set(PORTFOLIO_EXPOSURE.keys()) == {
             "ITC", "RELIANCE", "JIOFIN", "BANKBARODA",
-            "NTPCGREEN", "KNRCON", "IRCON", "BALRAMCHIN",
+            "NTPCGREEN", "KNRCON", "BALRAMCHIN",
+            "UNOMINDA", "GOLDBEES", "METALIETF", "NEXT50IETF",
         }
+
+    def test_ircon_is_removed(self):
+        # IRCON was sold on 2026-07-01; must not appear in PORTFOLIO_EXPOSURE
+        assert "IRCON" not in PORTFOLIO_EXPOSURE
 
     def test_every_ticker_has_required_fields(self):
         for tkr, info in PORTFOLIO_EXPOSURE.items():
@@ -108,6 +115,36 @@ class TestPortfolioExposure:
         for tkr in PORTFOLIO_EXPOSURE:
             assert tkr.lower() in _KEYWORD_TO_TICKERS
 
+    def test_no_three_char_aliases(self):
+        # The 2026-07-27 audit dropped short aliases (≤3 chars) like
+        # "bob" / "ril" / "knr" because they match inside unrelated
+        # words (April, Landbobank, etc.). Verify no alias is ≤3 chars.
+        for tkr, info in PORTFOLIO_EXPOSURE.items():
+            for alias in info["aliases"]:
+                assert len(alias.strip()) >= 4, (
+                    f"{tkr}: alias {alias!r} is too short (≤3 chars) "
+                    "and risks false-positive matches"
+                )
+
+    def test_reliance_aliases_require_context(self):
+        # "reliance" alone is dropped — it must always be qualified
+        # by Industries / Jio / Retail / Ambani / Mukesh Ambani.
+        reliance_aliases = {a.lower() for a in PORTFOLIO_EXPOSURE["RELIANCE"]["aliases"]}
+        assert "reliance" not in reliance_aliases, (
+            "RELIANCE has unqualified 'reliance' alias — would match "
+            "'economic self-reliance', 'energy reliance', etc."
+        )
+        assert "ril" not in reliance_aliases, (
+            "RELIANCE has 'ril' alias — matches 'April', 'until', etc."
+        )
+
+    def test_bankbaroda_aliases_exclude_bob(self):
+        bank_aliases = {a.lower() for a in PORTFOLIO_EXPOSURE["BANKBARODA"]["aliases"]}
+        assert "bob" not in bank_aliases, (
+            "BANKBARODA has 'bob' alias — matches unrelated names like "
+            "'Bob Dylan' or 'Bob Iger'"
+        )
+
 
 # ---------- _find_affected_tickers ----------
 
@@ -122,10 +159,10 @@ class TestFindAffectedTickers:
 
     def test_direct_hit_on_alias(self):
         scores = _find_affected_tickers(
-            "RIL to invest in retail expansion",
+            "Reliance Industries to invest in retail expansion",
             "The Ambani company plans aggressive growth",
         )
-        assert "RELIANCE" in scores  # RIL is an alias
+        assert "RELIANCE" in scores  # "Reliance Industries" is an alias
 
     def test_sector_hit(self):
         scores = _find_affected_tickers(
@@ -173,16 +210,21 @@ class TestFindAffectedTickers:
 
     def test_sector_word_does_not_match_inside_unrelated_word(self):
         """
-        "rail" (IRCON sector keyword) must not match inside "retail" or
-        "trailer", and must not fire just because an unrelated flood
-        story happens to mention train services being suspended without
-        naming IRCON, Indian Railways, or a railway capex/project theme.
+        "rail" sector keywords must not match inside "retail" or
+        "trailer". Sector-only matches should not reach the alert
+        threshold of 4 for an unrelated story.
         """
         scores = _find_affected_tickers(
             "Retailer opens new trailer park showroom",
             "Big discounts on retail goods this festive season",
         )
-        assert "IRCON" not in scores
+        # Allow low sector-only scores but verify no ticker reaches
+        # the alert threshold of 4
+        for tkr, sc in scores.items():
+            assert sc < 4, (
+                f"{tkr} scored {sc} on a generic retail story — "
+                "should require a stronger direct/theme match"
+            )
 
     def test_generic_bank_word_alone_does_not_trigger_alert_threshold(self):
         """
@@ -198,6 +240,95 @@ class TestFindAffectedTickers:
         # ("psu bank", "public sector bank", etc. require more context),
         # so no match should occur at all for this unrelated story.
         assert a_scores.get("BANKBARODA", 0) < 4
+
+    # ---- 2026-07-27 alias-tightening regressions (from real log entries) ----
+    def test_unqualified_reliance_does_not_match(self):
+        """
+        "economic self-reliance" / "energy reliance" used to fire a
+        RELIANCE alert (the bare ticker matched the lowercase English
+        idiom). The bare ticker is now matched case-sensitively so
+        lowercase 'reliance' in idioms no longer counts.
+        """
+        scores = _find_affected_tickers(
+            "Economic self-reliance key to India's rise in new global order",
+            "S. Gurumurthy speech",
+        )
+        # "Reliance Industries" / "Reliance Jio" / "Mukesh Ambani" are
+        # not in the text — RELIANCE must not score a direct hit.
+        assert "RELIANCE" not in scores or scores.get("RELIANCE", 0) < 4
+
+    def test_april_inflation_not_reliance(self):
+        """
+        The dropped alias 'ril' used to match 'ril' as a substring of
+        'April'. With both the alias and the case-sensitive ticker
+        fix, generic inflation headlines don't fire.
+        """
+        scores = _find_affected_tickers(
+            "April inflation print: CPI hits 5.1%",
+            "Monsoon concerns through May and June",
+        )
+        assert "RELIANCE" not in scores
+
+    def test_kpsc_veterinary_officer_not_reliance(self):
+        """
+        Real log entry from 2026-07-26: a KPSC veterinary officer
+        selection story matched RELIANCE on 'ril' (substring of
+        'until' / 'April'). With the alias dropped, this no longer
+        happens.
+        """
+        scores = _find_affected_tickers(
+            "KPSC temporarily stays veterinary officer selection list, "
+            "forms internal inquiry committee to review",
+            "Karnataka public service commission",
+        )
+        assert "RELIANCE" not in scores
+
+    def test_police_arrest_railway_loco_pilot_no_longer_matches(self):
+        """
+        Real log entry from 2026-07-26: a murder story about a railway
+        loco pilot matched IRCON via 'rail' / 'railway'. IRCON has
+        been sold (removed from PORTFOLIO_EXPOSURE), so this no
+        longer scores any ticker.
+        """
+        scores = _find_affected_tickers(
+            "Police arrest railway loco pilot for murder of elderly woman in Tirupati",
+            "Andhra Pradesh crime news",
+        )
+        assert scores == {}
+
+    def test_us_pricing_article_not_reliance(self):
+        """
+        Real log entry from 2026-07-26: a US pricing regulation article
+        matched RELIANCE via the 'retail' + 'consumer' sector keywords.
+        Sectors still match here, so RELIANCE may get a low score —
+        but the threshold check means it should NOT score >= 4 (no
+        direct hit, and RELIANCE's sectors no longer include 'retail'
+        or 'consumer' after the 2026-07-27 tightening).
+        """
+        a_scores = _find_affected_tickers(
+            "New Jersey governor signs law banning surveillance pricing to protect shoppers",
+            "US retail consumer protection regulation",
+        )
+        assert a_scores.get("RELIANCE", 0) < 4
+
+    def test_new_tickers_are_scoreable(self):
+        """
+        Verify the 4 new tickers added 2026-07-27 (UNOMINDA, GOLDBEES,
+        METALIETF, NEXT50IETF) are matched when their keywords appear.
+        """
+        uno = _find_affected_tickers(
+            "Uno Minda auto component exports surge 30% YoY",
+            "EV penetration boosts wiring harness demand",
+        )
+        assert "UNOMINDA" in uno
+        assert uno["UNOMINDA"] >= 5
+
+        gold = _find_affected_tickers(
+            "Gold price hits fresh record on US Fed pivot",
+            "MCX gold futures surge 2%",
+        )
+        assert "GOLDBEES" in gold
+        assert gold["GOLDBEES"] >= 3
 
 
 # ---------- _score_article_for_portfolio ----------
@@ -240,19 +371,18 @@ class TestScoreArticle:
         impacts, is_generic = _score_article_for_portfolio(a)
         assert impacts == []
 
-    def test_ircon_railway_capex(self):
+    def test_unominda_auto_electronics(self):
         a = make_article(
-            "IRCON wins Rs 2500 crore railway capex contract",
-            "PSU railway order from Indian Railways",
-            category="economic",
+            "Maruti sales jump 15%; Uno Minda auto component orders surge",
+            "EV penetration boosts wiring harness demand",
+            category="business_risk",
         )
         impacts, is_generic = _score_article_for_portfolio(a)
         assert not is_generic
         tickers = [t for t, _, _ in impacts]
-        assert "IRCON" in tickers
-        # IRCON should have high score due to multiple keyword matches
-        ircon_score = next(s for t, s, _ in impacts if t == "IRCON")
-        assert ircon_score >= 5
+        assert "UNOMINDA" in tickers
+        uno_score = next(s for t, s, _ in impacts if t == "UNOMINDA")
+        assert uno_score >= 5
 
     def test_ntpcgreen_solar_policy(self):
         a = make_article(
@@ -315,14 +445,14 @@ class TestRenderImpactAlert:
     def test_specific_alert_does_not_list_all_tickers(self):
         """A specific-hit alert should only mention affected tickers."""
         a = make_article(
-            "IRCON wins railway capex contract",
-            "PSU railway order",
+            "NHAI awards 12 highway projects to KNR Constructions",
+            "Construction companies win major road contracts",
             category="economic",
         )
         impacts, _ = _score_article_for_portfolio(a)
         msg = _render_impact_alert(a, impacts)
-        # IRCON must be present
-        assert "IRCON" in msg
+        # KNRCON must be present
+        assert "KNRCON" in msg
         # But other unrelated tickers should NOT be in this message
         assert "BALRAMCHIN" not in msg
         assert "Sugar" not in msg

@@ -54,6 +54,13 @@ Environment variables (.env):
   NEWS_QUIET_HOURS          "22-6" = don't send between 10 PM and 6 AM
                             (mainly for ad-hoc runs, the 8:55 AM schedule
                             is unaffected)
+  NEWS_PORTFOLIO_ONLY       "0" = send the full general digest (legacy
+                                  behavior). Default "1" (recommended):
+                                  filter to articles that score >= 4
+                                  against the user's 11 holdings via
+                                  portfolio_impact._find_affected_tickers.
+                                  Drops FIFA-finals-style stories that
+                                  don't impact any holding.
 
 CLI:
   python3 news_alert.py               # one-shot run
@@ -698,6 +705,80 @@ def _filter_fresh(articles: list[Article]) -> list[Article]:
     return out
 
 
+# ---------- Portfolio-impact filter ----------
+#
+# User feedback (2026-07-27): "those news are unrealted to my holdings most
+# of the times ... only send me the article links when there is the real
+# impact on my holdings due to that news, once an article get published -
+# find the keywords in the article first with my holdings names, then if
+# any get matched then only send those articles via telegram message.
+# What does FIFA finals have impact on my holdings?"
+#
+# Implementation: the news_alert general digest is filtered through
+# portfolio_impact._find_affected_tickers. Articles that score < 4
+# against the user's 11 holdings are dropped before they reach
+# _categorise_and_dedup. The result is a Telegram message that ONLY
+# contains articles matching one of the user's held tickers / sectors /
+# themes.
+#
+# Opt-out: set NEWS_PORTFOLIO_ONLY=0 (default 1) to revert to the
+# pre-filter general-digest behavior.
+#
+# Edge case: if the user has zero holdings (truth file says qty=0 for
+# everything) the filter would drop ALL news, which would silently
+# break the digest. We never want that — if no portfolio is configured,
+# fall back to general news so the user can still see the alert and
+# notice their config is wrong.
+
+NEWS_PORTFOLIO_ONLY_DEFAULT = True
+
+
+def _portfolio_only_enabled() -> bool:
+    """Return True if the news digest should be filtered to portfolio-impact only."""
+    raw = os.environ.get("NEWS_PORTFOLIO_ONLY", "").strip().lower()
+    if raw in ("0", "false", "no", "off"):
+        return False
+    if raw in ("1", "true", "yes", "on"):
+        return True
+    return NEWS_PORTFOLIO_ONLY_DEFAULT
+
+
+def _filter_for_portfolio(articles):
+    """
+    Drop articles that don't affect any held ticker. Returns
+    (filtered_articles, dropped_count).
+
+    Uses portfolio_impact._find_affected_tickers to score each article;
+    keeps only those with a ticker scoring >= 4.
+    If portfolio_impact can't be imported (e.g. running this file in
+    isolation), we leave the articles untouched and return (input, 0).
+    """
+    if not _portfolio_only_enabled():
+        return list(articles), 0
+    try:
+        from .portfolio_impact import (
+            _find_affected_tickers, PORTFOLIO_EXPOSURE,
+        )
+    except ImportError:
+        return list(articles), 0
+    if not PORTFOLIO_EXPOSURE:
+        return list(articles), 0
+
+    kept = []
+    dropped = 0
+    for a in articles:
+        scores = _find_affected_tickers(a.title, a.description)
+        if any(s >= 4 for s in scores.values()):
+            kept.append(a)
+        else:
+            dropped += 1
+    log.info(
+        "portfolio filter: kept %d / %d articles (%d dropped, no impact on holdings)",
+        len(kept), len(articles), dropped,
+    )
+    return kept, dropped
+
+
 def _categorise_and_dedup(
     articles: list[Article],
     seen: dict[str, str],
@@ -993,6 +1074,8 @@ def run_once(force_send: bool = False) -> dict:
         all_articles = []
 
     fresh = _filter_fresh(all_articles)
+    # Filter to portfolio-impact only (see _filter_for_portfolio docstring)
+    fresh, _dropped = _filter_for_portfolio(fresh)
     seen = _load_seen()
     buckets = _categorise_and_dedup(fresh, seen)
     _save_seen(seen)
@@ -1002,12 +1085,14 @@ def run_once(force_send: bool = False) -> dict:
     message = render_telegram(buckets, date_str=date_str, force=force_send)
 
     if message is None:
-        log.info("no significant news today (%d fresh articles)", len(fresh))
+        log.info("no significant news today (%d fresh articles, %d dropped by portfolio filter)",
+                 len(fresh), _dropped)
         result = {
             "ran_at": ran_at, "fetch_ok": True,
             "articles_total": len(all_articles),
             "articles_fresh": len(fresh),
             "articles_kept": total_articles,
+            "articles_dropped_by_portfolio_filter": _dropped,
             "categories": {c: len(buckets[c]) for c in buckets},
             "telegram": {"sent": False, "reason": "no significant news"},
             "errors": errors,
@@ -1021,6 +1106,7 @@ def run_once(force_send: bool = False) -> dict:
         "articles_total": len(all_articles),
         "articles_fresh": len(fresh),
         "articles_kept": total_articles,
+        "articles_dropped_by_portfolio_filter": _dropped,
         "categories": {c: len(buckets[c]) for c in buckets},
         "message_length": len(message),
         "telegram": send_result,
